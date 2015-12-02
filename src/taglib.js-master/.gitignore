@@ -1,0 +1,6 @@
+taglib-*
+*.o
+*.cpp.o
+.*.sw*
+build
+stamp-taglib-build

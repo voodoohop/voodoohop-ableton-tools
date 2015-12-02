@@ -1,0 +1,34 @@
+<script src="taglib.js"></script>
+<script>
+  var useWorker = false;
+
+  function init() {
+    document.getElementById("go").onclick = function () {
+      file = document.getElementById("file").files[0];
+
+      var onDone = function (data) {
+        document.getElementById("log").innerHTML = JSON.stringify(data, null, 2);
+      };
+
+      if (useWorker) {
+        file.readTaglibMetadata({
+          path: "http://localhost:8000/taglib.js",
+          worker: true
+        }, onDone);
+      } else {
+        file.readTaglibMetadata(onDone);
+      }
+    };
+
+    document.getElementById("asynchronous").onchange = function () {
+      useWorker = this.checked;
+    };
+  }
+
+  window.addEventListener("load", init, false);
+</script>
+<input type="file" id="file" accept="audio/*"><br>
+Use asynchronous worker: <input type="checkbox" id="asynchronous"><br>
+<button id="go">Read file</button><br>
+Taglib Data:<br>
+<pre id="log"></pre>

@@ -1,0 +1,21 @@
+{
+  "name": "most-react-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/.bin/budo index.js --live -- -t babelify"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-core": "^5.8.25",
+    "babelify": "^6.3.0",
+    "budo": "^5.1.1",
+    "most": "^0.15.0",
+    "ramda": "^0.17.1",
+    "react": "0.14.0",
+    "react-addons-update": "^0.14.0"
+  }
+}

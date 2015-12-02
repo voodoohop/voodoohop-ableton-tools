@@ -1,0 +1,32 @@
+{
+  "name": "taglib.js",
+  "description": "Javascript build of taglib.", 
+  "version": "0.0.1",
+  "homepage": "https://github.com/webcast/taglib.js",
+  "author": "Romain Beauxis <toots@rastageeks.org",
+  "repository":
+    {
+      "type":"git",
+      "url":"git@github.com:webcast/taglib.js.git"
+    },
+  "bugs":
+    {
+      "mail":"toots@rastageeks.org",
+      "url":"http://github.com/webcast/taglib.js/issues"
+    },
+  "main": "dist/taglib.js",
+  "directories": 
+    { "dist":"./dist",
+      "examples":"./examples",   
+      "src":"./src" 
+    },
+  "engine": {"node": ">= 0.4.7", "npm": "1"},
+  "licences":
+    [
+      {
+        "type":"GNU Lesser General Public License",
+        "url": "http://www.gnu.org/licenses/lgpl.html"
+      }
+    ],
+  "dependencies": {}
+}
