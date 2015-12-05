@@ -36,7 +36,8 @@ var extractMetadata = (path) => {
  return new Promise((resolve) => f.readTaglibMetadata((res) => {
   //  availableMetadataExtractor.push(extractMetadata);
    res = Imm.fromJS(res);
-   resolve(res.set("audio",res.get("audio") ? res.get("audio").mapKeys(k => k === "length" ? "duration" : k):null));
+   console.log("got metadata",res.toJS());
+   resolve(res.set("audio",res.get("audio") ? res.get("audio").set("duration", res.getIn(["audio","duration"])/1000):null));
  }));
 };
 
@@ -53,7 +54,7 @@ var extractMetadata = (path) => {
 // var metadataStream = fetchOrProcess(toTagStream.map(f =>f[0]), extractMetadata);
 
 
-import extractWarpMarkers from "./extractWarpMarkers";
+import extractWarpMarkers from "../transforms/extractWarpMarkers";
 
 // var Imm = require("immutable");
 
@@ -79,7 +80,8 @@ import {registerTransform, transforms} from "../api/audioMetadataGenerator";
 import {overviewWaveform} from "./thomashWarpWaveform";
 
 import audiobufferPeaks from "./audioBuffer2Peaks";
-import {getAudioBuffer} from "./streamAudio/streamingAudioToWaveform";
+
+import {getAudioBuffer} from "../transforms/streamingAudioToWaveform";
 
 
 

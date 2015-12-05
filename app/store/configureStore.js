@@ -1,4 +1,4 @@
-import { createStore } from 'redux';
+import createStore from './createReactiveStore';
 import rootReducer from '../reducers';
 import Subject from '../utils/subject.js';
 

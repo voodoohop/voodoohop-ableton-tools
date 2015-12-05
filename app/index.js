@@ -1,10 +1,19 @@
 import React from 'react';
 import { render } from 'react-dom';
-import configureStore from './store/configureStore';
+// import configureStore from './store/configureStore';
+import createStore from "./utils/createReactiveStore";
+import thunkMiddleware from 'redux-thunk'
+import promiseMiddleware from './middleware/promiseMiddleware'
+import applyMiddleware from "./utils/applyReactiveMiddleware"
+import combineReducers from "./utils/combineReactiveImmutableReducers"
 import './app.css';
 import './photon_tom.css';
 import TomWaveTest from "./TomWaveTest"
 import ipcStream from "electron-ipc-stream";
+import { Provider,connect } from 'react-redux';
+// import DevTools from "./containers/DevTools";
+
+
 var osc = require("node-osc");
 var emitStream = require('emit-stream');
 var oscServer = new osc.Server(5555, '0.0.0.0');
@@ -25,21 +34,17 @@ import most from "most";
 console.log("importing metadata");
 import importMetadata from "./utils/importAudioMetadata.js";
 
-// importMetadata().observe(console.log.bind(console));
-// var TomWavetest = 
+
+
 
     import {reactive} from "react-most-reactive";
-// document.addEventListener('DOMContentLoaded', function () {   
-ipcs.on('data', function (event, message) {
-	console.log(event);  // Prints "whoooooooh!"
-});
-// });
+
+
 var fs = require("fs");
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 var encoding = require("encoding");
 var dummy;
-const store = configureStore();
 
 var oscInput = 
 	most.fromEvent("message", oscServer)
@@ -57,8 +62,9 @@ var noneInput = oscInput.filter(f=> f[1] === "-none-");
 
 import {getTransformed} from "./api/audioMetadataGenerator";
 
+
 var playingTracks = 	
-	getTransformed(["path","id3Metadata", "waveform"], oscPathInput)	
+	getTransformed(["path","id3Metadata","audioMetadata", "waveform"], oscPathInput)	
 	.merge(noneInput.map(f => Immutable.Map({track:f[0].split("/")[2]})))
 	.zip((transformed,track) => Immutable.Map({track}).merge(transformed), oscInput.map(f => f[0].split("/")[2]))
 	.scan((tracks, d) => tracks.set(d.get("track"), d), Immutable.Map())
@@ -75,9 +81,37 @@ var playingTracks =
 
 
 import PlayingTracks from "./playingTracksView";
+
+import * as reducers from './reducers';
+
+
+// const store = configureStore();
+const newCreateStore = applyMiddleware(thunkMiddleware, promiseMiddleware)(createStore);
+const reducer = combineReducers(reducers);
+const store = newCreateStore(reducer);
+
+// store.state$.subscribe(state => render(state));
+// action$.subscribe(action => store.dispatcher$.onNext(action));
+
+
+// var ConnectedPlayingTracks = connect((state) => ({tracks:state}))(PlayingTracks);
+
+
+// var ConnectedDevTools = connect((state) => { 
+// 	console.log("napStateToProps:",state.toJS());
+// 	return state.toJS();
+// })(DevTools);
 // info.drain();
 render(
-	<PlayingTracks tracks={playingTracks} />,
+	
+	// <div>
+	
+	<PlayingTracks  tracks={playingTracks} />
+	// <DevTools />
+
+	// </div>
+	
+	,
 	// <TomWaveTest waveData={ reactiveWaveData } /></div>,
   	document.getElementById('root')
 );

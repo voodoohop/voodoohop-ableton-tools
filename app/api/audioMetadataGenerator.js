@@ -14,13 +14,6 @@ Stream.prototype.collect = function () {
 //   console.log("collectTest", x));
 
 
-import extractWarpMarkers from "../utils/extractWarpMarkers";
-
-var warpmarkerTransform = {
-  name: "warpMarkers",
-  depends: ["path", "audioMetadata"],
-  transform: (path, audioMetadata) => extractWarpMarkers(Immutable.fromJS(audioMetadata).set("path", path))
-}
 
 export var transforms = {};
 

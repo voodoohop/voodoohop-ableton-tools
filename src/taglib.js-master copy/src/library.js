@@ -9,6 +9,7 @@ mergeInto(LibraryManager.library, {
     getTaglibFile(fileref).position = position;
   },
   taglib_js_read: function (fileref, len, ptr) {
+      var fs = require("fs");
             var data = getTaglibFile(fileref);
             var position = data.position;
             if (data.position >= data.length) {

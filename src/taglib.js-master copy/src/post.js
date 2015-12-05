@@ -3,6 +3,7 @@
 files = {}
 
 function addTaglibFile(file, content) {
+  var fs = require("fs");
   var ptr = _malloc(1);
   files[ptr] = {
     file: file,

@@ -6,10 +6,10 @@ var fs = require("fs");
 var Immutable = require("immutable");
 
 var WaveformData = require("waveform-data");
-import doThePeaks from "./doThePeaks.js";
+import doThePeaks from "../transforms/doThePeaks.js";
 
 
-import WarpAdaptorCreator from "./warpWaveformDataAdaptor.js";
+// import WarpAdaptorCreator from "./warpWaveformDataAdaptor.js";
 console.log("wfdata",WaveformData.builders);
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 

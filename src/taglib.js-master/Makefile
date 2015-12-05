@@ -1,4 +1,4 @@
-TAGLIB_VERSION:=1.9.1
+TAGLIB_VERSION:=1.10
 TAGLIB:=taglib-$(TAGLIB_VERSION)
 
 EMCXX:=em++
@@ -6,10 +6,10 @@ EXPORTED_FUNCTIONS:='["_taglib_js_open", "_taglib_js_close", "_taglib_js_get_met
 CXXFLAGS:=-O2 -s ASM_JS=1 -s USE_TYPED_ARRAYS=2 -s TOTAL_MEMORY=128000000 
 LINKFLAGS:=-s EXPORTED_FUNCTIONS=$(EXPORTED_FUNCTIONS) $(CXXFLAGS)
 EMMAKE:=emmake
-TAGLIB_URL:="https://github.com/taglib/taglib/releases/download/v1.9.1/taglib-1.9.1.tar.gz"
+TAGLIB_URL:="http://taglib.github.io/releases/taglib-1.10.tar.gz"
 TAR:=tar
 # Beurk!
-INCLUDE_DIRS=$(shell find taglib-1.9.1/taglib | grep '\.h$$' | while read i; do dirname $$i; done | sort -u)
+INCLUDE_DIRS=$(shell find taglib-1.10/taglib | grep '\.h$$' | while read i; do dirname $$i; done | sort -u)
 
 all: dist/taglib.js
 
@@ -20,7 +20,6 @@ $(TAGLIB): $(TAGLIB).tar.gz stamp-taglib-build
 
 stamp-taglib-build:
 	$(TAR) xzvf $(TAGLIB).tar.gz && \
-	patch -p0 < src/emscripten-build.patch && \
 	rm -rf build && \
 	mkdir -p build && \
 	cd build && \

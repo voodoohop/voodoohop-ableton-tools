@@ -16,13 +16,13 @@ var post = console.log.bind(console);
 // po st("tomtom");
 //var most = require("most.js");
 //var Ppprom = promise;
-function extractWarpMarkers(path, audioMetaData) {
+export default function extractWarpMarkers(path, audioMetaData) {
   //console.log("simpleExtractWarpMarkers received dict name", dict.name, "\n");
   //var clipDict = new Dict(dictName);
   return new Promise((resolveMe,reject) => {
 
   post("possst extracting warp markers", path, audioMetaData.toString(), "\n");
-  var duration = audioMetaData.get("duration") * 1000 + 1000;//get("duration");
+  var duration = audioMetaData.get("duration") * 1000;//get("duration");
   var samprate = audioMetaData.get("samplerate");//get("samplingRate");
 
   var lastMarkerPos = -1;
@@ -90,12 +90,14 @@ function extractWarpMarkers(path, audioMetaData) {
 
       var newMarkers = [];
       markersArr.shift(); // throw annoying marker away
+      // if (markersArr[0].beats>0)
+      //   markersArr.unshift({beats:0, ms:0});
       var fm = markersArr[0];
       //var tm = markersArr[2];
       var lm = markersArr[markersArr.length - 1];
       var lastToFirstSpeed = (lm.beats - fm.beats) / (lm.ms - fm.ms);
       var extrapolateLastBeats = (duration - fm.ms) * lastToFirstSpeed + fm.beats;
-      var refBpm = ((extrapolateLastBeats - fm.beats) / (duration - fm.ms)) * 60000;
+      var refBpm = ((extrapolateLastBeats ) / (duration )) * 60000;
       //refBpm=100.0;
       post("REFBPM", {refBpm, lm, fm, extrapolateLastBeats, duration, filename});
       for (var i = 0; i < markersArr.length - 1; i++) {
@@ -224,6 +226,8 @@ function extractWarpMarkers(path, audioMetaData) {
 //   post("metameta",globalStreams.metaDataFromPlayingClips.toString(),"\n");
 // if(false)
 
-export default extractWarpMarkers;
+// export transform = extractWarpMarkers;
+
+// export depends = ["path", "audioMetadata"];
 
 // var pr};

@@ -149,7 +149,7 @@ extern "C" {
     if (props == NULL)
       return;
 
-    taglib_js_add_audio_property(fref, "length", props->length());
+    taglib_js_add_audio_property(fref, "duration", props->lengthInMilliseconds());
     taglib_js_add_audio_property(fref, "bitrate", props->bitrate());
     taglib_js_add_audio_property(fref, "channels", props->channels());
     taglib_js_add_audio_property(fref, "samplerate", props->sampleRate());

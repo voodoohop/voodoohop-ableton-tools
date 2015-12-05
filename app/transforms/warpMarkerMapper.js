@@ -30,6 +30,13 @@ export function warpMarkerReverseMap(warpMarkerStream) {
 			warpMarkerMap(destTimeStream, warpMarkerStream.map(wm => Immutable.Map({desttime: wm.get("sourcetime"), sourcetime: wm.get("desttime")})));
 }
 
+export function warpMarkerBeatMap(warpMarkerStream) {
+	return (beatStream) =>
+			warpMarkerMap(beatStream, warpMarkerStream.map(wm => Immutable.Map({desttime: wm.get("beats"), sourcetime: wm.get("sourcetime")})));
+}
+// export function beatTime(warpMarkers, beat) {
+	
+// }
 // 	var twoMarkers=warpMarkerStream.map(f=>f.toJS()).zip((prev,next) => [prev,next],warpMarkerStream.map(f=>f.toJS()).skip(1));
 // 	// twoMarkers.observe(t=> console.log("two",t)); 
 // 	return most.concat(

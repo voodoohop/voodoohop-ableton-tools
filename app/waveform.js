@@ -21,25 +21,36 @@ export default class Waveform extends Component {
 		console.log("resize",params);
 	}
 	render() {
-		console.log("reactThis",this.props.data);
-		var pointCount = this.props.data.get("length");
-		var maxArray=this.props.data.get("data").filter((v,i) => i%2==1).toJS();
-		var minArray=this.props.data.get("data").filter((v,i) => i%2==0).toJS();
+		var waveform = this.props.waveform;
+		console.log("reactThis",waveform&&waveform.toJS());
+		if (waveform === undefined || waveform.get("max").size<2)
+			return <span>undefined</span>;
+		// var waveform 
+		var pointCount = waveform.get("max").size;
+		var maxArray=waveform.get("max").toArray();
+		var minArray=waveform.get("min").toArray();
 		var points = maxArray.map((v,i) => [i,v]).concat(minArray.map((v,i) => [i,v]).reverse());
 		points.push(points[0]);
-		console.log("pts",points);
+		// console.log("pts",points);
 		var width="100%";
 		var height="100px";
 		var viewboxWidth=1000;
-		var viewboxHeight=100;
+		var viewboxHeight=200;
+		var beatLines=Immutable.Range(0,viewboxWidth, 1*viewboxWidth*waveform.get("pixelsPerBeat")/waveform.get("max").size);
+		console.log("bealines",beatLines.toJS());
 		return <svg preserveAspectRatio="none" 
 					width={width} height={height} 
 					viewBox={[0,0,viewboxWidth, viewboxHeight].join(" ")}>
+					  { beatLines.map(x =>
+					  	<line stroke="red" opacity="0.7" strokeWidth="2" x1={x} x2={x} y1={viewboxHeight/2} y2={viewboxHeight} />
+					  )}			
 					  <polyline stroke="none" fillOpacity="1"
 					  fill={this.props.color} 
 					//   strokeWidth="0.2	" 
 					  points={points.map(
-			(p)=> [p[0]*viewboxWidth/pointCount, (p[1]/255+0.5)*viewboxHeight].join(",")
-		).join(" ")} /></svg>;
+			(p)=> [p[0]*viewboxWidth/pointCount, (p[1]/2+0.5)*viewboxHeight].join(",")
+		).join(" ")} />
+
+		</svg>;
 	}
 }
