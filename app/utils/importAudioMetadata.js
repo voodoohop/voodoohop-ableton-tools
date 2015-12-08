@@ -7,6 +7,9 @@ import {fetchOrProcess} from "../api/db";
 import Imm from "immutable";
 
 
+import "../transforms/vampMetadata.js";
+
+
 
 // var metadataExtractor=ipcStream("metadataExtractRequest");
 // var metadataExtractorResult=ipcStream("metadataExtractResult");
@@ -29,17 +32,17 @@ var finder = new FindFiles({
 
 var toTagStream = most.fromEvent("match",finder).until(most.fromEvent("complete",finder)).zip(t => t, most.periodic(5000,true));
 
-var extractMetadata = (path) => {
+var extractMetadata = (pathStream) => pathStream.map(path => {
   console.log("extracting metadata",path);
   
  var f =new taglib.File(path);
- return new Promise((resolve) => f.readTaglibMetadata((res) => {
+ return most.fromPromise(new Promise((resolve) => f.readTaglibMetadata((res) => {
   //  availableMetadataExtractor.push(extractMetadata);
    res = Imm.fromJS(res);
    console.log("got metadata",res.toJS());
    resolve(res.set("audio",res.get("audio") ? res.get("audio").set("duration", res.getIn(["audio","duration"])/1000):null));
- }));
-};
+ })));
+});
 
 // var promiseGen = toTagStream.map(f =>);44
 

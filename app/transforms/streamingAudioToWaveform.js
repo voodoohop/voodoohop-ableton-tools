@@ -18,7 +18,8 @@ var audioElements = {};
 
 	
 
-export function getWebAudioBuffer(path) {
+export function getWebAudioBuffer(pathStream) {
+return 	pathStream.map(path => {
 	console.log("getStreamWaveform", path);
 	var offlineAudioCtx = new OfflineAudioContext(1, 2, 44100);
 	
@@ -31,7 +32,8 @@ export function getWebAudioBuffer(path) {
 	.tap(b => console.log("audiobuffer",b))
 	// console.log("ab",audioBuffer);
 	return audioBuffer;
-}
+})
+};
 
 
 export function getAudioBufferSourceNode(audioBuffer) {
@@ -112,12 +114,14 @@ export function audioStreamRangeAccessor(audioStream) {
 
 registerTransform({name: "audioStream", depends:["audioBuffer"], transform: (audioBuffer) => audioBuffer.map(buffer => ({buffer:buffer.getChannelData(0),duration:buffer.duration, offset: 0, sampleRate: buffer.sampleRate}))});
 
-import {warpMarkerReverseMap, warpMarkerBeatMap} from "./warpMarkerMapper";
+import {warpMarkerReverseMap, warpMarkerBeatMap, timeToBeatWarper} from "./warpMarkerMapper";
 
+registerTransform({name: "timeToBeat", depends: ["warpMarkers"], transform: timeToBeatWarper});
 
 registerTransform({name: "audioStreamRangeAccessor", depends:["audioStream"], transform:audioStreamRangeAccessor});
 
 registerTransform({name: "warpMarkerReverseMap", depends:["warpMarkers"], transform:audioStreamRangeAccessor});
+
 
 
 registerTransform({name: "warpedStreamByRange", depends:["warpMarkerReverseMap","audioStreamRangeAccessor"], 
@@ -161,8 +165,10 @@ console.log(most.from(Immutable.Range()).take(1004).collect().then(console.log.b
 function warpMap(buffer,warpMarkers) {
 	return new Promise((resolve) => {
 		console.log("buffer",buffer);
+	var fm = warpMarkers.get("warpMarkers").first();
+	var lm = warpMarkers.get("warpMarkers").last();
 	warpMarkerReverseMap(most.from(warpMarkers.get("warpMarkers")))
-		(most.from(Immutable.Range()).map((t)=> buffer.duration*1000*t/buffer.buffer.length ))
+		(most.from(Immutable.Range(fm.get("desttime"),lm.get("desttime"), (lm.get("desttime")-fm.get("desttime"))/buffer.buffer.length)))
 	.collect()
 		.then(warpedTimes => {
 			var newBuffer=[];
@@ -185,7 +191,7 @@ function warpMap(buffer,warpMarkers) {
 			console.log("wms",warpMarkers.toJS());
 			var pixelsPerBeat = buffer.buffer.length/warpMarkers.get("durationBeats");
 			warpMarkerBeatMap(most.from(warpMarkers.get("warpMarkers")))
-				(most.of(0)).take(1).observe(firstBeat => {console.log("firstBeat",firstBeat); resolve({pixelsPerBeat,waveform:newBuffer, firstBeat: 0*firstBeat*buffer.buffer.length/1000, duration: warpedDuration})})
+				(most.of(0)).take(1).observe(firstBeat => {console.log("firstBeat",firstBeat); resolve({pixelsPerBeat,waveform:newBuffer, firstBeat: (firstBeat), duration: warpedDuration})})
 			
 		}, error => console.error("warpedTimesError",error))
 	// return buffer;
@@ -213,7 +219,7 @@ registerTransform({name: "waveform", depends:["path","audioMetadata","audioStrea
 	  minmax.max.push(lodash.max(n));
 	  return minmax;
   
-  },{min:[],max:[], pixelsPerBeat: w.pixelsPerBeat, firstBeat:w.firstBeat})})
+  },{min:[],max:[], pixelsPerBeat: w.pixelsPerBeat, firstBeat: w.firstBeat})})
 //   .map(n => ({min: warpMap(n.min)}))
 .tap(n => console.log("precalculated",n))
   .map( n =>  {

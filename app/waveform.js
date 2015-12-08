@@ -16,6 +16,8 @@ import Immutable from "immutable";
 
 // var keyToColor=
 
+var tinycolor=require("tinycolor2");
+
 export default class Waveform extends Component {
 	resize(params) {
 		console.log("resize",params);
@@ -23,9 +25,12 @@ export default class Waveform extends Component {
 	render() {
 		var waveform = this.props.waveform;
 		console.log("reactThis",waveform&&waveform.toJS());
+		console.log("liveData",this.props.liveData.toJS());
 		if (waveform === undefined || waveform.get("max").size<2)
 			return <span>undefined</span>;
 		// var waveform 
+		// console.log("playingPOs", this.props.playingPosition);
+		var chords = this.props.chords;
 		var pointCount = waveform.get("max").size;
 		var maxArray=waveform.get("max").toArray();
 		var minArray=waveform.get("min").toArray();
@@ -36,14 +41,15 @@ export default class Waveform extends Component {
 		var height="100px";
 		var viewboxWidth=1000;
 		var viewboxHeight=200;
-		var beatLines=Immutable.Range(0,viewboxWidth, 1*viewboxWidth*waveform.get("pixelsPerBeat")/waveform.get("max").size);
-		console.log("bealines",beatLines.toJS());
+		var start = -1*waveform.get("pixelsPerBeat")*waveform.get("firstBeat")*viewboxWidth/waveform.get("max").size;
+		var beatLines=Immutable.Range(start,viewboxWidth, 32*viewboxWidth*waveform.get("pixelsPerBeat")/waveform.get("max").size);
+		var playingPosBeat = this.props.playingPosition;
+		var playingPosX=start+this.props.playingPosition*viewboxWidth*waveform.get("pixelsPerBeat")/waveform.get("max").size
+		var playingPosOpacity = Math.abs((playingPosBeat/4)%1-0.5)+0.5; 
+		// console.log("bealines",chords && chords.toJS(), beatLines.toJS());
 		return <svg preserveAspectRatio="none" 
 					width={width} height={height} 
 					viewBox={[0,0,viewboxWidth, viewboxHeight].join(" ")}>
-					  { beatLines.map(x =>
-					  	<line stroke="red" opacity="0.7" strokeWidth="2" x1={x} x2={x} y1={viewboxHeight/2} y2={viewboxHeight} />
-					  )}			
 					  <polyline stroke="none" fillOpacity="1"
 					  fill={this.props.color} 
 					//   strokeWidth="0.2	" 
@@ -51,6 +57,10 @@ export default class Waveform extends Component {
 			(p)=> [p[0]*viewboxWidth/pointCount, (p[1]/2+0.5)*viewboxHeight].join(",")
 		).join(" ")} />
 
+					  { beatLines.map(x =>
+					  	<line stroke={tinycolor(this.props.color).complement().toHexString()} opacity="0.3" strokeWidth="2" x1={x} x2={x} y1={0} y2={viewboxHeight} />
+					  )}	
+					  	<rect stroke="black" fill="black" opacity={playingPosOpacity} strokeWidth="5" x={0} width={playingPosX} y={0} height={viewboxHeight} />
 		</svg>;
 	}
 }

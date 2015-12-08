@@ -199,7 +199,7 @@ export default function extractWarpMarkers(path, audioMetaData) {
       post("time (marker extract):", new Date().getTime() - startTime);
       // outlet(1, warpMarkers.size);
       // Postln("sending dictionary content:",JSON.stringify(dict_to_jsobj(markers)));
-      var res = Imm.fromJS({ warpMarkers: warpMarkers, baseBpm: refBpm, durationBeats: beatss });
+      var res = Imm.fromJS({ warpMarkers: warpMarkers, baseBpm: refBpm, durationBeats: beatss-fm.beats });
       //clipDict.replace("metaData",audioMetaData);
       //outlet(0, "dictionary", audioMetaData.name);
       // f.close();

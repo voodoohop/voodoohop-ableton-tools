@@ -46,31 +46,61 @@ var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 var encoding = require("encoding");
 var dummy;
 
-var oscInput = 
+var oscRawInput = 
 	most.fromEvent("message", oscServer)
-	.tap(console.log.bind(console))
-		.map(f=> f[0])
-		.filter(f => (dummy=f[0].split("/")).length>0 && dummy[1] === "FilePath")
-	// .tap(f => console.log("fff",f));
+	// .tap(f=>console.log("rawOsc",f))
+	.map(f => f[0])
+var oscInput= oscRawInput	
+		.filter(f => f[2] === "playingClip" && f[1]>=0)
+		.map(f => Immutable.fromJS({trackId: f[1], data: f.slice(3)}))
+	.scan((state, info)=> state.setIn([info.get("trackId"), info.get("data").get(0)], info.get("data").get(1)), Immutable.Map( ))
+	// .tap(f => console.log("oscInput1",f.toJS()))
+	.flatMap(info => most.from(info.keySeq().map(k => info.get(k).set("trackId", k))))
+	.tap(f => console.log("oscInput",f.toJS()))
+	.multicast();
+	// .drain();	
+	
+var oscPlayingPosition = most.empty()//oscRawInput
+	.filter(f => f[2] === "playingPosition" && f[1]>=0)
+	.map(f => Immutable.Map({trackId: f[1], playingPosition: f[3]}))
+		
+		
+	.tap(f => console.log("playingPos",f.toJS()));
+	
+	
+var oscInputFileStatusOld = most.empty().filter(f => (dummy=f[0].split("/")).length>0 && dummy[1] === "FilePath");
 
-var oscPathInput = oscInput.filter(f=> f[1] !== "-none-").map(f => f[1]);
-var noneInput = oscInput.filter(f=> f[1] === "-none-");
+var oscPathInput =oscInput.filter(f=> f.get("playing") === 1).skipRepeatsWith(f => f.get("file_path"));
+var noneInput =oscInput.filter(f=> f.get("playing") === 0).map(f=> f.get("playing")).skipRepeats();
 
 // var testBuffer=importMetadata(oscPathInput, "audioBuffer");
 // testBuffer.observe(res => console.log("testBuffer",res));
 
 
 import {getTransformed} from "./api/audioMetadataGenerator";
+ 
+var playingTrackData = oscInput.filter(f=> f.get("playing")===1&&f.get("file_path"));
 
-
-var playingTracks = 	
-	getTransformed(["path","id3Metadata","audioMetadata", "waveform"], oscPathInput)	
-	.merge(noneInput.map(f => Immutable.Map({track:f[0].split("/")[2]})))
-	.zip((transformed,track) => Immutable.Map({track}).merge(transformed), oscInput.map(f => f[0].split("/")[2]))
-	.scan((tracks, d) => tracks.set(d.get("track"), d), Immutable.Map())
+var playingTracksMetadata = 	
+	getTransformed(["path","id3Metadata","audioMetadata", "waveform","vampChord_HPA"], playingTrackData.map(f => f.get("file_path")).skipRepeats())	
+	// .merge(noneI nput.map(f => Immutable.Map({track:f[0].split("/")[2]})))
+	// .zip((transformed,track) => Immutable.Map({trackId}).merge(transformed), oscInput.map(f => f[0].split("/")[2]))
+	// .filter(t=> )
+	.scan((tracks,track) => tracks.set(track.get("path"), track), Immutable.Map())
 	.skip(1)
-	.map(tracks => tracks.keySeq().map(k => tracks.get(k)))
-	.tap(f => console.log("fff3",f.toJS()));
+
+	// .scan((tracks, d) => tracks.set(d.get("track"), d), Immutable.Map())
+	// .skip(1)
+	
+	.tap(f => console.log("playingData",f.toJS()));
+	
+	
+var playingTracks = playingTrackData.combine((track,metadata) => Immutable.Map({trackId:track.get("trackId"),"fileData":metadata.get(track.get("file_path")), "liveData":track}), playingTracksMetadata)
+	.filter(t=> t.get("fileData")!== undefined)
+	.map(track => track.set("playingPosition", oscPlayingPosition.filter(pos => pos.get("trackId")===track.get("trackId")).map(pos => pos.get("playingPosition"))))
+	.tap(f => console.log("fff3",f.toJS && f.toJS()))
+	.scan((tracks, track) => tracks.set(track.get("trackId"),track),Immutable.Map()).skip(1)
+	;
 
 // playingTrack.sob
 

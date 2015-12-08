@@ -15,9 +15,17 @@ class Track extends Component {
 	render() {
 		var track = this.props.track;
 		console.log("track",track);
-		var key = track.getIn(["id3Metadata","initialkey"]);
-		return <div>title - {track.getIn(["id3Metadata","title"])},<label>key</label><span style={{fontWeight: "bold", color: keysToColors(key)}}>{key}</span>, <label>bpm</label>{track.getIn(["id3Metadata","bpm"])}, 
-				<p><ReactiveWaveform metadata={track.get("audioMetadata")} waveform={track.get("waveform")} color={keysToColors(track.getIn(["id3Metadata","initialkey"]))}/></p>
+		var key = track.getIn(["fileData", "id3Metadata","initialkey"]);
+		return <div>title - {track.getIn(["fileData","id3Metadata","title"])},<label>key</label><span style={{fontWeight: "bold", color: keysToColors(key)}}>{key}</span>, <label>bpm</label>{track.getIn(["fileData","id3Metadata","bpm"])}, 
+				<p>
+				<ReactiveWaveform 
+				liveData={track.get("liveData")}
+				playingPosition={track.get("playingPosition")}
+				metadata={track.getIn(["audioFile","audioMetadata"])} 
+				waveform={track.getIn(["fileData","waveform"])} 
+				chords={track.getIn(["fileData","vampChord_HPA"]) && track.getIn(["fileData","vampChord_HPA"]).scan((chords, chord) => chords.concat([chord]), Immutable.Seq())} 
+				color={keysToColors(track.getIn(["fileData", "id3Metadata","initialkey"]))}/>
+				</p>
 				</div>;
 	}
 }
@@ -27,8 +35,8 @@ export default class PlayingTracks extends Component {
 		console.log("thisTracks", this.props.tracks);
 		return <div style={{width:"100%"}} ><Rul style={{width:"100%"}} className="list-group">{this.props.tracks.map(t => {
 			console.log("sorting tracks to display",t && t.toJS());
-			return t.sortBy(a=> a.get("track")).map(
-			track => <Rli key={track.get("path")+"_"+track.get("track")} style={{backgroundColor:"rgba(0,0,0,0.85)", color:"white", width:"100%"}} className="list-group-item"><h3>{track.get("track")}</h3><ReactiveDiv>{track.get("path") ? <Track track={track} /> : "no clip playing"}</ReactiveDiv></Rli>
+			return t.sortBy(a=> a.get("trackId")).map(
+			track => <Rli key={track.get("trackId")} style={{backgroundColor:"rgba(0,0,0,0.85)", color:"white", width:"100%"}} className="list-group-item"><h3>{track.get("trackId")}</h3><ReactiveDiv>{track.getIn(["fileData","path"]) ? <Track track={track} /> : "no clip playing"}</ReactiveDiv></Rli>
 			)
 		})}</Rul></div>;
 	}

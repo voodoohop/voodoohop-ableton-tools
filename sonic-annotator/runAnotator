@@ -1,0 +1,5 @@
+#!/bin/sh
+
+./sonic-annotator -d vamp:qm-vamp-plugins:qm-segmenter:segmentation -d vamp:qm-vamp-plugins:qm-keydetector:key -d vamp:qm-vamp-plugins:qm-transcription:transcription -d vamp:nnls-chroma:chordino:simplechord -d vamp:nnls-chroma:chordino:chordnotes -d vamp:mtg-melodia:melodia:melody "$1" -w csv --csv-basedir ~/Documents/audioFeatures "$1"
+./sonic-annotator -d vamp:HPA:HPA_LBC:beat_synced_LBC  -w csv --csv-basedir ~/Documents/audioFeatures "$1"
+./sonic-annotator -d vamp:HPA:HPA:HPA_ACE -w csv --csv-basedir ~/Documents/audioFeatures "$1"

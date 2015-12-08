@@ -92,12 +92,17 @@ var createInputstreamTransform = (transform, transforms) =>{
       most.zip(
         (...dependsValues) => (transform.transform(...dependsValues)),
         ...(transform.depends.map(dep => transforms[dep](inputStream)))
-        )).delay(1).map(f => (f instanceof Promise) ? f : new Promise(resolve => resolve(f))).flatMap(f => most.fromPromise(f)
-        // .flatMapError(e => {
-        //   console.error("error_",e);
-        //   return most.of(Immutable.Map({error:e}));
-        // })
-        );
+        )).delay(1)
+        // .map(f => (f instanceof Promise) ? f : new Promise(resolve => resolve(f))).flatMap(f => most.fromPromise(f)
+         .map(f => f ===undefined ? most.empty() : ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f : (f.hasOwnProperty(Symbol.iterator) ? most.from(f) : most.of(f)) )))
+        //  .flatMap(f => f
+        // // .flatMapError(e => {
+        // //   console.error("error_",e);
+        // //   return most.of(Immutable.Map({error:e}));
+        // // })
+        // )    
+           
+ ;
   }
 };
 

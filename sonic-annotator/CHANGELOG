@@ -1,0 +1,202 @@
+Changes in Sonic Annotator 1.3 since the previous release 1.2:
+
+Back-end (feature writer) changes:
+
+ - Add the --csv-digits, --lab-digits, and --jams-digits options to
+   control the number of significant figures printed for feature values
+
+ - Update the JAMS writer to JAMS 0.2.0 format
+
+ - Show a more useful error message when user provides a filename
+   instead of a transform id to the -d option (happened to me when
+   cut-and-pasting command lines and I was quite baffled at first)
+
+
+Changes in Sonic Annotator 1.2 since the previous release 1.1:
+
+Front-end changes:
+
+ - Add the --segments-from option, providing the ability to read
+   segment boundaries from a file
+
+Back-end (feature writer) changes:
+
+ - Rename the JSON feature writer to JAMS. There may be other JSON
+   formats supported in future
+
+Bug fixes:
+
+ - Fix invalid JSON written by JAMS feature writer for dense
+   features.
+ - Fix invalid UTF-8 output from RDF feature writer when processing
+   MP3 files having ID3 tags in non-ASCII, non-UTF8 encodings
+
+
+Changes in Sonic Annotator 1.1 since the previous release 1.0:
+
+Front-end changes:
+
+ - Add support for the start time and duration properties of a
+   transform, applying a plugin to only a range of the input audio
+ - Reduce the internal processing blocksize from 16384 to 1024 samples
+   to reduce extent of time rounding at end of file or range
+ - Add --multiplex option to compose multiple audio files into a
+   single multi-channel stream with one input file per channel
+ - Add --normalise to request each audio file be normalised to 1.0 max
+ - Add support for the plugin_version property of a transform, causing
+   Sonic Annotator to refuse to run with the wrong version of a plugin
+ - Add --minversion option to permit scripts to check that the
+   version of Sonic Annotator is as they expect
+ - Add new housekeeping options to list the available feature writers
+   and supported audio file formats
+ - Pull out the feature-writer-specific help text into separate help
+   options (-h <writertype>) as the help was getting too long
+
+Back-end (feature writer) changes:
+
+ - Add --csv-omit-filename, --csv-end-times, and --csv-fill-ends
+   options to the CSV feature writer to adjust various aspects of its
+   output
+ - Add "json" feature writer, exporting to JAMS (JSON Annotated Music
+   Specification) format. This writer is provisional and is expected
+   to change in future releases to comply more effectively with the
+   specification
+ - Add "midi" feature writer, exporting to MIDI files
+ - Add "lab" feature writer, exporting to tab-separated label files.
+   (This is equivalent to using the CSV writer with a tab separator and
+   the new --csv-omit-filename and --csv-end-times options, but it's
+   simpler to use if .lab is what you want)
+
+Bug fixes:
+
+ - Fix the former habit of forging ahead even if not all transform
+   files could be found or parsed (this may have been intentional
+   behaviour but it is confusing more than it is useful)
+ - Fix failure to support --summary-only flag when reading transforms
+   with summaries from a transform file
+
+
+Changes in Sonic Annotator 1.0 since the previous release 0.7:
+
+Bug fixes:
+
+ - Fix incorrect samplerate in reading m4a files on OS/X
+ - Fix incorrect handling of FixedSampleRate outputs (Vamp SDK fix)
+ - Add tests that use the Vamp test plugin
+
+
+Changes in Sonic Annotator 0.7 since the previous release 0.6:
+
+Build changes:
+
+ - Support 64-bit builds on OS/X (using CoreAudio instead of
+   obsolete QuickTime audio file reader)
+
+ - Simplify RDF reading and fix some bugs. Now requires Dataquay
+   (http://breakfastquay.com/dataquay/) rather than using Redland
+   directly. Release builds use Sord/Serd rather than Redland
+
+
+Changes in Sonic Annotator 0.6 since the previous release 0.5:
+
+Build changes:
+
+ - Switch to modular SV-libraries build using svcore library
+ - We now require Vamp plugin SDK v2.3
+ - Add autoconf configure script
+
+Front-end changes:
+
+ - Pick up default sample rate and channel count from the first
+ audio file, where not specified in the transform, instead of using
+ hard coded defaults
+ - Make it possible to specify the window shape in transform
+ - Fix the --csv-one-file option which did not work in 0.5
+ - Fix --force option when using playlists
+ - Add -v option to print version number and exit
+
+
+Changes in Sonic Annotator 0.5 since the previous release 0.4:
+
+Build changes:
+
+ - Remove unused audioio library and avoid its dependencies
+
+Front-end changes:
+
+ - Avoid leaking file descriptors on exceptions
+ - Fix embarrassing bug that caused failure to mix down to mono
+ properly for single-channel plugins with multi-channel input files
+ - Fail sooner if the output file is not writable (i.e. don't wait
+ until the first data is available for writing)
+
+
+Changes in Sonic Annotator 0.4 since the previous release 0.3:
+
+Build changes:
+
+ - Sonic Annotator now requires the Vamp plugin SDK v2.1 or newer.
+
+Front-end changes:
+
+ - Frequency-domain plugins now use the PluginInputDomainAdapter's new
+ ShiftData processing method, ensuring that the first block received
+ by the plugin is the one centred on 0 rather than starting at 0.
+ Unfortunately, the old behaviour omitted a timing compensation step,
+ and this fix actually changes the results from some plugin processes:
+ the previous behaviour was not always in line with the Vamp plugin
+ specification.
+
+ - More useful diagnostics are now available when a plugin fails to
+ load or run.
+
+CSV back-end (feature writer) changes:
+
+ - The CSV writer now closes its output files properly when it
+ finishes writing to each one, rather than leaving them all open
+ until the end and risk running out of file descriptors.  This was
+ already the behaviour of the RDF writer, the CSV one has just been
+ updated to match it.
+ - The behaviour of the CSV writer has also been changed to match
+ that of the RDF writer in handling file write failures (it now
+ continues processing only if --force is given).
+
+
+Changes in Sonic Annotator 0.3 since the previous release 0.2:
+
+Front-end changes:
+
+ - A new --force front-end option (distinct from the --csv-force and
+ --rdf-force back-end options) has been added, which makes Sonic
+ Annotator continue to process subsequent audio files instead of
+ exiting after an error, if multiple audio files have been specified.
+
+RDF back-end (feature writer) changes:
+
+ - The RDF writer now conforms more correctly with the Music Ontology
+ in the way it relates signal, track, and track metadata.  Signals
+ that have available metadata now gain a Track resource to associate
+ that metadata with, instead of hanging it directly from the Signal
+ resource; also the audio file now encodes the signal rather than the
+ signal being available as the audio file (matching the domain
+ specification of the Music Ontology).  Note that this new resource
+ structure will not be properly read by versions of Sonic Visualiser
+ prior to 1.6 (should importing the data into Sonic Visualiser be of
+ interest to you).
+
+ - The --rdf-signal-uri option has been removed and replaced with the
+ more meaningful set of options --rdf-audiofile-uri, --rdf-track-uri,
+ and --rdf-maker-uri.
+
+ - A new --rdf-network option is available, to cause Sonic Annotator
+ to try to retrieve RDF descriptions for plugins from the network
+ where those descriptions are not available locally.  Use of this
+ option is recommended, but it is not the default because of the
+ possible performance implication (even though the results are mostly
+ cached, there may be some network access involved).
+
+ - The RDF writer now writes the computed_by property for signal
+ features.
+
+ - Plugin and output URIs in the resulting RDF are now percent-encoded.
+

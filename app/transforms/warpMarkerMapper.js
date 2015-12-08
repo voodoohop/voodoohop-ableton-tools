@@ -4,7 +4,7 @@ import Immutable from "immutable"
 
 export function warpMarkerMap(timeStream, warpMarkerStream) {
 	var twoMarkers=warpMarkerStream.map(f=>f.toJS()).zip((prev,next) => [prev,next],warpMarkerStream.map(f=>f.toJS()).skip(1));
-	twoMarkers.observe(t=> console.log("two",t));
+	// twoMarkers.observe(t=> console.log("two",t));
 	return most.concat(
 		twoMarkers.take(1).map(m => timeStream.takeWhile(t => t < m[0].sourcetime).map(t => (m[1].desttime-m[0].desttime) /(t - m[0].sourcetime)*t+m[0].desttime))
 		,
@@ -33,6 +33,11 @@ export function warpMarkerReverseMap(warpMarkerStream) {
 export function warpMarkerBeatMap(warpMarkerStream) {
 	return (beatStream) =>
 			warpMarkerMap(beatStream, warpMarkerStream.map(wm => Immutable.Map({desttime: wm.get("beats"), sourcetime: wm.get("sourcetime")})));
+}
+
+export function timeToBeatWarper(warpmarkers) {
+	return (timeStream) => warpMarkerMap(timeStream.map(t=> t*1000), most.from(warpmarkers.get("warpMarkers")))
+		.map(warpedTime => warpmarkers.get("baseBpm")*warpedTime/60000);
 }
 // export function beatTime(warpMarkers, beat) {
 	

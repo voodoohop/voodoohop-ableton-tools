@@ -1,0 +1,9 @@
+@article{SonicAnnotator,
+  author = {Chris Cannam and Michael O. Jewell and Christophe Rhodes and Mark Sandler and Mark d'Inverno},
+  title = {Linked Data And You: Bringing music research software into the Semantic Web},
+  journal = {Journal of New Music Research},
+  number = {4},
+  pages = {313-325},
+  volume = {39},
+  year = {2010}
+} 
