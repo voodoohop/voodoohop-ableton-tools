@@ -33,6 +33,8 @@
       }
 
       if (--scale_counter === 0){
+        if (max_value === -Infinity || min_value === Infinity)
+          console.error("infinity error");
         data_object.setInt8(offset++, Math.floor(min_value));
         data_object.setInt8(offset++, Math.floor(max_value));
         min_value = Infinity; max_value = -Infinity; scale_counter = scale;

@@ -12,7 +12,7 @@ function Subject(initial = null) {
     _end = end
     _error = error
     return _error
-  })
+  }).multicast()
 
   stream.push = v => now(
     () => typeof _add === `function` ? _add(v) : void 0

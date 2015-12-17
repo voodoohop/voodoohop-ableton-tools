@@ -11,6 +11,8 @@ var Imm = require("immutable");
 var fs = require("fs");
 
 var post = console.log.bind(console);
+
+import actionSubject from "../api/actionSubject";
 // var Promise = require("promise").Promise;
 //post("Promise");
 // po st("tomtom");
@@ -35,10 +37,11 @@ export default function extractWarpMarkers(path, audioMetaData) {
   post("filename:" + filename, "\n");
   post("length:", duration, "\n");
   // var f = new File(filename);
-    if (!fs.existsSync(filename))
+  if (!fs.existsSync(filename))
       reject("file "+filename+" does not exist");
     else
-    fs.readFile(filename, (err, buffer) => {
+     fs.readFile(filename, (err, buffer) => {
+      
       // post("error,buf",err,buffer);
       var position = 0;
       // f.byteorder = "little";
@@ -84,8 +87,9 @@ export default function extractWarpMarkers(path, audioMetaData) {
 
       if (markersArr.length == 0) {
         // post("NO MARKERS FOUND... PRESS SAVE!!", filename);
-        reject("warpmarkers not saved!!!");
-        return;
+        // reject("warpmarkers not saved!!!");
+        markersArr= [{beats: 0, ms: 0},{beats: 0, ms:0}, {beats: duration/5000, ms: duration}]
+        // return;
       }
 
       var newMarkers = [];
@@ -199,7 +203,7 @@ export default function extractWarpMarkers(path, audioMetaData) {
       post("time (marker extract):", new Date().getTime() - startTime);
       // outlet(1, warpMarkers.size);
       // Postln("sending dictionary content:",JSON.stringify(dict_to_jsobj(markers)));
-      var res = Imm.fromJS({ warpMarkers: warpMarkers, baseBpm: refBpm, durationBeats: beatss-fm.beats });
+      var res = Imm.fromJS({ path: filename, pathStat: JSON.parse(JSON.stringify(fs.statSync(filename))), warpMarkers: warpMarkers, baseBpm: refBpm, durationBeats: beatss-fm.beats });
       //clipDict.replace("metaData",audioMetaData);
       //outlet(0, "dictionary", audioMetaData.name);
       // f.close();

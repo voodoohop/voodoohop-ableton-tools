@@ -36,7 +36,7 @@ export function warpMarkerBeatMap(warpMarkerStream) {
 }
 
 export function timeToBeatWarper(warpmarkers) {
-	return (timeStream) => warpMarkerMap(timeStream.map(t=> t*1000), most.from(warpmarkers.get("warpMarkers")))
+	return (timeStream) => warpMarkerMap(timeStream.map(t=> t*1000), most.from(warpmarkers.get("warpMarkers") || []))
 		.map(warpedTime => warpmarkers.get("baseBpm")*warpedTime/60000);
 }
 // export function beatTime(warpMarkers, beat) {

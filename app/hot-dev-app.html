@@ -3,16 +3,21 @@
   <head>
   	<meta charset="utf-8">
     <title>Hello Electron React!</title>
-    
+  <!--<script src="../node_modules/jquery/dist/jquery.js"></script>-->
+  <script>window.$ = window.jQuery = require('jquery');</script>
+
+  <script>window.jQuery = $;</script>  
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../semantic/dist/semantic.min.css">
+<script src="../semantic/dist/semantic.min.js"></script>
   </head>
   <body>
-   <div class="window">
+   <div class="window" style="background-color:rgba(0,0,0,0.3)">
       <!-- .toolbar-header sits at the top of your app -->
 
       <!-- Your app's content goes inside .window-content -->
       <div class="window-content">
-        <div class="padded-more" style="width:100%">
+        <div  style="width:100%">
     <div id="root"></div>
         </div>
       </div>

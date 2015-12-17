@@ -42,7 +42,7 @@ function saveToDb(path, transformName, transformFunc, inputs, resolve, reject) {
             
             });
 }
-
+import {mapStackTrace} from "sourcemapped-stacktrace";
 var dbCachedTransform = (transform) => {
     if (transform.depends.length === 0 || transform.noCache)
       return transform;
@@ -82,27 +82,44 @@ var dbCachedTransform = (transform) => {
      });
   };
  
+ function mostify(f, transform=null) {
+   console.log("mostifying",(f && f.toJS && f.toJS())||f);
+   var res= f ===undefined ? most.empty() : ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f : (f.hasOwnProperty(Symbol.iterator) && ! (f instanceof String) ? most.from(f) : most.of(f)) ));
+   
+   return res.flatMapError(e => {
+                  
+            //      if (e && e.stack)
+            //  mapStackTrace(e.stack,st => console.error("error_",st));
+          
+          // else
+          console.error("error1_",transform,e);
+          return most.of(Immutable.Map({error:e}));
+        })
+ }
+ 
 var createInputstreamTransform = (transform, transforms) =>{
   return (inputStream) => {
     // console.log("is",transform,inputStream);
     return (
       transform.depends.length === 0 ?
-      (inputStream.map(transform.transform))
+       inputStream.flatMap(e => mostify(e,transform)).map(transform.transform).flatMapError(e => {
+        // if (e && e.stack)
+        //      mapStackTrace(e.stack,st => console.error("error_",st));
+          
+        //   else
+          console.error("error1_",transform, e);
+          return most.of(Immutable.Map({error:e}));
+        })
       :
       most.zip(
         (...dependsValues) => (transform.transform(...dependsValues)),
         ...(transform.depends.map(dep => transforms[dep](inputStream)))
-        )).delay(1)
+        ))//.delay(1)
         // .map(f => (f instanceof Promise) ? f : new Promise(resolve => resolve(f))).flatMap(f => most.fromPromise(f)
-         .map(f => f ===undefined ? most.empty() : ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f : (f.hasOwnProperty(Symbol.iterator) ? most.from(f) : most.of(f)) )))
-        //  .flatMap(f => f
-        // // .flatMapError(e => {
-        // //   console.error("error_",e);
-        // //   return most.of(Immutable.Map({error:e}));
-        // // })
-        // )    
-           
- ;
+         
+         .flatMap(e => mostify(e,transform)
+ 
+        ).multicast();
   }
 };
 
@@ -113,7 +130,8 @@ export var registerTransform = (transform) => {
 
 export var getTransformed = (requiredTransforms, inputStream) => {
   // console.log("getTransformed", requiredTransforms, transforms);
-  return most.zip((...transformed) => transformed.reduce((o,n,i)=> o.set(requiredTransforms[i], n),Immutable.Map()),...requiredTransforms.map(t => transforms[t](inputStream)));
+  return most.zip((...transformed) => transformed.reduce((o,n,i)=> o.set(requiredTransforms[i], n),Immutable.Map()),...requiredTransforms.map(t => transforms[t](inputStream)))
+    // .multicast();
 }
 
-registerTransform({ name: "path", transform: input => new Promise(resolve => resolve(input)), depends: [] })
+registerTransform({ name: "path", transform: input => input, depends: [] })

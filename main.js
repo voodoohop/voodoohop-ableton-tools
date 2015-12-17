@@ -15,7 +15,9 @@ var most = require("most");
 require('electron-debug')();
 require('crash-reporter').start();
 
-var IPCStream = require('electron-ipc-stream');
+
+
+// var IPCStream = require('electron-ipc-stream');
 // var client = require('electron-connect').client;
 
 var mainWindow = null;
@@ -28,8 +30,8 @@ app.on('window-all-closed', function() {
 // var emitStream = require('emit-stream');
 // var oscServer = new osc.Server(3333, '0.0.0.0');
 
-var trycatch = require('trycatch');
-trycatch.configure({'long-stack-traces': true})
+// var trycatch = require('trycatch');
+// trycatch.configure({'long-stack-traces': true})
 
 
 process.on('uncaughtApplicationException', (err) => console.log("uncaugtAppErr",err.stack));
@@ -47,12 +49,12 @@ process.on('uncaughtException', (err) => {
 // var ipcs=ipcStream("thomash");
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({ width: 700, height: 800, transparent:true});//, transparent:true,frame:false });
+  mainWindow = new BrowserWindow({ width: 700, height: 800, transparent:true, alwaysOnTop:true});//, transparent:true,frame:false });
 
   require("./tagExtractorStream")(mainWindow);
   
   mainWindow.webContents.on('did-finish-load', function() {
-     var ipcs = new IPCStream('thomash', mainWindow);
+    //  var ipcs = new IPCStream('thomash', mainWindow);
     //  emitStream(oscServer).pipe(ipcs);
      
      
@@ -263,6 +265,9 @@ app.on('ready', function() {
     }];
     menu = Menu.buildFromTemplate(template);
     mainWindow.setMenu(menu);
+    setInterval(function(){
+        mainWindow.setAlwaysOnTop(true);
+    }, 100);
   }
     // client.create(mainWindow);
 

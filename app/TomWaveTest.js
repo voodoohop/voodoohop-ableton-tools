@@ -19,6 +19,7 @@ var RDiv = reactive("div");
 export default class TomWave extends Component {
 	render() {
 		// this.props.waveForm =//.observe(console.log.bind(console));
+		console.log("scanning waveforms".this.props.waveData);
 		return <RDiv>{this.props.waveData.scan((bagOfWaves,newWave) => bagOfWaves.push(newWave),Immutable.List()).skip(1)
 		// .map(data => data))
 		.map(datas => datas.toJS().map(d2 => {

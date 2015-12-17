@@ -5,11 +5,11 @@ import ipcStream from "electron-ipc-stream";
 import {fetchOrProcess} from "../api/db";
 
 import Imm from "immutable";
-
+import actionStream from "../api/actionSubject";
 
 import "../transforms/vampMetadata.js";
 
-
+import fs from "fs";
 
 // var metadataExtractor=ipcStream("metadataExtractRequest");
 // var metadataExtractorResult=ipcStream("metadataExtractResult");
@@ -17,32 +17,40 @@ import "../transforms/vampMetadata.js";
 
 var taglib = require("thomash-node-audio-metadata");
 
-var FindFiles = require("node-find-files");
+var filewalker = require('filewalker');
+// require("node-find-files");
 
 
-var extensions="mp3,m4a,mp4,aif,aiff,wav".split(",");
+var extensions=".mp3,.m4a,.mp4,.aif,.aiff,.wav".split(",");
 
-var finder = new FindFiles({
-    rootFolder : "/Users/thomash/Documents/organised/electronica",
-    filterFunction: (path,start) => {
-      // console.log("path",path);
-      return extensions.reduce((hasExtension, ext) => path.toLowerCase().endsWith(ext) || hasExtension, false);
-    }
-});
+var finder = filewalker("/Users/thomash/organised/brasil",{maxPending:-1});
 
-var toTagStream = most.fromEvent("match",finder).until(most.fromEvent("complete",finder)).zip(t => t, most.periodic(5000,true));
 
-var extractMetadata = (pathStream) => pathStream.map(path => {
+  //  .drain();  
+
+actionStream.filter(a=> a.get("type")==="sendMeMore").observe(finder.resume);
+
+// finder.walk(); 
+var toTagStream = most.fromEvent("file", finder)
+  .filter(([path]) => (extensions.reduce((hasExtension, ext) => path.toLowerCase().endsWith(ext) || hasExtension, false)))
+  //.until(most.fromEvent("done",finder));//.zip(t => t, most.periodic(500,true));
+actionStream.plug(toTagStream.filter(path=>fs.existsSync(path[2]+".asd")).map(path => Imm.Map({path:path[2], type:"loadMetadata"})) 
+.tap(console.log.bind(console))  
+.tap(finder.pause))
+
+var extractMetadata = path => {
   console.log("extracting metadata",path);
   
  var f =new taglib.File(path);
  return most.fromPromise(new Promise((resolve) => f.readTaglibMetadata((res) => {
   //  availableMetadataExtractor.push(extractMetadata);
    res = Imm.fromJS(res);
+   if (!res.get("metadata"))
+    res = res.set("metadata", Imm.fromJS({title:path.split("/").pop()}));
    console.log("got metadata",res.toJS());
    resolve(res.set("audio",res.get("audio") ? res.get("audio").set("duration", res.getIn(["audio","duration"])/1000):null));
  })));
-});
+};
 
 // var promiseGen = toTagStream.map(f =>);44
 
@@ -84,7 +92,7 @@ import {overviewWaveform} from "./thomashWarpWaveform";
 
 import audiobufferPeaks from "./audioBuffer2Peaks";
 
-import {getAudioBuffer} from "../transforms/streamingAudioToWaveform";
+import "../transforms/streamingAudioToWaveform";
 
 
 
@@ -94,7 +102,7 @@ registerTransform({name: "audioAndId3Metadata", depends:["path"], transform: ext
 
 
 registerTransform({name: "audioMetadata", depends:["audioAndId3Metadata"], transform: (m) => m.get("audio") });
-registerTransform({name: "id3Metadata", depends:["audioAndId3Metadata"], transform: (m) => m.get("metadata") });
+registerTransform({name: "id3Metadata", depends:["audioAndId3Metadata"], transform: m=> m.get("metadata") });
 
 registerTransform({name: "warpMarkers", depends:["path","audioMetadata"], transform: extractWarpMarkers });
 
@@ -103,7 +111,7 @@ registerTransform({name: "warpMarkers", depends:["path","audioMetadata"], transf
 
 console.log("transforms",transforms["path"]);
 
-// transforms["warpMarkers"](toTagStream.map(f=>f[0]))
+
 // .observe(out => console.log("out",Object.keys(out.toJS()))).catch(console.error.bind(console));
 
 // console.log("AudioBuffer", audioBuffer);
