@@ -37,7 +37,8 @@ a:hover {
 
 
 .ui.statistics.tom {
-  font-size: 10px;
+  /*font-size: 3vw;*/
+  /*font-size: 2.5vw;*/
   /*background-color:rgba(0,0,0,0.7);*/
   /*-webkit-font-smoothing: antialiased;*/
 
@@ -45,12 +46,23 @@ a:hover {
    /*-webkit-text-stroke-color: black;*/
  padding:0px 0px 0px 0px;
    margin: 0px;
+   opacity:0.7;
+}
+
+.statistic.tom .value {
+  font-size:3vw !important;
+}
+
+.statistic.tom .label {
+  font-size:2vw !important;
 }
 
 .ui.statistic, .statistic.tom {
   padding:0px 0px 0px 0px;
+  font-size: 2.5vw !important;
   margin-bottom: 2px !important;
   margin-right: 2px !important;
+  margin-left:3px !important;
 }
 
 .blackTransparentBg {

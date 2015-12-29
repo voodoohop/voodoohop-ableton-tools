@@ -19,25 +19,45 @@ import {registerTransform} from "../api/audioMetadataGenerator";
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 var audioElements = {};
 
-	
+import {AIFFDecoder} from "../lib/audiofile";
+
+var shell = require('shelljs');
 
 export function getWebAudioBuffer(path) {
 // return 	pathStream.map(path => {
+
+		if (path.trim().toLowerCase().indexOf(".aif")>0) {
+			return most.fromPromise(new Promise(resolve => {
+				shell.exec("rm /tmp/decoded.wav", () =>
+				shell.exec("ffmpeg -i \""+path+"\" /tmp/decoded.wav", (res)=> {console.log("reser",res); resolve(getWebAudioBuffer("/tmp/decoded.wav"))})
+				);
+			})).flatMap(p => p)//.flatMap(p=>p);
+
+		}
+		// 	return most.of(new Promise((resolve,reject)=> fs.readFile(path,"utf8",(err,data)=>{
+		// 		console.log("calling decoder in 5s for data:", data.length); 
+		// 		setTimeout(()=>resolve(new AIFFDecoder().decode(data)),10);
+				
+		// 		}))).await();
+
 	console.log("getStreamWaveform", path);
-	var offlineAudioCtx = new OfflineAudioContext(1, 2, 11025);
+	var offlineAudioCtx = new OfflineAudioContext(1, 1, 11025);
 	// var audioCtx
+
+
 	var readStream = new Promise((resolve,reject) => fs.readFile(path, (err,data) => err ? reject(err):resolve(data)));
 	
 	var audioBuffer = most.fromPromise(readStream)
-		.tap(b => console.log("audiobuffer1",b))
+		// .tap(b => console.log("audiobuffer1",b))
 
 	// .scan((chunks,chunk) => Buffer.concat([chunks,chunk]), new Buffer([])).skip(5)
 	.map(chunk => {
-		console.log("chunk",chunk); 
+		//console.log("chunk",chunk); 
 		return AudioReader(new Uint8Array(chunk).buffer, offlineAudioCtx);
 	})//new Promise((resolve,reject) => offlineAudioCtx.decodeAudioData(new Uint8Array(chunk).buffer,resolve,reject))})
-	.await()//.observe(chunk => console.log("chunk",chunk)).catch(e => console.error(e));
-	.map(b => b.buffer)
+	//.observe(chunk => console.log("chunk",chunk)).catch(e => console.error(e));
+.await()
+	.map(b => b.buffer || b)
 
 	.tap(b => console.log("audiobuffer",b))
 	// console.log("ab",audioBuffer);
@@ -123,16 +143,29 @@ export function audioStreamRangeAccessor(audioStream) {
 
 
 registerTransform({name: "audioStream", depends:["audioBuffer"], transform: buffer => {
-	console.log("buffer",buffer);
+	console.log("sending buffer",buffer);//,buffer.channels[0].length);
+	if (buffer.channels) {
+		buffer.getChannelData = (i) => {
+			var c = buffer.channels[i];
+			var downSampled = [];
+			for (var j=0;j<c.length;j+=8)
+				downSampled.push(c[j]);
+			return downSampled;
+			//  buffer.channels[i].reduce((downSampled, sample, i)=>i % 8 === 0 ? downSampled.concat([sample]):downSampled,[]);;
+		}
+		buffer.duration = buffer.length/buffer.sampleRate;
+		buffer.sampleRate=buffer.sampleRate/8;
+	
+	}
 	if (!buffer.getChannelData)
 		return ({
 			buffer:[],
-			duration:0,
+			duration:-500,
 			offset:0
 		});
 	return ({
 		buffer:buffer.getChannelData(0),
-	duration:buffer.duration, 
+	duration:buffer.duration|| (buffer.length/buffer.sampleRate), 
 	offset: 0, sampleRate: 
 	buffer.sampleRate});
 	}});
@@ -228,7 +261,7 @@ function warpMap(buffer,warpMarkers) {
 import Subject from "../utils/subject";
 
 registerTransform({name: "waveform", depends:["path","audioMetadata","audioStream","warpMarkers"], transform: (path,audioMetadata, audioStream,warpMarkers) => {
-  console.log("AUDIOSTREAM",audioStream);
+//   console.log("AUDIOSTREAM",audioStream);
   
   return most.fromPromise(warpMap({buffer: split(audioStream.buffer,2048), duration: audioStream.duration},warpMarkers))
 //   .map((v,i) => )

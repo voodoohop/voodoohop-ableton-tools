@@ -1,3 +1,4 @@
+import "./utils/fixWhenErrorLog";
 import React from 'react';
 import { render } from 'react-dom';
 // import configureStore from './store/configureStore';
@@ -10,8 +11,8 @@ import {mapStackTrace} from "sourcemapped-stacktrace";
 console.log("sourcemappedStacktrace",mapStackTrace);
 
 
-
-import {oscInputStream, oscOutput} from "./utils/oscInOut";
+// import logger from "./utils/streamLog";
+import {oscOutput} from "./utils/oscInOut";
 
 import oscStateDiff from "./utils/oscStateDiff";
 // oscServer.on("message",(d,r)=>console.log("dddoscmain",d,r));
@@ -24,11 +25,11 @@ import Immutable from "immutable";
 // });
 
 
-import "./takeAction.js";
+// import "./takeAction.js";
 
 import actionSubject from "./api/actionSubject";
 
-actionSubject.observe(a => console.log("actionSubject", (a.toJS && a.toJS()) || a)).catch(e => console.error(e));
+// actionSubject.observe(a => console.log("actionSubject", (a.toJS && a.toJS()) || a)).catch(e => console.error(e));
 
 import most from "most";
 console.log("importing metadata");
@@ -77,42 +78,46 @@ import PlayingTracks from "./playingTracksView";
 // info.drain();
 
 
-import {livedataStore, metadataStore, uiStateStore, oscOutputStore} from "./store";
+import {livedataStore, metadataStore, uiStateStore, oscOutputStore, midiClipStore} from "./store";
 
-// var liveData = livedataStore(
-// 	oscInputStream
-// 		.filter(f => f[2] === "playingClip" && f[1]>=0)
-// 		.map(f => Immutable.fromJS({trackId: f[1], data: f.slice(3)}))
-// );
 
-// var metadata = metadataStore(liveData.flatMap(data => most.from(data.map(d => d.get("file_path")))),most.empty());
+
+import log from "./utils/streamLog";
 
 oscOutput.plug(oscOutputStore);
 
-var appState = most.combine((liveData, fileData, uiState) => Immutable.Map({liveData, fileData, uiState}) , livedataStore.startWith(Immutable.Map()), metadataStore.startWith(Immutable.Map()), uiStateStore.startWith(Immutable.Map({globalZoom:1})))
-.tap(s => console.log("appState", s));
+var appState = most.combine((liveData, metaData, midiData, uiState) => 
+	Immutable.Map({uiState, tracks: liveData.filter(data=>data.get("file_path") && data.get("file_path").length>0).map((data, trackId) => Immutable.Map({liveData:data, fileData: metaData.get(data.get("file_path")), midiData: midiData.get(trackId), trackId:trackId}))}	)
+	,livedataStore.tap(ld => console.table(ld.map(v => v).toJS())), metadataStore, midiClipStore, uiStateStore
+	)
 
-appState = appState.map(s => 
-	Immutable.Map({
-		tracks: s.get("liveData").keySeq().reduce((tracks,trackId) => 
-	tracks.set(trackId, Immutable.Map({liveData: s.getIn(["liveData",trackId]), fileData: s.getIn(["fileData", s.getIn(["liveData",trackId,"file_path"])])}))
-	,Immutable.Map()), 
-		uiState: s.get("uiState")
 
-	}) 
+// uiStateStore.observe(log("uiState")).catch(e => console.error(e));
+// metadataStore.observe(log("metadataState")).catch(e => console.error(e));
+
+// midiClipStore.observe(log("midiClipState")).catch(e => console.error(e));
+
+// appState = appState.map(s => 
+// 	Immutable.Map({
+// 		tracks: s.get("liveData").keySeq().reduce((tracks,trackId) => 
+// 	tracks.set(trackId, Immutable.Map({liveData: s.getIn(["liveData",trackId]), fileData: s.getIn(["fileData", s.getIn(["liveData",trackId,"file_path"])])}))
+// 	,Immutable.Map()), 
+// 		uiState: s.get("uiState")
+
+// 	}) 
 // s.keySeq().reduce((mapped,k) => mapped.merge(s.get(k).mapEntries(e=> [e[0], Immutable.Map().set(k,s.get(k).get(e[0]))],true)), Immutable.Map({}))
-)
+// )
 
-appState.observe(state => {
-	console.log("state",state);
+import throttledDebounce from "./utils/throttledDebounce";
+
+appState.tap(log("state")).observe(state => {
+	// console.log("state",state);
 	// console.table(state.toJS());
 render(
-	
-	// <div>
-	
-	<PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
-	// <DevTools />
+<div>	
 
+	<PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
+</div>
 	// </div>
 	
 	,
@@ -120,7 +125,7 @@ render(
   	document.getElementById('root')
 );
 
-});
+}).catch(e => console.error(e));
 
 if (process.env.NODE_ENV !== 'production') {
 	// Use require because imports can't be conditional.
@@ -129,3 +134,26 @@ if (process.env.NODE_ENV !== 'production') {
 	// module and its dependencies as dead code.
 	// require('./createDevToolsWindow')(store);
 }
+
+
+
+
+  // <div className="toolbar-actions" style={{backgroundColor:"rgba(0,0,0,0)", border:"none"}}>
+  //   <div className="btn-group">
+  //     <button className={"btn btn-default "+state.getIn(["uiState","visibleView"]) === "trackView" ? "active":""}  onClick={()=>actionSubject.push(Immutable.Map({type:"showView", value:"trackView"}))}>
+  //       <span className="icon icon-home"></span>
+  //     </button>
+  //     <button className="btn btn-default" onClick={()=>actionSubject.push(Immutable.Map({type:"showView", value:"gridView"}))}>
+  //       <span className="icon icon-folder"></span>
+  //     </button>
+  //   </div>
+
+  //   <button className="btn btn-default">
+  //     <span className="icon icon-home icon-text"></span>
+  //     Filters
+  //   </button>
+
+  //   <button className="btn btn-default btn-dropdown pull-right">
+  //     <span className="icon icon-megaphone"></span>
+  //   </button>
+  // </div>

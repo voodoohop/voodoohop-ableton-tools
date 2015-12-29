@@ -1,7 +1,6 @@
 import Subject from "./subject.js";
 // import gen from "../api/audioMetadataGenerator";
 import most from "most";
-import ipcStream from "electron-ipc-stream";
 import {fetchOrProcess} from "../api/db";
 
 import Imm from "immutable";
@@ -10,9 +9,6 @@ import actionStream from "../api/actionSubject";
 import "../transforms/vampMetadata.js";
 
 import fs from "fs";
-
-// var metadataExtractor=ipcStream("metadataExtractRequest");
-// var metadataExtractorResult=ipcStream("metadataExtractResult");
 
 
 var taglib = require("thomash-node-audio-metadata");
@@ -23,7 +19,7 @@ var filewalker = require('filewalker');
 
 var extensions=".mp3,.m4a,.mp4,.aif,.aiff,.wav".split(",");
 
-var finder = filewalker("/Users/thomash/organised/brasil",{maxPending:-1});
+var finder = filewalker("/Users/thomash/organised",{maxPending:-1});
 
 
   //  .drain();  

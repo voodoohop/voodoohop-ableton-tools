@@ -8,7 +8,7 @@ import _ from "lodash";
 
 import Imm from "immutable";
 
-export var pouch = new PouchDB("thomashMusicMusicNow"+Math.random());
+export var pouch = new PouchDB("thomashMusicMusicNow"/*+Math.random()*/);
 window.PouchDB = pouch;
 // var remoteDB = new PouchDB('http://localhost:5984/myremotedbtomtom')
 
@@ -23,15 +23,15 @@ window.PouchDB = pouch;
 
 console.log("got pouch",pouch);
 // setInterval(()=>
-pouch.allDocs({
-  include_docs: true,
-  attachments: true
-}).then(function (result) {
-  // handle result
-  console.log("allDocs",result);
-}).catch(function (err) {
-  console.log(err);
-})
+// pouch.allDocs({
+//   include_docs: true,
+//   attachments: true
+// }).then(function (result) {
+//   // handle result
+//   console.log("allDocs",result);
+// }).catch(function (err) {
+//   console.log(err);
+// })
 //,1000);
 
 

@@ -3,7 +3,6 @@ import component from 'omniscient';
 // import { dom } from 'react-reactive-class';
 import most from "most";
 import Immutable from "immutable";
-import Waveform from "./waveform";
 
 // var ReactiveWaveform = reactive(Waveform);
 import keysToColors from "./api/keysToColors";
@@ -11,11 +10,14 @@ import keysToColors from "./api/keysToColors";
 // import ReactCountdownClock from "react-countdown-clock";
 
 import ProgressLabel from "react-progress-label";
+import AudioContainer from "./audioContainer";
 
 
 
 var TrackStatistic=component(({fileData}) =>
 <div className="ui mini statistics inverted right floated tom blackTransparentBg">
+  {
+  (fileData.getIn([ "id3Metadata","initialkey"])) ? 
   <div className="statistic tom">
     <div className="value" style={{ color: keysToColors(fileData.getIn([ "id3Metadata","initialkey"]))}}>
       {fileData.getIn([ "id3Metadata","initialkey"])}
@@ -24,6 +26,8 @@ var TrackStatistic=component(({fileData}) =>
       Key
     </div>
   </div>
+  :null
+  }
   <div className="statistic  tom">
     <div className="value">
       {fileData.getIn(["warpMarkers","baseBpm"]).toFixed(2) || fileData.getIn([ "id3Metadata","bpm"]) || "-"}
@@ -34,7 +38,7 @@ var TrackStatistic=component(({fileData}) =>
   </div>
   <div className="statistic  tom">
     <div className="value">
-      {fileData.getIn([ "audioMetadata","duration"]) || "-"}
+      {Math.round(fileData.getIn([ "audioMetadata","duration"])) || "-"}
 	</div>
     <div className="label">
       Duration
@@ -51,49 +55,43 @@ var Track = component(({track,trackId, uiState}) => {
 		// var track = props.track;	
 		if (!track)
 			return <div>no track found</div>;
-		// console.log("trackttt",track.toJS());
+	
+    // console.log("trackttt",track.toJS());
 		var progress=20;
 	  var textStyle = {
       'fill': '#ffffff',
       'textAnchor': 'middle'
     };
-    if (!track.getIn(["fileData","waveform"])) {
+    if (!track.getIn(["fileData","waveform"]) && track.getIn(["liveData","file_path"])) {
       actionStream.push(Immutable.Map({type:"loadMetadata", path: track.getIn(["liveData","file_path"])}));
-      return <div>loading...</div>;
+      return <div>{"loading"}</div>;
     }  
     
+     var grouped =uiState.getIn(["groupedTracks",trackId]);
 
+    
+    // var audioContainer = ;
     return (		
     <div className="ui vertical segment inverted" style={{padding:"3px"}}>
-    <div className="image">
+    <div className="image" style={{position:"relative"}}>
     <div className="content inverted" style={{position:"absolute", width:"100%"}}>
-  
-      <TrackStatistic fileData={track.get("fileData")} />
-      
-			    <div className="ui header tom"><span className="blackTransparentBg">{track.getIn(["fileData","id3Metadata","artist"])}</span></div>
-      <span className="blackTransparentBg">{track.getIn(["fileData","id3Metadata","title"])}</span>
+                 
 
-	</div>    
+    {
+      track.get("fileData") ? <TrackStatistic fileData={track.get("fileData")} /> : ""
+    } 
+			    <div className="ui header tom" style={{fontSize:"3vw"}}><span className="blackTransparentBg"> 
+{track.getIn(["fileData","id3Metadata","artist"])}
+          </span></div>
+      <span className="blackTransparentBg" style={{fontSize:"2vw", margin:"0px"}}>{track.getIn(["fileData","id3Metadata","title"])}</span>
 
-	 	<Waveform 
-				trackId={trackId}
-				liveData={track.get("liveData")}
-				metadata={track.getIn(["fileData","audioMetadata"])} 
-				waveform={track.getIn(["fileData","waveform"])} 
-        uiState={uiState}
-				chords={
-					(track.getIn(["fileData","vampChord_HPA"]) && !track.getIn(["fileData","vampChord_HPA","error"]) && track.getIn(["fileData","vampChord_HPA"]))
-				|| 	(track.getIn(["fileData","vampChord_QM"]) && !track.getIn(["fileData","vampChord_QM","error"]) && track.getIn(["fileData","vampChord_QM"]))
- 
-				} 
-				musicalKey={track.getIn(["fileData", "id3Metadata","initialkey"])}/>
-			     </div>
-    <div className="content inverted">
-			    <div className="description">
- 
-</div>
-	</div>
+    </div><div style={{paddingTop:"10px",height:"100%"}}>
+    <AudioContainer uiState={uiState} trackId={trackId} track={track} />   
     </div>
+  <button style ={{right:"0px",bottom:"0px", position:"absolute",opacity:0.6}} className={"ui  button inverted mini floated right toggle "+(grouped ? "yellow" : "blue")}
+    onClick={() => actionStream.push(Immutable.Map({type:"groupButtonClicked", trackId}))}><i className={grouped ? "fa fa-unlink":"fa fa-link"} style={{fontWeight:"bold"}}></i></button>
+  </div>
+  </div>
 	
 				
 		
@@ -101,21 +99,26 @@ var Track = component(({track,trackId, uiState}) => {
 
 });
 
+import log from "./utils/streamLog";
 
-
+var logger=log("playingTracksView");
 // var RTrack = reactive(Track);
 export default component(({availableTracks,uiState}) => 
 	{
-		// console.log("thisTracks", availableTracks);
+        var sortedTracks = availableTracks.keySeq().sort().toArray();
+		logger("thijsTracks", availableTracks,uiState,sortedTracks);
 		// var tracks = this.props.tracks;
+        sortedTracks.map(log("trkId"));
 		if (!availableTracks)
 			return <div>no tracks loaded</div>;
-		return  <div className="ui inverted relaxed divided list" style={{backgroundColor:"rgba(0,0,0,0.9)"}}>
+		return  <div className="ui inverted relaxed divided list" style={{backgroundColor:"rgba(0,0,0,0)"}}>
 
-			{availableTracks.keySeq().sort().map(trackId => {
+			{sortedTracks.map(trackId => {
 				
 				var track = availableTracks.get(trackId);
-				console.log("rendering track",track.get("trackId"),track);
+				logger("rendering track",track.get("trackId"),track);
+        // if (track === undefined || (!track.get("midiData") && !track.get("fileData")))
+        //   return <div key={trackId}  className="item">undefined {trackId}</div>;
 				return     <div key={trackId}  className="item">
 							<div className="content">
 									<Track track={track} trackId={trackId} uiState={uiState} /> 

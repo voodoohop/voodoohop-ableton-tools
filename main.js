@@ -12,13 +12,12 @@ var most = require("most");
 //   console.log("Node NOT Exiting...");
 // });
 
-require('electron-debug')();
+// require('electron-debug')();
+
 require('crash-reporter').start();
-
-
-
-// var IPCStream = require('electron-ipc-stream');
-// var client = require('electron-connect').client;
+var electron=require("electron");
+console.log("app",electron);
+electron.app = app;
 
 var mainWindow = null;
 
@@ -48,14 +47,42 @@ process.on('uncaughtException', (err) => {
 // oscServer.on("message",(d,r)=>console.log("dddoscmain",d,r));
 // var ipcs=ipcStream("thomash");
 
-app.on('ready', function() {
-  mainWindow = new BrowserWindow({ width: 700, height: 800, transparent:true, alwaysOnTop:true});//, transparent:true,frame:false });
 
-  require("./tagExtractorStream")(mainWindow);
-  
+var Positioner =require("electron-positioner");
+app.on('ready', function() {
+  mainWindow = new BrowserWindow({ width: 500, height: 600, 
+    transparent:true, 
+    alwaysOnTop:true,
+    // frame: false,
+	  
+		alwaysOnTop: true,
+		'min-width': 151,
+		'min-height': 126,
+		// 'standard-window': false,
+		'use-content-size': true,
+    experimentalFeatures: true,
+    
+    // Boolean - Allow an https page to display content like images from http URLs. Default is `false`. 
+    allowDisplayingInsecureContent: false,
+ 
+    // Boolean - Allow a https page to run JavaScript, CSS or plugins from http URLs. Default is `false`. 
+    allowRunningInsecureContent: false,
+    experimentalCanvasFeatures:true,
+    // overlayFullscreenVideo:true,
+      darkTheme: true,
+
+    zoomFactor:1
+    });
+    
+    // window.mainWindow = mainWindow;
+    //, transparent:true,frame:false });
+var positioner = new Positioner(mainWindow);
+
+// Moves the window top right on the screen.
+positioner.move('topRight');
+
+  console.log("hey");
   mainWindow.webContents.on('did-finish-load', function() {
-    //  var ipcs = new IPCStream('thomash', mainWindow);
-    //  emitStream(oscServer).pipe(ipcs);
      
      
      
@@ -66,22 +93,22 @@ app.on('ready', function() {
 
   
   if (process.env.HOT) {
-    mainWindow.loadUrl('file://' + __dirname + '/app/hot-dev-app.html');
+    mainWindow.loadURL('file://' + __dirname + '/app/hot-dev-app.html');
   } else {
-    mainWindow.loadUrl('file://' + __dirname + '/app/app.html');
+    mainWindow.loadURL('file://' + __dirname + '/app/app.html');
   }
 
   mainWindow.on('closed', function() {
     mainWindow = null;
   });
 
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.openDevTools();
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   mainWindow.openDevTools();
+  // }
 
   if (process.platform === 'darwin') {
     template = [{
-      label: 'Electron',
+      label: 'VOODOOHOP',
       submenu: [{
         label: 'About ElectronReact',
         selector: 'orderFrontStandardAboutPanel:'
@@ -162,45 +189,6 @@ app.on('ready', function() {
           mainWindow.toggleDevTools();
         }
       }]
-    }, {
-      label: 'Window',
-      submenu: [{
-        label: 'Minimize',
-        accelerator: 'Command+M',
-        selector: 'performMiniaturize:'
-      }, {
-        label: 'Close',
-        accelerator: 'Command+W',
-        selector: 'performClose:'
-      }, {
-        type: 'separator'
-      }, {
-        label: 'Bring All to Front',
-        selector: 'arrangeInFront:'
-      }]
-    }, {
-      label: 'Help',
-      submenu: [{
-        label: 'Learn More',
-        click: function() {
-          require('shell').openExternal('http://electron.atom.io');
-        }
-      }, {
-        label: 'Documentation',
-        click: function() {
-          require('shell').openExternal('https://github.com/atom/electron/tree/master/docs#readme');
-        }
-      }, {
-        label: 'Community Discussions',
-        click: function() {
-          require('shell').openExternal('https://discuss.atom.io/c/electron');
-        }
-      }, {
-        label: 'Search Issues',
-        click: function() {
-          require('shell').openExternal('https://github.com/atom/electron/issues');
-        }
-      }]
     }];
 
     menu = Menu.buildFromTemplate(template);
@@ -265,10 +253,16 @@ app.on('ready', function() {
     }];
     menu = Menu.buildFromTemplate(template);
     mainWindow.setMenu(menu);
-    setInterval(function(){
-        mainWindow.setAlwaysOnTop(true);
-    }, 100);
+    // mainWindow.flashFrame(true);
+    // setInterval(function(){
+    //     mainWindow.setAlwaysOnTop(true);
+    // }, 100);
+    // 
   }
     // client.create(mainWindow);
+
+require('electron-debug')({
+    showDevTools: true
+});
 
 });

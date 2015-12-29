@@ -2,17 +2,21 @@ import most from "most";
 
 import osc from "node-osc";
 import Subject from "./subject";
-
+import throttledDebounce from "./throttledDebounce";
 import Immutable from "immutable";
+import log from "./streamLog";
+
 var oscServer = new osc.Server(5555, '0.0.0.0');
 oscServer.setMaxListeners(100);
 console.log("oscSerrver in renderer", oscServer);
 
 var oscInputStream = most.fromEvent("message", oscServer)
-	.map(f => f[0]);
-	
+	.map(f => f[0])
+    .skipRepeatsWith((e,f) => JSON.stringify(f) === JSON.stringify(e))
+    .tap(log("oscIn"))
+	.multicast();
 // export oscInputStream as oscInp;
-
+console.log("OSCstream",oscInputStream);
 
 var oscOutput = Subject();
 // oscOutput
@@ -20,12 +24,15 @@ var oscOutput = Subject();
 
 var currentOscSender = new Promise(resolve => resolve(Immutable.Map({})));
 
-oscOutput.map(s => typeof s === "Stream" ? s : most.of(s)).join().scan((oscSender, oscMessage) => oscSender.then(() => new Promise(resolve => {
-	console.log("sending, ", oscMessage.toJS());
-	var client = new osc.Client(oscMessage.get("host") || '127.0.0.1', oscMessage.get("port") || 4000);
-	client.send(...oscMessage.get("args").toJS(), function() {
-		resolve(Immutable.Map({sent: oscMessage}));
-		client.kill();
+var client = new osc.Client('127.0.0.1', 4444);
+
+oscOutput.map(s => s instanceof most.Stream ? s : most.of(s)).join()
+
+.scan((oscSender, oscMessage) => oscSender.then(() => new Promise(resolve => {
+	console.log("sending, ", oscMessage.toJS() );
+	client.send(oscMessage.get("trackId"),...oscMessage.get("args").toJS(), function() {
+		setTimeout(()=>resolve(Immutable.Map({sent: oscMessage})),1);
+		// client.kill();
 	});
 }
 )),currentOscSender)
@@ -34,3 +41,7 @@ oscOutput.map(s => typeof s === "Stream" ? s : most.of(s)).join().scan((oscSende
 
 
 export {oscOutput, oscInputStream};
+
+setTimeout(() =>
+oscOutput.push(Immutable.fromJS({trackId:"sendAll",args:[]}))
+,50);
