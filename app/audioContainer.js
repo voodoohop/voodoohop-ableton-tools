@@ -3,8 +3,6 @@ import React from 'react';
 import component from 'omniscient';
 import logger from "./utils/streamLog";
 
-import ClipTypes from "./api/clipTypes";
-
 import Immutable from "immutable";
 
 import actionSubject from "./api/actionSubject";
@@ -52,13 +50,16 @@ export default component(({uiState,trackId,track}) => {
 		}
 		
 	log(playingPosX,uiState,liveData,trackId);
-    
+    var waveform=track.getIn(["fileData","waveform"]);
+    var midiData = track.getIn(["midiData","notes"]);
+    if (!waveform && !midiData)
+        return <div>Waveform / midi not yet loaded</div>;
     var detailView=null;//<div>no visualisation for this data type</div>;
     // return detailView;
     if (track.getIn(["fileData","waveform"]))
       detailView = <Waveform 
 				trackId={trackId}
-				waveform={track.getIn(["fileData","waveform"])} 
+				waveform={waveform} 
 				chords={
 					(track.getIn(["fileData","vampChord_HPA"]) && !track.getIn(["fileData","vampChord_HPA","error"]) && track.getIn(["fileData","vampChord_HPA"]))
 				|| 	(track.getIn(["fileData","vampChord_QM"]) && !track.getIn(["fileData","vampChord_QM","error"]) && track.getIn(["fileData","vampChord_QM"]))
@@ -69,11 +70,11 @@ export default component(({uiState,trackId,track}) => {
     else 
       if (track.get("midiData"))
     {
-      detailView = <PianoRoll notes={track.getIn(["midiData","notes"])} trackId={trackId} />;
+      detailView = <PianoRoll notes={midiData} trackId={trackId} />;
     }
     console.log("detailView",detailView);
     
-	return <svg style={{overflow:"hidden"}} preserveAspectRatio="none"
+	return <div key={"waveform_"+waveform.get("path")}><svg style={{overflow:"hidden"}} preserveAspectRatio="none"
 					width={"100%"}  height={"100%"}
 					viewBox={[0,0,viewboxWidth, viewboxHeight].join(" ")}>
 						<defs>
@@ -89,9 +90,10 @@ export default component(({uiState,trackId,track}) => {
 							{detailView}
 						  </g>
 					      <BeatClickGrid startMarker={liveData.get("start_marker")} endMarker={liveData.get("end_marker")} trackId={trackId}/> 
-
 						</g>
-					</svg>;
+					</svg>
+                    <label className="mini ui inverted">{Math.round(waveform.get("pixelsPerBeat"))} {waveform.getIn(["max",0])}<small>{waveform.get("path")}</small></label>
+                    </div>;
 
     }
 )

@@ -9,7 +9,6 @@ import keysToColors from "./api/keysToColors";
 
 // import ReactCountdownClock from "react-countdown-clock";
 
-import ProgressLabel from "react-progress-label";
 import AudioContainer from "./audioContainer";
 
 
@@ -119,7 +118,7 @@ export default component(({availableTracks,uiState}) =>
 				logger("rendering track",track.get("trackId"),track);
         // if (track === undefined || (!track.get("midiData") && !track.get("fileData")))
         //   return <div key={trackId}  className="item">undefined {trackId}</div>;
-				return     <div key={trackId}  className="item">
+				return     <div key={"key_"+trackId}  className="item">
 							<div className="content">
 									<Track track={track} trackId={trackId} uiState={uiState} /> 
 							</div>

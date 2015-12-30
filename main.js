@@ -14,7 +14,7 @@ var most = require("most");
 
 // require('electron-debug')();
 
-require('crash-reporter').start();
+// require('crash-reporter').start({companyName:"voodoohop"});
 var electron=require("electron");
 console.log("app",electron);
 electron.app = app;
@@ -33,13 +33,13 @@ app.on('window-all-closed', function() {
 // trycatch.configure({'long-stack-traces': true})
 
 
-process.on('uncaughtApplicationException', (err) => console.log("uncaugtAppErr",err.stack));
+// process.on('uncaughtApplicationException', (err) => console.log("uncaugtAppErr",err.stack));
 
-process.on('uncaughtException', (err) => {
-  console.log("uncaughtExc",err.stack);
-  // We are in an undefined state and need to restart
-  // handleSoftShutodwn()
-})
+// process.on('uncaughtException', (err) => {
+//   console.log("uncaughtExc",err.stack);
+//   // We are in an undefined state and need to restart
+//   // handleSoftShutodwn()
+// })
 
 // var osc = require("node-osc");
 // var oscServer = new osc.Server(3333, '0.0.0.0');

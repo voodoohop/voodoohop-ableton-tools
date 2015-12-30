@@ -16,7 +16,6 @@ import actionSubject from "./api/actionSubject";
 // }
 
 // var keyToColor=
-var TWEEN = require('tween.js');
 
 import tinycolor from "tinycolor2";
 
@@ -57,7 +56,7 @@ var waveformPoly = (({durationBeats, waveformData, trackId,chords,musicalKey,sta
 
 		var pixelsPerBeat = waveformData.get("pixelsPerBeat");
 		// var s = segmentedByChord(Immutable.Seq(maxArray)).toJS();
-		log("segmented",segmentedByChord);
+		// log("segmented",segmentedByChord);
 		 
 				 console.timeEnd("renderWaveformTime");
 
@@ -66,7 +65,7 @@ var waveformPoly = (({durationBeats, waveformData, trackId,chords,musicalKey,sta
 		if (points.size===0)
 			return null;
 		points = points.concat([points.first()]).toArray();
-		log("points",i,points,segment.toJS());
+		// log("points",i,points,segment.toJS());
 		points=points.map((p)=> [p[0]/pixelsPerBeat, (p[1]/2+0.5)*127].join(","));
 		return <polyline key={""+segment.get("startOffset")+"_"+segment.get("endOffset")} 
 			stroke="none" fillOpacity="1"
@@ -88,7 +87,7 @@ export default component(({waveform, chords, musicalKey,trackId,gainScale}) => {
 			return null;
 		var durationBeats =waveform.get("size")/waveform.get("pixelsPerBeat");
 		// var waveform 
-		log("waveformData", waveform,chords,musicalKey,trackId);
+		// log("waveformData", waveform,chords,musicalKey,trackId);
 		// var chords = props.chords;
 		// log("pts",points);
 		// var beatToPos = (beat) => beat;//*waveform.get("pixelsPerBeat")*viewboxWidth/waveform.get("size");

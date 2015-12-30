@@ -4,18 +4,12 @@ import { render } from 'react-dom';
 // import configureStore from './store/configureStore';
 import './app.css';
 import './photon_tom.css';
-import TomWaveTest from "./TomWaveTest"
-import { Provider,connect } from 'react-redux';
 // import DevTools from "./containers/DevTools";
 import {mapStackTrace} from "sourcemapped-stacktrace";
-console.log("sourcemappedStacktrace",mapStackTrace);
 
 
 // import logger from "./utils/streamLog";
 import {oscOutput} from "./utils/oscInOut";
-
-import oscStateDiff from "./utils/oscStateDiff";
-// oscServer.on("message",(d,r)=>console.log("dddoscmain",d,r));
 
 import Immutable from "immutable";
 
@@ -32,7 +26,7 @@ import actionSubject from "./api/actionSubject";
 // actionSubject.observe(a => console.log("actionSubject", (a.toJS && a.toJS()) || a)).catch(e => console.error(e));
 
 import most from "most";
-console.log("importing metadata");
+
 import importMetadata from "./utils/importAudioMetadata.js";
 
 
@@ -87,7 +81,13 @@ import log from "./utils/streamLog";
 oscOutput.plug(oscOutputStore);
 
 var appState = most.combine((liveData, metaData, midiData, uiState) => 
-	Immutable.Map({uiState, tracks: liveData.filter(data=>data.get("file_path") && data.get("file_path").length>0).map((data, trackId) => Immutable.Map({liveData:data, fileData: metaData.get(data.get("file_path")), midiData: midiData.get(trackId), trackId:trackId}))}	)
+	Immutable.Map({uiState, tracks: liveData.filter(data=>data.get("file_path") && data.get("file_path").length>0)
+    // .filter(liveData => {
+    //   console.log("filtering",liveData.get("file_path"), metaData.toJS());
+    //   return  metaData.has(liveData.get("file_path"));
+      
+    //   })
+    .map((data, trackId) => Immutable.Map({liveData:data, fileData: metaData.get(data.get("file_path")), midiData: midiData.get(trackId), trackId:trackId}))}	)
 	,livedataStore.tap(ld => console.table(ld.map(v => v).toJS())), metadataStore, midiClipStore, uiStateStore
 	)
 
@@ -111,17 +111,10 @@ var appState = most.combine((liveData, metaData, midiData, uiState) =>
 import throttledDebounce from "./utils/throttledDebounce";
 
 appState.tap(log("state")).observe(state => {
-	// console.log("state",state);
+	// console.error("state",state);
 	// console.table(state.toJS());
 render(
-<div>	
-
-	<PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
-</div>
-	// </div>
-	
-	,
-	// <TomWaveTest waveData={ reactiveWaveData } /></div>,
+	<PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />	,
   	document.getElementById('root')
 );
 

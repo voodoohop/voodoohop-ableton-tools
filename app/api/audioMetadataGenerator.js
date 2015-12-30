@@ -24,11 +24,6 @@ import {mapStackTrace} from "sourcemapped-stacktrace";
    var res= f ===undefined ? most.empty() : ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f : (f.hasOwnProperty(Symbol.iterator) && ! (f instanceof String) ? most.from(f) : most.of(f)) ));
    
    return res.flatMapError(e => {
-                  
-            //      if (e && e.stack)
-            //  mapStackTrace(e.stack,st => console.error("error_",st));
-          
-          // else
           console.error("error1_",transform,e);
           return most.of(Immutable.Map({error:e}));
         })
@@ -50,7 +45,7 @@ var createInputstreamTransform = (transform, transforms) => {
   return (inputStream) => {
       
     // console.log("is",transform,inputStream);
-    return getCachedWithInputStream(transform.name, inputStream, ()=>
+    return getCachedWithInputStream(transform.name, inputStream, () =>
       transform.depends.length === 0 ?
        inputStream.flatMap(e => mostify(e,transform))
        .map(transform.transform).flatMapError(e => {
@@ -73,10 +68,9 @@ var createInputstreamTransform = (transform, transforms) => {
     )}
 };
 
-export var registerTransform = (transform) => {
-  var dbCached = transform;//dbCachedTransform(transform);
-  transforms[dbCached.name] = createInputstreamTransform(dbCached, transforms);
-};
+export var registerTransform = (transform) => 
+  transforms[transform.name] = createInputstreamTransform(transform, transforms);
+
 
 export var getTransformed = (requiredTransforms, inputStream) => {
   // console.log("getTransformed", requiredTransforms, transforms);

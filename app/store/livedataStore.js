@@ -63,4 +63,7 @@ var liveDataModified =
             ,Immutable.Map()).skip(1)
             );
 
+// actionStream.plug(liveDataPrepped.tap(log("liveDataPrepped")).filter(d => d.get("type")==="file_path").map(d=> Immutable.Map({type:"loadMetadata", path: d.get("value")})));
+
+
 export default liveDataModified.multicast();

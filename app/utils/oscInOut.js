@@ -36,7 +36,7 @@ oscOutput.map(s => s instanceof most.Stream ? s : most.of(s)).join()
 	});
 }
 )),currentOscSender)
-.await()
+.flatMap(f => most.fromPromise(f))
 .observe(oscStatus => console.log("osc sent:", oscStatus.toJS()));
 
 

@@ -27,8 +27,6 @@ export default function extractWarpMarkers(path, audioMetaData) {
   var duration = audioMetaData.get("duration") * 1000;//get("duration");
   var samprate = audioMetaData.get("samplerate");//get("samplingRate");
 
-  var lastMarkerPos = -1;
-
   var filename = path + ".asd";
   // post(filename + "\n");
   //length--; // to stop from reading after sample end
@@ -45,12 +43,7 @@ export default function extractWarpMarkers(path, audioMetaData) {
       // post("error,buf",err,buffer);
       var position = 0;
       // f.byteorder = "little";
-      var markerNo = 0;
-      var fname = filename;
-      var chunksize = buffer.length;
-      var tsk;
       var markersArr = [];
-      var lastMarker;
  
       //var chunk=0;
       // while (position < buffer.length) {
@@ -137,31 +130,6 @@ export default function extractWarpMarkers(path, audioMetaData) {
         beats: lm2.beats + (duration - lm2.sourcetime) * lastBpm / 60000
       });
 
-      // var fm = newMarkers[0];
-      // if (false) {
-      //   var newMarkersInterpolated = [];
-      //   newMarkersInterpolated.push(newMarkers[0]);
-      //   for (var i = 1; i < newMarkers.length; i++) {
-      //     var startBeat = Math.ceil(newMarkers[i - 1].beats);
-      //     var endBeat = Math.floor(newMarkers[i].beats);
-      //     var prevTime = newMarkers[i - 1].sourcetime;
-      //     var bpmNow2:number = newMarkers[i].bpm;
-      //     for (var currentBeat = startBeat; currentBeat < endBeat; currentBeat += 1) {
-      //       var beatOffset = currentBeat - newMarkers[i - 1].beats;
-      //       var currentTime = beatOffset / (bpmNow / 60000) + prevTime;
-      //       var interpInfo = {
-      //         sourcetime: <number>currentTime,
-      //         bpm: bpmNow2,
-      //         beats: currentBeat
-      //       };
-      //       newMarkersInterpolated.push(interpInfo);
-      //     }
-      //     newMarkersInterpolated.push(newMarkers[i]);
-      //   }
-
-      //   newMarkers = newMarkersInterpolated;
-      //   post("interpolated markers", newMarkersInterpolated.length, "\n");
-    
       for (var i = 1; i < newMarkers.length; i++) {
         var relSpeed = newMarkers[i - 1].bpm / refBpm;
         newMarkers[i].desttime = newMarkers[i - 1].desttime + (newMarkers[i].sourcetime - newMarkers[i - 1].sourcetime) * relSpeed;
@@ -214,24 +182,3 @@ export default function extractWarpMarkers(path, audioMetaData) {
   });
   // });
 }
-
-//var processingNow = false;
-//post("hey from es6!!!!", );
-//self = this;
-// for (var k in Promise)
-// 	post("keys my love", k,"\n");
-
-//var metaDataWithWarpMarkersDict = new Dict("metaDataWithWarpMarkers");
-//globalStreams.metaDataByPath.observe(v=>post(v.stringify()));
-//setTimeout(function() {
-// post("\nhey man, from tsts\n");
-// new Promise(resolve => setTimeout(resolve, 200)).then(() => post("resolved\n\n"));
-//globalStreams.metaDataByPath.observe(function(v) {/*var d = new Dict();d.parse(v);*/post("meta2",v.stringify(),"\n")}).catch(function(e) {postprops(e)});;
-//   post("metameta",globalStreams.metaDataFromPlayingClips.toString(),"\n");
-// if(false)
-
-// export transform = extractWarpMarkers;
-
-// export depends = ["path", "audioMetadata"];
-
-// var pr};

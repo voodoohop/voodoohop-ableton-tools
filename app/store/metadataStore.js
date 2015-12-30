@@ -30,16 +30,18 @@ var loadPaths = actionStream.filter(a => a.get("type") === "loadMetadata")
     .tap(log("loadPaths"))
     ;
 
-	var checkedDb = loadPaths.map(path => new Promise((resolve, reject) => db.get(path).then(doc => resolve(Immutable.fromJS(doc))).catch(e => resolve({notInDb: path})))).await();
+	var checkedDb = loadPaths.flatMap(path => most.fromPromise(new Promise((resolve, reject) => db.get(path).then(doc => resolve(Immutable.fromJS(doc))).catch(e => resolve({notInDb: path})))));
 	// .tap(e => console.log("pathe2",e))
 	
 	var notInDborReload = checkedDb.filter(d => d.notInDb).map(d => d.notInDb)
 	.merge(actionStream.filter(a => a.get("type") === "reloadMetadata").map(a=>a.get("path"))).skipRepeats()//.multicast();
 
 	//.zip(d => d, throttler.startWith(null))
-	var loadedMetadata = getTransformed(["path","id3Metadata","audioMetadata", "waveform","warpMarkers","vampChord_HPA","vampChord_QM"], 
-    notInDborReload
+    var getNextTransformed = Subject(true);
+	var loadedMetadata = getTransformed(["path","id3Metadata","audioMetadata", "warpMarkers","waveform","vampChord_HPA","vampChord_QM"], 
+    notInDborReload.zip(d => d, getNextTransformed)
     .tap(log("actually requesting metadata load")))
+    .tap(() => getNextTransformed.push(true))
 		.tap(f =>   db.upsert(f.get("path"), doc => {
 				
                 doc = Immutable.fromJS(doc).merge(f).toJS();
