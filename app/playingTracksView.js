@@ -11,15 +11,15 @@ import keysToColors from "./api/keysToColors";
 
 import AudioContainer from "./audioContainer";
 
+import transposedNote from "./utils/transposedNote";
 
-
-var TrackStatistic=component(({fileData}) =>
+var TrackStatistic=component(({fileData,liveData}) =>
 <div className="ui mini statistics inverted right floated tom blackTransparentBg">
   {
-  (fileData.getIn([ "id3Metadata","initialkey"])) ? 
+  (liveData.get("transposedKey")) ? 
   <div className="statistic tom">
-    <div className="value" style={{ color: keysToColors(fileData.getIn([ "id3Metadata","initialkey"]))}}>
-      {fileData.getIn([ "id3Metadata","initialkey"])}
+    <div className="value" style={{ color: keysToColors(liveData.get("transposedKey"))}}>
+      {liveData.get("transposedKey")}
     </div>
     <div className="label">
       Key
@@ -77,12 +77,12 @@ var Track = component(({track,trackId, uiState}) => {
                  
 
     {
-      track.get("fileData") ? <TrackStatistic fileData={track.get("fileData")} /> : ""
+      track.get("fileData") ? <TrackStatistic liveData={track.get("liveData")} fileData={track.get("fileData")} /> : ""
     } 
 			    <div className="ui header tom" style={{fontSize:"3vw"}}><span className="blackTransparentBg"> 
-{track.getIn(["fileData","id3Metadata","artist"])}
+{track.getIn(["fileData","id3Metadata","artist"]) || track.getIn(["liveData","name"])}
           </span></div>
-      <span className="blackTransparentBg" style={{fontSize:"2vw", margin:"0px"}}>{track.getIn(["fileData","id3Metadata","title"])}</span>
+      <span className="blackTransparentBg" style={{fontSize:"2vw", margin:"0px",color: keysToColors(track.getIn([ "liveData","transposedKey"]))}}>{track.getIn(["fileData","id3Metadata","title"])}</span>
 
     </div><div style={{paddingTop:"10px",height:"100%"}}>
     <AudioContainer uiState={uiState} trackId={trackId} track={track} />   

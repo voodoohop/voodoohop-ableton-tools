@@ -8,6 +8,10 @@ Stream.prototype.collect = function () {
   return this.reduce((xs, x) => { xs.push(x); return xs; }, []);
 };
 
+Stream.prototype.combinePrevious = function(functor) {
+    return this.loop((prev,next) => (prev=== null) ? {seed:next,value:null} :  {seed:next,value:functor(prev,next)},null).skip(1)
+};
+
 
 // most.from([1, 2, 3, 4]).collect().then(x=>
 //   console.log("collectTest", x));
@@ -18,7 +22,8 @@ export var transforms = {};
 
 import {mapStackTrace} from "sourcemapped-stacktrace";
 
- 
+import actionStream from "../api/actionSubject";
+
  function mostify(f, transform=null) {
    console.log("mostifying",(f && f.toJS && f.toJS())||f);
    var res= f ===undefined ? most.empty() : ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f : (f.hasOwnProperty(Symbol.iterator) && ! (f instanceof String) ? most.from(f) : most.of(f)) ));
@@ -70,6 +75,7 @@ var createInputstreamTransform = (transform, transforms) => {
 
 export var registerTransform = (transform) => 
   transforms[transform.name] = createInputstreamTransform(transform, transforms);
+
 
 
 export var getTransformed = (requiredTransforms, inputStream) => {

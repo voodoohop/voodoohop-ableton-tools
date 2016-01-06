@@ -43,7 +43,7 @@
   ],
   "homepage": "https://github.com/chentsulin/electron-react-boilerplate#readme",
   "devDependencies": {
-    "asar": "^0.8.0",
+    "asar": "^0.9.0",
     "babel": "^5.8.23",
     "babel-core": "^5.8.23",
     "babel-eslint": "^4.1.1",
@@ -89,7 +89,7 @@
     "webpack": "^1.12.1",
     "webpack-dev-middleware": "^1.2.0",
     "webpack-hot-middleware": "^2.4.1",
-    "webpack-target-electron-renderer": "^0.1.1"
+    "webpack-target-electron-renderer": "^0.3.0"
   },
   "dependencies": {
     "@most/hold": "^0.2.0",
@@ -104,6 +104,7 @@
     "iconv-lite": "^0.4.13",
     "immutablediff": "^0.4.2",
     "labella": "^0.1.1",
+    "leveldown": "^1.4.3",
     "most": "^0.16.0",
     "most-react": "^1.0.0",
     "nexusui": "^1.0.8",
@@ -115,6 +116,7 @@
     "pouchdb": "^5.1.0",
     "pouchdb-upsert": "^2.0.0",
     "react": "^0.14.2",
+    "react-cardstack": "0.0.7",
     "react-dnd": "^2.0.2",
     "react-dnd-html5-backend": "^2.0.0",
     "react-dom": "^0.14.2",
@@ -127,6 +129,7 @@
     "redux-promise": "^0.5.0",
     "redux-thunk": "^1.0.0",
     "reflux-immutable": "^1.0.5",
+    "searchkit": "^0.1.13",
     "semantic-ui": "^2.1.6",
     "shelljs": "^0.5.3",
     "sourcemapped-stacktrace": "^1.0.0",

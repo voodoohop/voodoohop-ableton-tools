@@ -51,27 +51,26 @@ app.on('window-all-closed', function() {
 var Positioner =require("electron-positioner");
 app.on('ready', function() {
   mainWindow = new BrowserWindow({ width: 500, height: 600, 
-    transparent:true, 
+    // transparent:true, 
     alwaysOnTop:true,
-    // frame: false,
+    frame: false,
 	  
-		alwaysOnTop: true,
 		'min-width': 151,
 		'min-height': 126,
 		// 'standard-window': false,
 		'use-content-size': true,
-    experimentalFeatures: true,
+    // experimentalFeatures: true,
     
     // Boolean - Allow an https page to display content like images from http URLs. Default is `false`. 
-    allowDisplayingInsecureContent: false,
+    allowDisplayingInsecureContent: true,
  
     // Boolean - Allow a https page to run JavaScript, CSS or plugins from http URLs. Default is `false`. 
-    allowRunningInsecureContent: false,
-    experimentalCanvasFeatures:true,
+    allowRunningInsecureContent: true,
+    // experimentalCanvasFeatures:true,
     // overlayFullscreenVideo:true,
-      darkTheme: true,
+      darkTheme: false
 
-    zoomFactor:1
+    // zoomFactor:1
     });
     
     // window.mainWindow = mainWindow;

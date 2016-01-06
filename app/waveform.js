@@ -23,7 +23,7 @@ import keysToColors from "./api/keysToColors";
 
 
 
-var waveformPoly = (({durationBeats, waveformData, trackId,chords,musicalKey,start, gainScale}) => {
+var waveformPoly = component(({durationBeats, waveformData, trackId,chords,musicalKey,start}) => {
 		if (!chords)
 			chords = Immutable.fromJS([{chord: musicalKey, startBeat: 0, endBeat: durationBeats}]);
 		// log("waveform args", duration, viewboxWidth, viewboxHeight, waveformData.toJS(), trackId,chords.toString());
@@ -60,7 +60,7 @@ var waveformPoly = (({durationBeats, waveformData, trackId,chords,musicalKey,sta
 		 
 				 console.timeEnd("renderWaveformTime");
 
-	return <g style={{transform:"scale(1,"+(Math.log(gainScale+1))*4+")",transformOrigin:"center"}}>{segmentedByChord.map((segment,i) => {
+	return <g>{segmentedByChord.map((segment,i) => {
 		var points = segment.get("max").map((v,i) => [i+segment.get("startOffset"),v]).concat(segment.get("min").map((v,i) => [i+segment.get("startOffset"),v]).reverse());
 		if (points.size===0)
 			return null;
@@ -77,7 +77,7 @@ var waveformPoly = (({durationBeats, waveformData, trackId,chords,musicalKey,sta
 	});
     
 
-export default component(({waveform, chords, musicalKey,trackId,gainScale}) => {
+export default component(({waveform, chords, musicalKey,trackId, gain}) => {
 		// log("waveformprops",props);
 		// var waveform = props.waveform;
 		// log("reactThis",waveform&&waveform.toJS());
@@ -94,13 +94,13 @@ export default component(({waveform, chords, musicalKey,trackId,gainScale}) => {
 		var start = -1*(waveform.get("firstBeat"))+0;
 		// var beatLines=Immutable.Range(start,durationBeats-start, 32);
 		// log("bealines",chords && chords.toJS(), beatLines.toJS());
- 		var waveformPolyline = waveformPoly({start, durationBeats,musicalKey, waveformData: waveform, trackId,gainScale});
+ 		// var waveformPolyline =;
         
-        var res= waveformPolyline;
+        // var res= waveformPolyline;
         				 console.timeEnd("renderWaveformTime");
        console.time("renderWaveformTime");
 
-        return res;
+        return <g style={{transformOrigin:"center",transform:"scale(1,"+((Math.exp(gain/0.4)-1)/1.5)+")"}}>{ waveformPoly({start, durationBeats,musicalKey, waveformData: waveform, trackId})}</g>;
        			// { beatLines.map(x =>
 					//   	<line key={x} stroke={tinycolor(color).complement().toHexString()} opacity="0.3" strokeWidth="2" x1={x} x2={x} y1={0} y2={127} />				
 					//   )}	

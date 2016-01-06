@@ -30,7 +30,7 @@ oscOutput.map(s => s instanceof most.Stream ? s : most.of(s)).join()
 
 .scan((oscSender, oscMessage) => oscSender.then(() => new Promise(resolve => {
 	console.log("sending, ", oscMessage.toJS() );
-	client.send(oscMessage.get("trackId"),...oscMessage.get("args").toJS(), function() {
+	client.send(""+oscMessage.get("trackId"),...oscMessage.get("args").toArray(), function() {
 		setTimeout(()=>resolve(Immutable.Map({sent: oscMessage})),1);
 		// client.kill();
 	});

@@ -30,7 +30,8 @@ var loadPaths = actionStream.filter(a => a.get("type") === "loadMetadata")
     .tap(log("loadPaths"))
     ;
 
-	var checkedDb = loadPaths.flatMap(path => most.fromPromise(new Promise((resolve, reject) => db.get(path).then(doc => resolve(Immutable.fromJS(doc))).catch(e => resolve({notInDb: path})))));
+	var checkedDb = loadPaths.flatMap(path => most.fromPromise(new Promise((resolve, reject) => db.get(path)
+    .then(doc => doc === null? resolve({notInDb: path}) : resolve(Immutable.fromJS(doc))).catch(e => resolve({notInDb: path})))));
 	// .tap(e => console.log("pathe2",e))
 	
 	var notInDborReload = checkedDb.filter(d => d.notInDb).map(d => d.notInDb)
@@ -43,7 +44,8 @@ var loadPaths = actionStream.filter(a => a.get("type") === "loadMetadata")
     .tap(log("actually requesting metadata load")))
     .tap(() => getNextTransformed.push(true))
 		.tap(f =>   db.upsert(f.get("path"), doc => {
-				
+				if (doc === null)
+                    return;
                 doc = Immutable.fromJS(doc).merge(f).toJS();
 				
                 console.log("upserting doc",doc);
@@ -63,21 +65,24 @@ var pathsToBeWatched = metadata.flatMap(m => most.from(m.toArray().filter(e => e
 	
  
  	
-	// pathsToBeWatched.observe(p => console.log("pathsToBeWatched",p.toJS()));
+	pathsToBeWatched.observe(p => console.log("pathsToBeWatched",p.toJS())).catch(e => console.error(e));
 	
 	
 	var pathsChangedSinceStart = pathsToBeWatched.flatMap(p => most.fromPromise(new Promise(resolve => {
 		let watcher=null;
+        console.log("trying to watch path",p);
 		console.log("watching", p.get("watchPath"));
 		watcher = fs.watch(p.get("watchPath"), () => {console.log("unwatching", p.get("watchPath")); watcher.close(); resolve(p);})
 	})));
 	// .observe(p => console.log("pathsChangedWatched",p.toJS()));
 	 var pathsChangedFile = pathsToBeWatched
+     .tap(log("pathsChangedFile22"))
  		// .merge()
+        .filter(p=> p.get("watchStat") !== undefined)
  		.filter(p => new Date(fs.statSync(p.get("watchPath")).mtime).getTime() - new Date(p.get("watchStat").get("mtime")).getTime()>0)
 		.merge(pathsChangedSinceStart)
 		.tap(p => console.log("pathChanged, sending reloadMetadata",p.toJS()));
-
+pathsChangedFile.observe(log("pathsChangedFile")).catch(e => console.error(e));
 	actionStream.plug(pathsChangedFile.map(p => Immutable.Map({type: "reloadMetadata", path: p.get("target").get("path")})));//observe(p => console.log("pathsChanged",p.toJS()));
 
 var metadataStore= metadata

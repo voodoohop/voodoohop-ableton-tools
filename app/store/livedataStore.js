@@ -30,40 +30,25 @@ import groupedTracksApplier from "./groupedTracksApplier";
 
 
 
-var clickedLoopAction = 
-actionStream.tap(log("actionStream")).filter(a => a.get("type") === "clickedBeat");
-
-export var clickedLoopCommands = clickedLoopAction.flatMap(action=>
-	{	
-		// console.log("tracks",tracks.toJS());
-    	var commands=		
-		[
-			["looping",1],
-			["loop_start",Math.floor(action.get("beat")/16)*16], 
-			["loop_end",(Math.floor(action.get("beat")/16)+1)*16]
-		];
-		return most.from(commands.map(c=>Immutable.Map({trackId: Number(action.get("trackId")), type: c[0], value:c[1]})));// tracks.update(action.get("trackId"), track => commands.reduce((track, command) => track.set(command[0], command[1]), track))
-	}).tap(log("clickedLoopCommands"));
     
-    
-export var liveDataInAbleton =  liveDataPrepped.scan((store,newData)=> 
+// export var liveDataInAbleton =  liveDataPrepped.scan((store,newData)=> 
 
-                store.setIn([newData.get("trackId"),newData.get("type")],newData.get("value"))
-                    .updateIn([newData.get("trackId"),"trackId"],(t) => newData.get("trackId"))
-, Immutable.Map()).skip(1);
+//                 store.setIn([newData.get("trackId"),newData.get("type")],newData.get("value"))
+//                     .updateIn([newData.get("trackId"),"trackId"],(t) => newData.get("trackId"))
+// , Immutable.Map()).skip(1);
 
 var liveDataModified = 
 // groupedTracksApplier(
-        throttledDebounce(50,
+        throttledDebounce(25,
             liveDataPrepped
-            .merge(clickedLoopCommands)
+          
             .scan((store,newData) => 
                 store.setIn([newData.get("trackId"),newData.get("type")],newData.get("value"))
                     .updateIn([newData.get("trackId"),"trackId"],(t) => newData.get("trackId"))
             ,Immutable.Map()).skip(1)
             );
 
-// actionStream.plug(liveDataPrepped.tap(log("liveDataPrepped")).filter(d => d.get("type")==="file_path").map(d=> Immutable.Map({type:"loadMetadata", path: d.get("value")})));
+actionStream.plug(liveDataPrepped.tap(log("liveDataPrepped")).filter(d => d.get("type")==="file_path").map(d=> Immutable.Map({type:"loadMetadata", path: d.get("value")})));
 
 
 export default liveDataModified.multicast();

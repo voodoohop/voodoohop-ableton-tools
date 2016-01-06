@@ -65,13 +65,15 @@ export default component(({uiState,trackId,track}) => {
 				|| 	(track.getIn(["fileData","vampChord_QM"]) && !track.getIn(["fileData","vampChord_QM","error"]) && track.getIn(["fileData","vampChord_QM"]))
  
 				} 
-                gainScale={liveData.get("gain")}
-				musicalKey={track.getIn(["fileData", "id3Metadata","initialkey"])}/>;
+                gain={liveData.get("gain") || 0.4}
+				musicalKey={track.getIn(["liveData", "transposedKey"])}/>;
     else 
       if (track.get("midiData"))
     {
       detailView = <PianoRoll notes={midiData} trackId={trackId} />;
     }
+    else
+        return <div> no midi or waveform data yet </div>
     console.log("detailView",detailView);
     
 	return <div key={"waveform_"+waveform.get("path")}><svg style={{overflow:"hidden"}} preserveAspectRatio="none"
@@ -92,8 +94,8 @@ export default component(({uiState,trackId,track}) => {
 					      <BeatClickGrid startMarker={liveData.get("start_marker")} endMarker={liveData.get("end_marker")} trackId={trackId}/> 
 						</g>
 					</svg>
-                    <label className="mini ui inverted">{Math.round(waveform.get("pixelsPerBeat"))} {waveform.getIn(["max",0])}<small>{waveform.get("path")}</small></label>
                     </div>;
 
     }
 )
+

@@ -60,7 +60,7 @@ export function getWebAudioBuffer(path) {
 // .await()
 	
 	// console.log("ab",audioBuffer);
-	return new Promise(resolve => audioBuffer.observe(res => resolve(res)));
+	return most.fromPromise(new Promise(resolve => audioBuffer.observe(res => resolve(res)).catch(e => console.error(e))));
 // })
 };
 
