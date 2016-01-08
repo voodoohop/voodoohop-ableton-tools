@@ -34,8 +34,8 @@ var loadPaths = actionStream.filter(a => a.get("type") === "loadMetadata")
     .then(doc => doc === null? resolve({notInDb: path}) : resolve(Immutable.fromJS(doc))).catch(e => resolve({notInDb: path})))));
 	// .tap(e => console.log("pathe2",e))
 	
-	var notInDborReload = checkedDb.filter(d => d.notInDb).map(d => d.notInDb)
-	.merge(actionStream.filter(a => a.get("type") === "reloadMetadata").map(a=>a.get("path"))).skipRepeats()//.multicast();
+	var notInDborReload = checkedDb.filter(d => d.notInDb).map(d => d.notInDb).skipRepeats()
+	.merge(actionStream.filter(a => a.get("type") === "reloadMetadata").map(a=>a.get("path"))).tap(log("notInDbOrReload"))//.multicast();
 
 	//.zip(d => d, throttler.startWith(null))
     var getNextTransformed = Subject(true);

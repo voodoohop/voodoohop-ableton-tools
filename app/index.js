@@ -38,8 +38,6 @@ import transposedNote from "./utils/transposedNote";
 
 import {livedataStore, metadataStore, uiStateStore, oscOutputStore, midiClipStore} from "./store";
 
-
-
 import log from "./utils/streamLog";
 
 import when from 'when';
@@ -47,11 +45,11 @@ unhandledRejectionsWithSourceMaps(when.Promise);
 
 function unhandledRejectionsWithSourceMaps(Promise) {
 	Promise.onPotentiallyUnhandledRejection = function(r) {
-		setTimeout(function() {
+		// setTimeout(function() {
 			if(!r.handled) {
 				throw r.value;
 			}
-		}, 0);
+		// }, 0);
 	};
 
 	Promise.onPotentiallyUnhandledRejectionHandled = function(r) {
@@ -85,9 +83,19 @@ throttledDebounce(50,appState)
     if (!v.getIn(["fileData","id3Metadata","initialkey"]))
         return v;
     var pitch = v.getIn(["liveData","pitch"]);
+    var chords=(
+					(v.getIn(["fileData","vampChord_HPA"]) && !v.getIn(["fileData","vampChord_HPA","error"]) && v.getIn(["fileData","vampChord_HPA"]))
+				|| 	(v.getIn(["fileData","vampChord_QM"]) && !v.getIn(["fileData","vampChord_QM","error"]) && v.getIn(["fileData","vampChord_QM"]))
+           );
     if (!pitch)
         pitch=0;
-    return v.setIn(["liveData","transposedKey"], transposedNote(v.getIn(["fileData","id3Metadata","initialkey"]),v.getIn(["liveData","pitch"])));
+    var resTransposedKey =v
+           .setIn(["liveData","transposedKey"], transposedNote(v.getIn(["fileData","id3Metadata","initialkey"]),pitch));
+
+    if (chords)
+        resTransposedKey = resTransposedKey
+            .setIn(["liveData","transposedChords"], chords.map(chord => chord.set("chord",transposedNote(chord.get("chord"),pitch))));
+	return resTransposedKey;			
   })))
 .tap(log("state")).observe(state => {
 	// console.error("state",state);

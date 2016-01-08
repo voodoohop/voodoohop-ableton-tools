@@ -49,34 +49,33 @@ export default component(({uiState,trackId,track}) => {
 			loopHighlight = <rect stroke="white" fill="rgba(255,255,255,0.1)" opacity="0.9" y="0" x={loopStart} width={loopEnd-loopStart} height={127} />
 		}
 		
-	log(playingPosX,uiState,liveData,trackId);
+	log(playingPosX,uiState,liveData,trackId,track);
     var waveform=track.getIn(["fileData","waveform"]);
     var midiData = track.getIn(["midiData","notes"]);
     if (!waveform && !midiData)
         return <div>Waveform / midi not yet loaded</div>;
-    var detailView=null;//<div>no visualisation for this data type</div>;
+    var detailViews=[];
+    // var detailViewMidi=null;
+    //<div>no visualisation for this data type</div>;
     // return detailView;
     if (track.getIn(["fileData","waveform"]))
-      detailView = <Waveform 
+      detailViews.push(<Waveform 
 				trackId={trackId}
+                key={detailViews.length} 
 				waveform={waveform} 
-				chords={
-					(track.getIn(["fileData","vampChord_HPA"]) && !track.getIn(["fileData","vampChord_HPA","error"]) && track.getIn(["fileData","vampChord_HPA"]))
-				|| 	(track.getIn(["fileData","vampChord_QM"]) && !track.getIn(["fileData","vampChord_QM","error"]) && track.getIn(["fileData","vampChord_QM"]))
- 
-				} 
+				chords={liveData.get("transposedChords")} 
                 gain={liveData.get("gain") || 0.4}
-				musicalKey={track.getIn(["liveData", "transposedKey"])}/>;
-    else 
+				musicalKey={track.getIn(["liveData", "transposedKey"])}/>);
+    
       if (track.get("midiData"))
     {
-      detailView = <PianoRoll notes={midiData} trackId={trackId} />;
+      detailViews.push(<PianoRoll key={detailViews.length} notes={midiData} trackId={trackId} />);
     }
-    else
+    if (detailViews.length==0)
         return <div> no midi or waveform data yet </div>
-    console.log("detailView",detailView);
+    console.log("detailView",detailViews);
     
-	return <div key={"waveform_"+waveform.get("path")}><svg style={{overflow:"hidden"}} preserveAspectRatio="none"
+	return <div key={"trackid_detail_"+trackId}><svg style={{overflow:"hidden"}} preserveAspectRatio="none"
 					width={"100%"}  height={"100%"}
 					viewBox={[0,0,viewboxWidth, viewboxHeight].join(" ")}>
 						<defs>
@@ -86,11 +85,12 @@ export default component(({uiState,trackId,track}) => {
     						</mask>
 					   </defs>
 
-					    <g transform={"scale("+(scale)+","+(viewboxHeight/127)+") "+"translate("+(-playingPosX+(visibleBeats/4))+",0)"}>	
-						  {loopHighlight}
+					    <g transform={"scale("+(scale)+","+(viewboxHeight/127)+") translate("+(-playingPosX+(visibleBeats/4))+",0)"}>	
 						  <g style={{mask:"url(#"+"Mask"+trackId+")"}}>
-							{detailView}
+							{detailViews}
 						  </g>
+						  {loopHighlight}
+
 					      <BeatClickGrid startMarker={liveData.get("start_marker")} endMarker={liveData.get("end_marker")} trackId={trackId}/> 
 						</g>
 					</svg>

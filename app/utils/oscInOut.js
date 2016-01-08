@@ -6,9 +6,12 @@ import throttledDebounce from "./throttledDebounce";
 import Immutable from "immutable";
 import log from "./streamLog";
 
+
+
 var oscServer = new osc.Server(5555, '0.0.0.0');
 oscServer.setMaxListeners(100);
 console.log("oscSerrver in renderer", oscServer);
+
 
 var oscInputStream = most.fromEvent("message", oscServer)
 	.map(f => f[0])

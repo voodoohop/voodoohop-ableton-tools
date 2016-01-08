@@ -24,7 +24,7 @@ export default function extractWarpMarkers(path, audioMetaData) {
   return new Promise((resolveMe,reject) => {
 
   post("possst extracting warp markers", path, audioMetaData.toString(), "\n");
-  var duration = audioMetaData.get("duration") * 1000;//get("duration");
+  var duration = (audioMetaData.get("duration")) * 1000;//get("duration");
   var samprate = audioMetaData.get("samplerate");//get("samplingRate");
 
   var filename = path + ".asd";

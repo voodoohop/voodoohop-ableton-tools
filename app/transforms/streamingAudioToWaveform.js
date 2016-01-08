@@ -74,7 +74,7 @@ var _ = require("lodash");
 
 
 
-
+const downsampleFactor = 16;
 
 
 registerTransform({name: "audioStream", depends:["audioBuffer"], transform: buffer => {
@@ -83,13 +83,13 @@ registerTransform({name: "audioStream", depends:["audioBuffer"], transform: buff
 		buffer.getChannelData = (i) => {
 			var c = buffer.channels[i];
 			var downSampled = [];
-			for (var j=0;j<c.length;j+=8)
+			for (var j=0;j<c.length;j+=downsampleFactor)
 				downSampled.push(c[j]);
 			return downSampled;
 			//  buffer.channels[i].reduce((downSampled, sample, i)=>i % 8 === 0 ? downSampled.concat([sample]):downSampled,[]);;
 		}
 		buffer.duration = buffer.length/buffer.sampleRate;
-		buffer.sampleRate=buffer.sampleRate/8;
+		buffer.sampleRate=buffer.sampleRate/downsampleFactor;
 	
 	}
 	if (!buffer.getChannelData)

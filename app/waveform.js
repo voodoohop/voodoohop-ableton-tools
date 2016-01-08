@@ -23,7 +23,7 @@ import keysToColors from "./api/keysToColors";
 
 
 
-var waveformPoly = component(({durationBeats, waveformData, trackId,chords,musicalKey,start}) => {
+var WaveformPoly = component(({durationBeats, waveformData, trackId,chords,musicalKey,start}) => {
 		if (!chords)
 			chords = Immutable.fromJS([{chord: musicalKey, startBeat: 0, endBeat: durationBeats}]);
 		// log("waveform args", duration, viewboxWidth, viewboxHeight, waveformData.toJS(), trackId,chords.toString());
@@ -99,8 +99,10 @@ export default component(({waveform, chords, musicalKey,trackId, gain}) => {
         // var res= waveformPolyline;
         				 console.timeEnd("renderWaveformTime");
        console.time("renderWaveformTime");
-
-        return <g style={{transformOrigin:"center",transform:"scale(1,"+((Math.exp(gain/0.4)-1)/1.5)+")"}}>{ waveformPoly({start, durationBeats,musicalKey, waveformData: waveform, trackId})}</g>;
+    //    console.log("gainIs",gain);
+        return <g style={{transform:"scaleY("+((Math.exp(gain/0.4)-1)/1.5)+")",transformOrigin:"center"}}>
+                    <WaveformPoly start={start} durationBeats={durationBeats} musicalKey={musicalKey} waveformData={waveform} trackId={trackId} chords={chords}/>
+               </g>;
        			// { beatLines.map(x =>
 					//   	<line key={x} stroke={tinycolor(color).complement().toHexString()} opacity="0.3" strokeWidth="2" x1={x} x2={x} y1={0} y2={127} />				
 					//   )}	

@@ -11,7 +11,8 @@ import keysToColors from "./api/keysToColors";
 
 import AudioContainer from "./audioContainer";
 
-import transposedNote from "./utils/transposedNote";
+
+
 
 var TrackStatistic=component(({fileData,liveData}) =>
 <div className="ui mini statistics inverted right floated tom blackTransparentBg">
@@ -50,8 +51,19 @@ var TrackStatistic=component(({fileData,liveData}) =>
 
 import actionStream from "./api/actionSubject";
 
-var Track = component(({track,trackId, uiState}) => {
+import {DraggableParent, DraggableChild, dragEvent} from "./utils/makeDraggableTrack";
+
+
+actionStream.plug(most.fromEvent("beginDrag", dragEvent));
+actionStream.plug(most.fromEvent("endDrag", dragEvent));
+actionStream.plug(most.fromEvent("hoverDrag", dragEvent).throttle(20)
+.skipRepeatsWith((a,b)=> a.get("targetId") === b.get("targetId"))
+);
+
+
+var Track = component(function({track,trackId, uiState}) {
 		// var track = props.track;	
+        // console.log("props",this.props);
 		if (!track)
 			return <div>no track found</div>;
 	
@@ -68,10 +80,16 @@ var Track = component(({track,trackId, uiState}) => {
     
      var grouped =uiState.getIn(["groupedTracks",trackId]);
 
-    
+    var style={padding:"3px"/*,backgroundColor:"white"*/,boxSizing:"content-box"};
+    if (uiState.getIn(["dragState", "hover"]) && uiState.getIn(["dragState", "hover","sourceId"])!==trackId)
+        style.backgroundColor="rgba(255,255,255,0.12)"
+    if (uiState.getIn(["dragState", "hover","targetId"])===trackId && uiState.getIn(["dragState", "hover","sourceId"])!==trackId) {
+        style.border="1px dotted white";
+        style.backgroundColor="rgba(255,255,255,0.2)";
+     }
     // var audioContainer = ;
-    return (		
-    <div className="ui vertical segment inverted" style={{padding:"3px"}}>
+    return this.props.connectDragSource(
+        this.props.connectDropTarget(<div className="ui vertical segment inverted" style={style}>
     <div className="image" style={{position:"relative"}}>
     <div className="content inverted" style={{position:"absolute", width:"100%"}}>
                  
@@ -90,19 +108,21 @@ var Track = component(({track,trackId, uiState}) => {
   <button style ={{right:"0px",bottom:"0px", position:"absolute",opacity:0.6}} className={"ui  button inverted mini floated right toggle "+(grouped ? "yellow" : "blue")}
     onClick={() => actionStream.push(Immutable.Map({type:"groupButtonClicked", trackId}))}><i className={grouped ? "fa fa-unlink":"fa fa-link"} style={{fontWeight:"bold"}}></i></button>
   </div>
-  </div>
-	
-				
-		
-);
+  </div>));
 
 });
+
+const DraggableTrack = DraggableChild(Track);
 
 import log from "./utils/streamLog";
 
 var logger=log("playingTracksView");
 // var RTrack = reactive(Track);
-export default component(({availableTracks,uiState}) => 
+
+// import { CardStack, Card } from 'react-cardstack';
+
+
+const PlayingTracks = component(({availableTracks,uiState}) => 
 	{
         var sortedTracks = availableTracks.keySeq().sort().toArray();
 		logger("thijsTracks", availableTracks,uiState,sortedTracks);
@@ -110,22 +130,24 @@ export default component(({availableTracks,uiState}) =>
         sortedTracks.map(log("trkId"));
 		if (!availableTracks)
 			return <div>no tracks loaded</div>;
-		return  <div className="ui inverted relaxed divided list" style={{backgroundColor:"rgba(0,0,0,0)"}}>
+		return  <div className="ui inverted divided list" style={{backgroundColor:"rgba(0,0,0,0)"}}>
 
 			{sortedTracks.map(trackId => {
 				
 				var track = availableTracks.get(trackId);
 				logger("rendering track",track.get("trackId"),track);
-        // if (track === undefined || (!track.get("midiData") && !track.get("fileData")))
-        //   return <div key={trackId}  className="item">undefined {trackId}</div>;
-				return     <div key={"key_"+trackId}  className="item">
+ 				return     <div key={"key_"+trackId}  className="item">
 							<div className="content">
-									<Track track={track} trackId={trackId} uiState={uiState} /> 
+									<DraggableTrack track={track} trackId={trackId} uiState={uiState} /> 
 							</div>
 							</div>;
-	})}</div>;
+	})}
+    </div>;
 	}
 );
+
+
+export default DraggableParent(PlayingTracks);
 
 // <div className="floating ui">
 //   <ProgressLabel

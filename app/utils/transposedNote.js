@@ -2,6 +2,8 @@ import {note} from "teoria";
 
 function getTransposed(noteString, semitones=0) {
     console.log("transposing",noteString,semitones);
+    if (noteString.toUpperCase().indexOf("N") >=0)
+        return noteString;
     semitones = parseInt(semitones);
     if (isNaN(semitones))
         semitones=0;

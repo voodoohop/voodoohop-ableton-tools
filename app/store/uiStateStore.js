@@ -24,12 +24,24 @@ var toggle = (set,member) => set.contains(member) ? set.remove(member):set.add(m
 
 export default actionStream//.filter(a=> a.get("type") === "globalZoom" || a.get("type") === "groupButtonClicked")
 
-.scan((store,input) => 
+.scan((store,input) => {
 // input.get("trackId") ? store.mergeIn([input.get("trackId")], input) : 
 // store.set(input.get("type"), input.get("value"))
-input.get("type")==="globalZoom" ? 
-store.set("visibleBeats", input.get("value")*(visibleBeatsZoomedOut-4)+4):
-(input.get("type")==="groupButtonClicked" ? store.set("groupedTracks", toggle(store.get("groupedTracks"),input.get("trackId")))  : store)
+    switch (input.get("type")) {
+        case "globalZoom":
+            return store.set("visibleBeats", input.get("value")*(visibleBeatsZoomedOut-4)+4);
+        case "groupButtonClicked":
+            return store.set("groupedTracks", toggle(store.get("groupedTracks"),input.get("trackId")));
+        case "hoverDraggingTrack":
+            // if (input.get(""))
+            return store.setIn(["dragState","hover"], input);
+        case "endDraggingTrack":
+            // console.log("removing");
+            return store.remove("dragState");            
+        default:
+           return store;
+    }
+ }
 , initialState).startWith(initialState)
 .skipRepeats()
 .tap(logger("uiState"));

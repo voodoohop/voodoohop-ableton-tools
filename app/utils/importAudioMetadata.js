@@ -92,7 +92,22 @@ import "../transforms/streamingAudioToWaveform";
 
 
 
-registerTransform({name: "audioAndId3Metadata", depends:["path"], transform: extractMetadata});
+registerTransform({name: "audioAndId3Metadata", depends:["path","audioStream"], transform: 
+    (path,as)=> 
+    extractMetadata(path).map(a=>
+    {
+    console.log("ais",a.toJS());
+
+    return a.updateIn(["audio"],audio=> {
+        if (audio===null)
+            audio = Imm.Map();
+        console.log("updating in",audio,as);
+        return audio.set("duration",as.duration).set("samplerate",as.sampleRate);
+     })
+    
+    })
+     
+ });
 
 // registerTransform({name: "waveformRange", depends:[], transform: waveform});
 

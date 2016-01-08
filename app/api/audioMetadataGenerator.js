@@ -26,7 +26,7 @@ import actionStream from "../api/actionSubject";
 
  function mostify(f, transform=null) {
    console.log("mostifying",(f && f.toJS && f.toJS())||f);
-   var res= f ===undefined ? most.empty() : ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f : (f.hasOwnProperty(Symbol.iterator) && ! (f instanceof String) ? most.from(f) : most.of(f)) ));
+   var res= f ===undefined  || f === null ? most.of(Immutable.Map({error:"got falsy value from transfrom "+transform.name})): ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f : (f.hasOwnProperty(Symbol.iterator) && ! (f instanceof String) ? most.from(f) : most.of(f)) ));
    
    return res.flatMapError(e => {
           console.error("error1_",transform,e);
