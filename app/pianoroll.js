@@ -1,15 +1,24 @@
 import React from 'react';
 import component from 'omniscient';
 import Immutable from "immutable";
+
+import keysToColors from "./api/keysToColors";
+import {note as teoriaNote} from "teoria";
+
 var SvgNote = component(({note,pitchSet}) => {
 	var {beat, duration, pitch, velocity, muted} = note.toJS();
 	// console.log("rendering note", beat,duration, pitch);
-	return <rect x={beat} y={(pitchSet.size-pitchSet.indexOf(pitch))*127/pitchSet.size} fill={"rgba(255,255,255,"+(velocity/127)+")"} width={duration-0.01} height={127/pitchSet.size-0.01} strok="none"/>
+    var n =teoriaNote.fromMIDI(pitch);
+    var fill = keysToColors(""+n.name()+n.accidental()+"m");
+    console.log("note col",""+n.name()+n.accidental(), pitch,pitchSet.indexOf(pitch));
+    // pitchSet=Immutable.List([-1]).concat(pitchSet)
+	return <rect x={beat} y={(pitchSet.size-pitchSet.indexOf(pitch))*100/pitchSet.size} 
+    fill={fill} opacity={velocity/127} width={duration-0.01} height={100/pitchSet.size-0.01} strok="none"/>
 }
 )
 
 export default component(({notes}) => {
-	console.log("notesFound",notes.toArray().map((note,i) => "bla"+i));
+	console.log("notesFound",notes.toJS());
 	var pitchSet = notes.reduce((pitches, note)=>pitches.add(note.get("pitch")), Immutable.Set());
 	console.log("pitchSet",pitchSet.sort().toList().toJS());
 	return <g>{notes.toArray().map((note,i) => {

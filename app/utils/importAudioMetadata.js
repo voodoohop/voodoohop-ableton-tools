@@ -90,7 +90,7 @@ import audiobufferPeaks from "./audioBuffer2Peaks";
 
 import "../transforms/streamingAudioToWaveform";
 
-
+registerTransform({name:"pathStat", depends:["path"], transform: (path) => Imm.fromJS(JSON.parse(JSON.stringify(fs.statSync(path))))});
 
 registerTransform({name: "audioAndId3Metadata", depends:["path","audioStream"], transform: 
     (path,as)=> 
