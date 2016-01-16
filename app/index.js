@@ -77,6 +77,7 @@ var appState = most.combine((liveData, metaData, midiData, uiState) =>
 
 
 import throttledDebounce from "./utils/throttledDebounce";
+import ObjectInspector from 'react-object-inspector';
 
 throttledDebounce(50,appState)
 .map(state => state.set("tracks", state.get("tracks").map((v,trackId)=> {
@@ -101,7 +102,10 @@ throttledDebounce(50,appState)
 	// console.error("state",state);
 	// console.table(state.toJS());
 render(
-	<PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />	,
+	<div><PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />	
+    
+    <ObjectInspector style={{color:"white"}} data={ state.toJS() } />,
+    </div>,
   	document.getElementById('root')
 );
 

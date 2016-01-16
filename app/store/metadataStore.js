@@ -39,10 +39,11 @@ var loadPaths = actionStream.filter(a => a.get("type") === "loadMetadata")
 
 	//.zip(d => d, throttler.startWith(null))
     var getNextTransformed = Subject(true);
-	var loadedMetadata = getTransformed(["path","id3Metadata","audioMetadata", "warpMarkers","waveform","vampChord_HPA","vampChord_QM"], 
+	var loadedMetadata = getTransformed(["path","pathStat","id3Metadata","audioMetadata", "warpMarkers","waveform","vampChord_HPA","vampChord_QM"], 
     notInDborReload.zip(d => d, getNextTransformed)
     .tap(log("actually requesting metadata load")))
     .tap(() => getNextTransformed.push(true))
+    
 		.tap(f =>   db.upsert(f.get("path"), doc => {
 				if (doc === null)
                     return;
@@ -98,3 +99,8 @@ var metadataStore= metadata
 
 
 export default createMetadataStore(actionStream).startWith(Immutable.Map()).multicast();
+
+import {dataStore} from "../api/db";
+
+dataStore("blaData",most.from([{path:"bla",someData:[1,2,3]},{path:"2as",someData:[3,2,3]}].map(Immutable.Map)))
+.observe(log("dataTest"));

@@ -10,10 +10,10 @@ var SvgNote = component(({note,pitchSet}) => {
 	// console.log("rendering note", beat,duration, pitch);
     var n =teoriaNote.fromMIDI(pitch);
     var fill = keysToColors(""+n.name()+n.accidental()+"m");
-    console.log("note col",""+n.name()+n.accidental(), pitch,pitchSet.indexOf(pitch));
+    console.log("note col",""+n.name()+n.accidental(), pitch,pitchSet.indexOf(pitch),beat,duration,velocity);
     // pitchSet=Immutable.List([-1]).concat(pitchSet)
 	return <rect x={beat} y={(pitchSet.size-pitchSet.indexOf(pitch))*100/pitchSet.size} 
-    fill={fill} opacity={velocity/127} width={duration-0.01} height={100/pitchSet.size-0.01} strok="none"/>
+    fill={fill} opacity={velocity/127} width={duration-0.01} height={100/pitchSet.size-0.01} stroke="black" strokeWidth="0.1"/>
 }
 )
 
