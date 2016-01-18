@@ -69,27 +69,41 @@ var appState = most.combine((liveData, metaData, midiData, uiState) =>
     //   return  metaData.has(liveData.get("file_path"));
       
     //   })
-    .map((data, trackId) => Immutable.Map({liveData:data, fileData: (data.get("file_path") ? 
-        metaData.get(data.get("file_path")) : null), midiData: midiData.get(trackId), trackId:trackId}))}	)
-	,livedataStore.tap(ld => console.table(ld.map(v => v).toJS())), metadataStore, midiClipStore, uiStateStore
-	)
+    .map((data, trackId) =>{
+        console.log("track combining",data.toJS(),metaData.toJS());
+        
+        return Immutable.Map({liveData: data, fileData: (data.get("file_path") ? 
+        metaData.get(data.get("file_path")) : null), midiData: midiData.get(trackId) || null, trackId:trackId})})}	)
+	,livedataStore.tap(ld => console.table(ld.map(v => v).toJS())), metadataStore, midiClipStore, uiStateStore)
 
 
 
 import throttledDebounce from "./utils/throttledDebounce";
 import ObjectInspector from 'react-object-inspector';
 
-throttledDebounce(50,appState)
-.map(state => state.set("tracks", state.get("tracks").map((v,trackId)=> {
+var debouncedState =  throttledDebounce(50,appState);
+var finalState = debouncedState
+.scan((prevState,state) => state.set("tracks", state.get("tracks").map((v,trackId)=> {
+    if (prevState === null)
+        return v;
+    var pv = prevState.getIn(["tracks",trackId])
+    // console.log("pv",pv);
     if (!v.getIn(["fileData","id3Metadata","initialkey"]))
         return v;
     var pitch = v.getIn(["liveData","pitch"]);
+     if (!pitch)
+        pitch=0;
+    console.log("table",);
+    console.table([pv.get("liveData").toJS(),v.get("liveData").toJS()]);
+    if (pv.getIn(["liveData","pitch"]) === pitch && pv.getIn(["liveData","transposedChords"]))
+        return v
+            .setIn(["liveData","transposedChords"],pv.getIn(["liveData","transposedChords"]))
+            .setIn(["liveData","transposedKey"],pv.getIn(["liveData","transposedKey"]));
     var chords=(
 					(v.getIn(["fileData","vampChord_HPA"]) && !v.getIn(["fileData","vampChord_HPA","error"]) && v.getIn(["fileData","vampChord_HPA"]))
 				|| 	(v.getIn(["fileData","vampChord_QM"]) && !v.getIn(["fileData","vampChord_QM","error"]) && v.getIn(["fileData","vampChord_QM"]))
            );
-    if (!pitch)
-        pitch=0;
+
     var resTransposedKey =v
            .setIn(["liveData","transposedKey"], transposedNote(v.getIn(["fileData","id3Metadata","initialkey"]),pitch));
 
@@ -97,17 +111,25 @@ throttledDebounce(50,appState)
         resTransposedKey = resTransposedKey
             .setIn(["liveData","transposedChords"], chords.map(chord => chord.set("chord",transposedNote(chord.get("chord"),pitch))));
 	return resTransposedKey;			
-  })))
-.tap(log("state")).observe(state => {
+  })),null).skip(1)
+.tap(log("state")).multicast();
+
+actionSubject.plug(
+    finalState.flatMap(s => most.from(
+    s.get("tracks").toArray()
+    .filter(t => t.get("midiData") && t.get("fileData") && !t.getIn(["fileData","midiMetadata"]))
+    .map(t => Immutable.Map({type:"mergeMetadata", data:Immutable.Map({midiMetadata: t.get("midiData")}), path: t.getIn(["fileData","path"])}))
+)));
+
+finalState.observe(state => {
 	// console.error("state",state);
 	// console.table(state.toJS());
 render(
-	<div><PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />	
-    
-    <ObjectInspector style={{color:"white"}} data={ state.toJS() } />,
+	<div><PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
+    <ObjectInspector style={{color:"white"}} data={ state.toJS() } />
     </div>,
   	document.getElementById('root')
-);
+)
 
 }).catch(e => console.error(e));
 

@@ -48,7 +48,7 @@ export default component(({uiState,trackId,track}) => {
 			var loopEnd = liveData.get("loop_end");
 			loopHighlight = <rect stroke="white" fill="rgba(255,255,255,0.1)" opacity="0.9" y="0" x={loopStart} width={loopEnd-loopStart} height={127} />
 		}
-		
+	var endMarker=parseFloat(liveData.get("end_marker"));	
 	log(playingPosX,uiState,liveData,trackId,track);
     var waveform=track.getIn(["fileData","waveform"]);
     var midiData = track.getIn(["midiData","notes"]);
@@ -61,7 +61,7 @@ export default component(({uiState,trackId,track}) => {
     if (track.getIn(["fileData","waveform"]))
       detailViews.push(<Waveform 
 				trackId={trackId}
-                key={detailViews.length} 
+                key={"blababla_"+detailViews.length} 
 				waveform={waveform} 
 				chords={liveData.get("transposedChords")} 
                 gain={liveData.get("gain") || 0.4}
@@ -81,7 +81,9 @@ export default component(({uiState,trackId,track}) => {
 						<defs>
 					    	<mask id={"Mask"+trackId}>
 								<rect stroke="none" fill="white" opacity={0.3} x={0} width={Math.max(playingPosX,1)} y={0} height={200} />
-								<rect stroke="none" fill="white" opacity="1" x={playingPosX} width={viewboxWidth-playingPosX} y={0} height={viewboxHeight} />
+								<rect stroke="none" fill="white" opacity={1} x={playingPosX} width={endMarker-playingPosX} y={0} height={viewboxHeight} />
+								<rect stroke="none" fill="white" opacity={0.3} x={endMarker} width={viewboxWidth-endMarker} y={0} height={viewboxHeight} />
+
     						</mask>
 					   </defs>
 

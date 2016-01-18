@@ -15,7 +15,7 @@ console.log("oscSerrver in renderer", oscServer);
 
 var oscInputStream = most.fromEvent("message", oscServer)
 	.map(f => f[0])
-    .skipRepeatsWith((e,f) => JSON.stringify(f) === JSON.stringify(e))
+    // .skipRepeatsWith((e,f) => JSON.stringify(f) === JSON.stringify(e))
     .tap(log("oscIn"))
 	.multicast();
 // export oscInputStream as oscInp;

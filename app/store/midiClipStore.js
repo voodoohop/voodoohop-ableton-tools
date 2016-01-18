@@ -5,7 +5,7 @@ import Immutable from "immutable";
 // import {createStore} from "./appStore";
 
 import {oscInputStream} from "../utils/oscInOut";
-import mididataLinker from "./mididataLinker";
+import {midiClipStoreLinker as mididataLinker} from "./mididataLinker";
 
 import actionStream from "../api/actionSubject";
 import log from "../utils/streamLog";
@@ -43,7 +43,5 @@ var doStore= (liveMidiInput) => liveMidiInput
 
 
 var midiClipStore = doStore(actionStream.filter(a => a.get("type")==="liveMidiClipInput")).startWith(Immutable.Map())
-
-// midiClipStore).drain();
 
 export default mididataLinker(midiClipStore);

@@ -12,6 +12,12 @@ import log from "../utils/streamLog";
 
 import {oscInputStream} from "../utils/oscInOut";
 
+
+// import {midiClipStore} from ".";
+
+// import {liveDataMidiLinker} from "./mididataLinker";
+
+
 var oscInput= oscInputStream	
 		.filter(f => f[2] === "playingClip" && f[1]>=0)
 		.map(f => Immutable.fromJS({type: "liveDataInput", trackId: f[1], data: f.slice(3)}));
@@ -48,7 +54,9 @@ var liveDataModified =
             ,Immutable.Map()).skip(1)
             );
 
-actionStream.plug(liveDataPrepped.tap(log("liveDataPrepped")).filter(d => d.get("type")==="file_path").map(d=> Immutable.Map({type:"loadMetadata", path: d.get("value")})));
+// actionStream.plug(liveDataPrepped.tap(log("liveDataPrepped")).filter(d => d.get("type")==="file_path").map(d=> Immutable.Map({type:"loadMetadata", path: d.get("value")})));
+
+
 
 
 export default liveDataModified.multicast();

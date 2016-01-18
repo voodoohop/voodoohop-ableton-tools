@@ -6,16 +6,10 @@ import Immutable from "immutable";
 // import Waveform from "./waveform";
 
 import logger from "./utils/streamLog";
-var log = logger("waveform");
-import actionSubject from "./api/actionSubject";
-// class  extends Component {
-// 	render() {
-// 		var track = props.track;
-// 		return <Rli style={{backgroundColor:"rgba(0,0,0,0.6)", color:"white"}} className="list-group-item" key={track.get("trackName")}><h3>{track.get("trackName")}</h3>title - {track.get("id3Metadata").get("title")},key - {track.get("id3Metadata").get("initialkey")}, bpm - {track.get("id3Metadata").get("bpm")}<br><Waveform data={track.get("waveform")} /></Rli>;
-// 	}
-// }
 
-// var keyToColor=
+var log = logger("waveform");
+
+import actionSubject from "./api/actionSubject";
 
 import tinycolor from "tinycolor2";
 
@@ -24,7 +18,7 @@ import keysToColors from "./api/keysToColors";
 
 
 var WaveformPoly = component(({durationBeats, waveformData, trackId,chords,musicalKey,start}) => {
-		if (!chords)
+		// if (!chords)
 			chords = Immutable.fromJS([{chord: musicalKey, startBeat: 0, endBeat: durationBeats}]);
 		// log("waveform args", duration, viewboxWidth, viewboxHeight, waveformData.toJS(), trackId,chords.toString());
 
@@ -78,7 +72,7 @@ var WaveformPoly = component(({durationBeats, waveformData, trackId,chords,music
     
 
 export default component(({waveform, chords, musicalKey,trackId, gain}) => {
-		// log("waveformprops",props);
+		 log("waveformprops",waveform, chords, musicalKey, trackId, gain);
 		// var waveform = props.waveform;
 		// log("reactThis",waveform&&waveform.toJS());
 		// var liveData=props.liveData;

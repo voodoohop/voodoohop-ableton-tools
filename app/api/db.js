@@ -23,17 +23,6 @@ window.PouchDB = pouch;
 
 
 console.log("got pouch",pouch);
-// setInterval(()=>
-// pouch.allDocs({
-//   include_docs: true,
-//   attachments: true
-// }).then(function (result) {
-//   // handle result
-//   console.log("allDocs",result);
-// }).catch(function (err) {
-//   console.log(err);
-// })
-//,1000);
 
 import throttledDebounce from "../utils/throttledDebounce";
 
@@ -62,20 +51,20 @@ function addToImmStore(storeName,store, item, key) {
     // if (!item.has(key) && item.has("type"))
     //     return store.setIn()
     
-    if (item.has(key)) {
+    // if (item.has(key)) {
         console.log("upserting",item.toJS());
-        db.upsert(storeName+"_"+item.get(key), doc => {
+        db.upsert(storeName+"_"+key, doc => {
 				if (doc === null)
                     doc = {};
                 var mergedDoc = Imm.fromJS(doc).mergeDeep(item);
                 console.log("merged",mergedDoc.toJS());
                 return mergedDoc.toJS();
               });
-        return store.mergeDeep(Imm.Map().set(item.get(key),item))
-    };
+        return store.mergeDeep(Imm.Map().set(key,item))
+    // };
 }
 
-export function dataStore(storeName, stream, key="path") {
+export function dataStore(storeName, stream, keyFunc = (item)=>item.get("path")) {
     
     return most.fromPromise(db.allDocs({
         include_docs: true,
@@ -85,8 +74,9 @@ export function dataStore(storeName, stream, key="path") {
     )).tap(log("allDocs")).flatMap(allDocs => { 
         var saved = allDocs.rows.reduce((store,row) => store.set(row.id.replace(storeName+"_",""),Imm.fromJS(row.doc)),Imm.Map());
      console.log("presaved",saved.toJS(),allDocs);
-    var memStore = stream.scan((store,item) => addToImmStore(storeName,store,item,key), saved);
-    return memStore;
+    var memStore = stream.tap(log("memStoreToDB"))
+    .scan((store,item) => addToImmStore(storeName,store,item,keyFunc(item)), saved).skip(1);
+    return memStore.startWith(saved);
     });
         //throttledDebounce(500,memStore);    
 }
