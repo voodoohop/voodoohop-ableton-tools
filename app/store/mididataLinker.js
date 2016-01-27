@@ -12,7 +12,7 @@ export var midiClipStoreLinker= (midiClipStore) => actionStream
         
         if (drag.get("targetId") && mididata.has(drag.get("sourceId"))) {
             console.log("mididata combining");
-            return mididata.set(drag.get("targetId"),mididata.get(drag.get("sourceId")).set("trackId",drag.get("targetId")));
+            return mididata.set(drag.get("targetId"),mididata.get(drag.get("sourceId"))/*.set("trackId",drag.get("targetId"))*/);
         }
         return mididata;
     },midiClipStore);

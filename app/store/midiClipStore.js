@@ -9,16 +9,23 @@ import {midiClipStoreLinker as mididataLinker} from "./mididataLinker";
 
 import actionStream from "../api/actionSubject";
 import log from "../utils/streamLog";
+import {livedataStore} from ".";
+
 
 var oscMidiClipInput = oscInputStream
 	.filter(f => f[2] === "midiClip" && f[1]>=0)
 		.map(f => Immutable.fromJS({type: "liveMidiClipInput", trackId: f[1],command:f[3], data: f.slice(4)}));
-	
 		
+var oscMidiClipReceiverTrack = oscInputStream
+	.filter(f => f[0] === "midiClipReceiverTrack")//.observe(log("midiClipReceiverTrack"))
+	.map(f => Immutable.fromJS({type: "midiClipReceiverTrack", trackId: f[1]}));
+
+
 actionStream.plug(oscMidiClipInput);
 
+actionStream.plug(oscMidiClipReceiverTrack);
 
-var doStore= (liveMidiInput) => liveMidiInput
+var doStore= (liveMidiInput) => liveMidiInput      
 		.filter(midi => midi.get("command") === "notes")
 		.flatMap(notesStart => {
 			console.log("notesStart", notesStart.toJS());
@@ -35,13 +42,22 @@ var doStore= (liveMidiInput) => liveMidiInput
 			   //.map(notes => Immutable.Map({trackId: trackId, notes: notes.orderBy(note => note.get("beat"))}))
 		
 		})
-		.scan((store, midiClip) => store.set(midiClip.get("trackId"), midiClip), Immutable.Map())
+		.combine((midiClip,liveData) => {
+            var data = liveData.get(midiClip.get("trackId")).remove("playingPosition").remove("playing");
+            var contained = data.reduce((isContained,v,k) => isContained && midiClip.get(k)===v,true);
+            return contained? midiClip : midiClip.merge(data);
+        },livedataStore)
+        
 		//  .await()
 		
 	 .tap(log("oscMidiStore"));
 
 
 
-var midiClipStore = doStore(actionStream.filter(a => a.get("type")==="liveMidiClipInput")).startWith(Immutable.Map())
+var midiClipStore = doStore(actionStream.filter(a => a.get("type")==="liveMidiClipInput"))
+    .merge(actionStream.filter(a=>a.get("type") === "midiClipReceiverTrack").map(a=> Immutable.Map({trackId: a.get("trackId"), midiclipReceiver:true})))
+    .scan((store, midiClip) => store.mergeIn([midiClip.get("trackId")], midiClip), Immutable.Map())
+    .startWith(Immutable.Map())
+
 
 export default mididataLinker(midiClipStore);

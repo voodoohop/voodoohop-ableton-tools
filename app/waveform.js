@@ -21,7 +21,7 @@ var WaveformPoly = component(({durationBeats, waveformData, trackId,chords,music
 		// if (!chords)
 			chords = Immutable.fromJS([{chord: musicalKey, startBeat: 0, endBeat: durationBeats}]);
 		// log("waveform args", duration, viewboxWidth, viewboxHeight, waveformData.toJS(), trackId,chords.toString());
-
+        //TODO: make waveforms optionally half length
 		
 		// var takeRange = (waveSeq,startIndex=0, endIndex=Infinity) => 
 		// 		waveSeq
@@ -39,8 +39,8 @@ var WaveformPoly = component(({durationBeats, waveformData, trackId,chords,music
 				return Immutable.Map({size:0});
 			return Immutable.Map({
 				chord:chord.get("chord"), 
-				max: waveformData.get("max").slice(startOffset,endOffset),
-				min: waveformData.get("min").slice(startOffset,endOffset),
+				max: waveformData.get("max").slice(startOffset,endOffset),//.map(t=>t*2-1),
+				min: waveformData.get("min").slice(startOffset,endOffset),//.map(t=>-1),
 				startOffset: startOffset,
 				endOffset: endOffset,
 				size: endOffset-startOffset

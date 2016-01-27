@@ -49,8 +49,11 @@ var liveDataModified =
             liveDataPrepped
           
             .scan((store,newData) => 
+                
                 store.setIn([newData.get("trackId"),newData.get("type")],newData.get("value"))
                     .updateIn([newData.get("trackId"),"trackId"],(t) => newData.get("trackId"))
+                    .updateIn([newData.get("trackId"),"gain"],(t) => t || 0.4)
+
             ,Immutable.Map()).skip(1)
             );
 

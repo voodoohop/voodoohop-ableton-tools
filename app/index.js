@@ -9,7 +9,7 @@ import {mapStackTrace} from "sourcemapped-stacktrace";
 
 
 // import logger from "./utils/streamLog";
-import {oscOutput} from "./utils/oscInOut";
+
 
 import Immutable from "immutable";
 
@@ -59,18 +59,10 @@ function unhandledRejectionsWithSourceMaps(Promise) {
 	};
 }
 
-oscOutput.plug(oscOutputStore.tap(log("plugged")));
-
 var appState = most.combine((liveData, metaData, midiData, uiState) => 
-	Immutable.Map({uiState, tracks: liveData//.filter(data=>data.get("file_path") && data.get("file_path").length>0
-    
-    // .filter(liveData => {
-    //   console.log("filtering",liveData.get("file_path"), metaData.toJS());
-    //   return  metaData.has(liveData.get("file_path"));
-      
-    //   })
+	Immutable.Map({uiState, tracks: liveData
     .map((data, trackId) =>{
-        console.log("track combining",data.toJS(),metaData.toJS());
+        // console.log("track combining",data.toJS(),metaData.toJS());
         
         return Immutable.Map({liveData: data, fileData: (data.get("file_path") ? 
         metaData.get(data.get("file_path")) : null), midiData: midiData.get(trackId) || null, trackId:trackId})})}	)
@@ -118,7 +110,10 @@ actionSubject.plug(
     finalState.flatMap(s => most.from(
     s.get("tracks").toArray()
     .filter(t => t.get("midiData") && t.get("fileData") && !t.getIn(["fileData","midiMetadata"]))
-    .map(t => Immutable.Map({type:"mergeMetadata", data:Immutable.Map({midiMetadata: t.get("midiData")}), path: t.getIn(["fileData","path"])}))
+    .map(t => Immutable.Map({
+        type:"mergeMetadata", 
+        data:Immutable.Map({midiMetadata: t.get("midiData")}), 
+        path: t.getIn(["fileData","path"])}))
 )));
 
 finalState.observe(state => {

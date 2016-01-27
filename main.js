@@ -25,30 +25,8 @@ app.on('window-all-closed', function() {
   if (process.platform !== 'darwin') app.quit();
 });
 
-// var osc = require("node-osc");
-// var emitStream = require('emit-stream');
-// var oscServer = new osc.Server(3333, '0.0.0.0');
 
-// var trycatch = require('trycatch');
-// trycatch.configure({'long-stack-traces': true})
-
-
-// process.on('uncaughtApplicationException', (err) => console.log("uncaugtAppErr",err.stack));
-
-// process.on('uncaughtException', (err) => {
-//   console.log("uncaughtExc",err.stack);
-//   // We are in an undefined state and need to restart
-//   // handleSoftShutodwn()
-// })
-
-// var osc = require("node-osc");
-// var oscServer = new osc.Server(3333, '0.0.0.0');
-// console.log("oscSerrver in renderer",oscServer);
-// oscServer.on("message",(d,r)=>console.log("dddoscmain",d,r));
-// var ipcs=ipcStream("thomash");
-
-
-var Positioner =require("electron-positioner");
+var Positioner = require("electron-positioner");
 app.on('ready', function() {
   mainWindow = new BrowserWindow({ width: 500, height: 600, 
     // transparent:true, 
@@ -68,7 +46,7 @@ app.on('ready', function() {
     allowRunningInsecureContent: true,
     // experimentalCanvasFeatures:true,
     // overlayFullscreenVideo:true,
-      darkTheme: false
+      darkTheme: true
 
     // zoomFactor:1
     });

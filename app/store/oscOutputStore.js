@@ -16,7 +16,7 @@ import log from "../utils/streamLog";
 import Subject from "../utils/subject";
 
 import throttledDebounce from "../utils/throttledDebounce";
-
+import {oscOutput} from "../utils/oscInOut";
 // most.combine((tracks,uiState) => tracks.filter((v,trackId)=> uiState.get("groupedTracks").includes(parseInt(trackId))),livedataStore,uiStateStore)
 // .observe(log("oscGrouped"));
 // var groupedTracksState = most.combine((tracks,uiState) => tracks.filter((v,trackId)=> uiState.get("groupedTracks").includes(parseInt(trackId))),livedataStore,uiStateStore);
@@ -226,8 +226,7 @@ var mergedCommands = clickedLoopCommands
 .flatMap(f=>f);
 
 
-
-export default mergedCommands
+var store = mergedCommands
 // .filter(f => f.get("type"))
 // .tap(log("mergedCommands"))
 .map(tc => 
@@ -237,7 +236,11 @@ export default mergedCommands
 		})
 	).tap(log("oscOutputcommand"));
     
-    
+
+
+oscOutput.plug(store.tap(log("plugged")));
+
+export default store;
  
 // oscDiff2(
 // 	// clickedLoopCommands, groupedChangeRequest,

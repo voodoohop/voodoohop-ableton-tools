@@ -73,7 +73,7 @@ export default component(({uiState,trackId,track}) => {
     }
     if (detailViews.length==0)
         return <div> no midi or waveform data yet </div>
-    console.log("detailView",detailViews);
+    // console.log("detailView",detailViews);
     
 	return <div key={"trackid_detail_"+trackId}><svg style={{overflow:"hidden"}} preserveAspectRatio="none"
 					width={"100%"}  height={"100%"}
