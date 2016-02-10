@@ -37,7 +37,12 @@ export default actionStream//.filter(a=> a.get("type") === "globalZoom" || a.get
             return store.setIn(["dragState","hover"], input);
         case "endDraggingTrack":
             // console.log("removing");
-            return store.remove("dragState");            
+            return store.remove("dragState");      
+        case "loadMetadata":
+            return store.set("lastMetadataLoad", input.get("path"));      
+        case "metadataLoaded":
+            return store.set("lastMetadata", input.get("metadata"));      
+            
         default:
            return store;
     }

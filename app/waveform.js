@@ -8,7 +8,6 @@ import Immutable from "immutable";
 import logger from "./utils/streamLog";
 
 var log = logger("waveform");
-
 import actionSubject from "./api/actionSubject";
 
 import tinycolor from "tinycolor2";
@@ -17,7 +16,7 @@ import keysToColors from "./api/keysToColors";
 
 
 
-var WaveformPoly = component(({durationBeats, waveformData, trackId,chords,musicalKey,start}) => {
+var WaveformPoly = component(({durationBeats, waveformData, trackId,chords, musicalKey,start}) => {
 		// if (!chords)
 			chords = Immutable.fromJS([{chord: musicalKey, startBeat: 0, endBeat: durationBeats}]);
 		// log("waveform args", duration, viewboxWidth, viewboxHeight, waveformData.toJS(), trackId,chords.toString());
@@ -63,7 +62,7 @@ var WaveformPoly = component(({durationBeats, waveformData, trackId,chords,music
 		points=points.map((p)=> [p[0]/pixelsPerBeat, (p[1]/2+0.5)*127].join(","));
 		return <polyline key={""+segment.get("startOffset")+"_"+segment.get("endOffset")} 
 			stroke="none" fillOpacity="1"
-					  fill={keysToColors(segment.get("chord"))}
+					  fill={tinycolor(keysToColors(segment.get("chord"))).lighten(20).toHexString()}
 					  points={points.join(" ")} />;
 		})}
 		 

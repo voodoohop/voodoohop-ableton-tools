@@ -20,7 +20,7 @@ var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 var audioElements = {};
 
 import {AIFFDecoder} from "../lib/audiofile";
-
+import log from "../utils/streamLog";
 var shell = require('shelljs');
 
 export function getWebAudioBuffer(path) {
@@ -54,7 +54,7 @@ export function getWebAudioBuffer(path) {
 	.flatMap(chunk => {
 		//console.log("chunk",chunk); 
 		return most.fromPromise(AudioReader(new Uint8Array(chunk).buffer, offlineAudioCtx)).map(b => b.buffer || b)
-	   .tap(b => console.log("audiobuffer",b));
+	//    .tap(b => console.log("audiobuffer",b));
 	})//new Promise((resolve,reject) => offlineAudioCtx.decodeAudioData(new Uint8Array(chunk).buffer,resolve,reject))})
 	//.observe(chunk => console.log("chunk",chunk)).catch(e => console.error(e));
 // .await()
@@ -78,7 +78,7 @@ const downsampleFactor = 16;
 
 
 registerTransform({name: "audioStream", depends:["audioBuffer"], transform: buffer => {
-	console.log("sending buffer",buffer);//,buffer.channels[0].length);
+	// console.log("sending buffer",buffer);//,buffer.channels[0].length);
 	if (buffer.channels) {
 		buffer.getChannelData = (i) => {
 			var c = buffer.channels[i];
@@ -131,14 +131,14 @@ console.log("resampling res",res);
 
 function warpMap(buffer,warpMarkers) {
 	return new Promise((resolve,reject) => {
-		console.log("buffer",buffer,warpMarkers);
-		
+		// console.log("buffer",buffer,warpMarkers);
+		console.log("warpMarkers",warpMarkers);
 	if (warpMarkers.get("error"))
 		reject("warpMarkers not present");
 	var fm = warpMarkers.get("warpMarkers").first();
 	var lm = warpMarkers.get("warpMarkers").last();
-	warpMarkerReverseMap(most.from(warpMarkers.get("warpMarkers")))
-		(most.from(Immutable.Range(fm.get("desttime"),lm.get("desttime"), (lm.get("desttime")-fm.get("desttime"))/buffer.buffer.length)))
+	warpMarkerReverseMap(most.from(warpMarkers.get("warpMarkers").toArray()))
+		(most.from(Immutable.Range(fm.get("desttime"),lm.get("desttime"), (lm.get("desttime")-fm.get("desttime"))/buffer.buffer.length).toArray()))
 	.collect()
 		.then(warpedTimes => {
 			var newBuffer=[];
@@ -160,8 +160,13 @@ function warpMap(buffer,warpMarkers) {
 				newBuffer[i] = sampleVal; });
 			console.log("wms",warpMarkers.toJS());
 			var pixelsPerBeat = buffer.buffer.length/warpMarkers.get("durationBeats");
-			warpMarkerBeatMap(most.from(warpMarkers.get("warpMarkers")))
-				(most.of(0)).take(1).observe(firstBeat => {console.log("firstBeat",firstBeat); resolve({pixelsPerBeat,waveform:newBuffer, firstBeat: (firstBeat), duration: warpedDuration})})
+			warpMarkerBeatMap(most.from(warpMarkers.get("warpMarkers").toArray()))(most.of(0))
+            .tap(log("beatMapRes"))
+            .take(1).tap(firstBeat => {
+                console.log("firstBeat",firstBeat); 
+                resolve({pixelsPerBeat,waveform:newBuffer, firstBeat: (firstBeat), duration: warpedDuration})
+            })
+            .drain();
 			
 		}, error => console.error("warpedTimesError",error))
 	// return buffer;
@@ -171,7 +176,7 @@ function warpMap(buffer,warpMarkers) {
 import Subject from "../utils/subject";
 
 registerTransform({name: "waveform", depends:["path","audioStream","warpMarkers"], transform: (path,audioStream,warpMarkers) => {
-//   console.log("AUDIOSTREAM",audioStream);
+   console.log("AUDIOSTREAM",audioStream,warpMarkers.toJS());
   
   return most.fromPromise(warpMap({buffer: split(audioStream.buffer,2048), duration: audioStream.duration},warpMarkers))
 //   .map((v,i) => )
@@ -190,13 +195,13 @@ registerTransform({name: "waveform", depends:["path","audioStream","warpMarkers"
   
   },{min:[],max:[], pixelsPerBeat: w.pixelsPerBeat, firstBeat: w.firstBeat, path})})
 //   .map(n => ({min: warpMap(n.min)}))
-.tap(n => console.log("precalculated",n))
+// .tap(n => console.log("precalculated",n))
   .map( n =>  {
 	//   var resampledMin = resample(n.min, 4096,-1);
 	//   var resampledMax = resample(n.max, 4096);
 	  return Immutable.fromJS(n);//{min: resampledMin, max: resampledMax, pixelsPerBeat: n.pixelsPerBeat* resampledMin.length/n.max.length, firstBeat: n.firstBeat * resampledMin.length/n.min.length})
   })
 
-  .tap(n => console.log("calculated",n.toJS()))//.map(n => Immutable.fromJS(n));//(new Immutable.Range(audioMetadata.get("duration")*audioMetadata.get("sample_rate")));
+//   .tap(n => console.log("calculated",n.toJS()))//.map(n => Immutable.fromJS(n));//(new Immutable.Range(audioMetadata.get("duration")*audioMetadata.get("sample_rate")));
   .flatMapError(e => Immutable.fromJS({error:"no warpMarkers saved"}))
 }});

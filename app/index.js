@@ -27,21 +27,29 @@ import most from "most";
 
 import importMetadata from "./utils/importAudioMetadata.js";
 
+// import "./utils/recursiveMetadataImporter";
 
 import keysToColors from "./api/keysToColors";
 	
 
 import PlayingTracks from "./playingTracksView";
 
-
+    
 import transposedNote from "./utils/transposedNote";
 
-import {livedataStore, metadataStore, uiStateStore, oscOutputStore, midiClipStore} from "./store";
+import {livedataStore, metadataStore, uiStateStore, oscOutputStore, midiClipStore, remoteClipUpdater} from "./store";
 
 import log from "./utils/streamLog";
 
 import when from 'when';
+
+import ProcessingStatus from "./processingStatus";
 unhandledRejectionsWithSourceMaps(when.Promise);
+
+
+window.actionStream = actionSubject;
+window.Imm = Immutable;
+window.most = most;
 
 function unhandledRejectionsWithSourceMaps(Promise) {
 	Promise.onPotentiallyUnhandledRejection = function(r) {
@@ -59,14 +67,21 @@ function unhandledRejectionsWithSourceMaps(Promise) {
 	};
 }
 
-var appState = most.combine((liveData, metaData, midiData, uiState) => 
+
+
+var appState = most.combine((liveData, metaData, midiData, uiState,remoteClipUpdater) => 
 	Immutable.Map({uiState, tracks: liveData
     .map((data, trackId) =>{
         // console.log("track combining",data.toJS(),metaData.toJS());
         
         return Immutable.Map({liveData: data, fileData: (data.get("file_path") ? 
-        metaData.get(data.get("file_path")) : null), midiData: midiData.get(trackId) || null, trackId:trackId})})}	)
-	,livedataStore.tap(ld => console.table(ld.map(v => v).toJS())), metadataStore, midiClipStore, uiStateStore)
+        metaData.get(data.get("file_path")) : null),
+        remoteClipUpdater:remoteClipUpdater.get(trackId),
+         midiData: midiData.get(trackId) || null, trackId:trackId})
+        .filter(v=> v !== null && v !== undefined) 
+         })}	)
+	,livedataStore.tap(ld => console.table(ld.map(v => v).toJS())), metadataStore, midiClipStore, uiStateStore, remoteClipUpdater)
+    
 
 
 
@@ -85,9 +100,9 @@ var finalState = debouncedState
     var pitch = v.getIn(["liveData","pitch"]);
      if (!pitch)
         pitch=0;
-    console.log("table",);
+    // console.log("table",);
     console.table([pv.get("liveData").toJS(),v.get("liveData").toJS()]);
-    if (pv.getIn(["liveData","pitch"]) === pitch && pv.getIn(["liveData","transposedChords"]))
+    if (pv.getIn(["liveData","pitch"]) === pitch && pv.getIn(["liveData","file_path"]) === v.getIn(["liveData","file_path"]) && pv.getIn(["liveData","transposedChords"]))
         return v
             .setIn(["liveData","transposedChords"],pv.getIn(["liveData","transposedChords"]))
             .setIn(["liveData","transposedKey"],pv.getIn(["liveData","transposedKey"]));
@@ -121,6 +136,8 @@ finalState.observe(state => {
 	// console.table(state.toJS());
 render(
 	<div><PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
+    <center><img src="../open_key_notation_6000.png" width="60%" height="auto"/></center>
+    <ProcessingStatus uiState={state.get("uiState")} />
     <ObjectInspector style={{color:"white"}} data={ state.toJS() } />
     </div>,
   	document.getElementById('root')

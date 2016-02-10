@@ -3,6 +3,7 @@ import Subject from "./subject.js";
 import most from "most";
 // import {fetchOrProcess} from "../api/db";
 
+
 import Imm from "immutable";
 import actionStream from "../api/actionSubject";
 
@@ -10,29 +11,21 @@ import "../transforms/vampMetadata.js";
 
 import fs from "fs";
 
+import log from "../utils/streamLog";
 
 var taglib = require("thomash-node-audio-metadata");
 
-var filewalker = require('filewalker');
+// var filewalker = require('filewalker');
 // require("node-find-files");
 
 
 var extensions=".mp3,.m4a,.mp4,.aif,.aiff,.wav".split(",");
 
-var finder = filewalker("/Users/thomash/organised",{maxPending:-1});
+// var finder = filewalker("/Users/thomash/Documents/organised/electronica",{maxPending:-1});
 
-
+// import metadataStore from "../store/metadataStore";
   //  .drain();  
 
-actionStream.filter(a=> a.get("type")==="sendMeMore").observe(finder.resume);
-
-// finder.walk(); 
-var toTagStream = most.fromEvent("file", finder)
-  .filter(([path]) => (extensions.reduce((hasExtension, ext) => path.toLowerCase().endsWith(ext) || hasExtension, false)))
-  //.until(most.fromEvent("done",finder));//.zip(t => t, most.periodic(500,true));
-actionStream.plug(toTagStream.filter(path=>fs.existsSync(path[2]+".asd")).map(path => Imm.Map({path:path[2], type:"loadMetadata"})) 
-.tap(console.log.bind(console))  
-.tap(finder.pause))
 
 var extractMetadata = path => {
   console.log("extracting metadata",path);
@@ -63,17 +56,6 @@ var extractMetadata = path => {
 
 import extractWarpMarkers from "../transforms/extractWarpMarkers";
 
-// var Imm = require("immutable");
-
-// var warpMarkerStream = metadataStream.flatMap(f => most.fromPromise(extractWarpMarkers(f)).flatMapError(e => {
-//   console.log("error_"+e);
-//   return most.of(e);
-// }))
-// .tap(p => console.log("promiseWarpMarkers",p.toString()));
-
-// warpMarkerStream.zip((warpMarkers,md) => md.merge(warpMarkers), metadataStream)
-// .observe(out => console.log("out",out.toString())).catch(console.error.bind(console));
-
 
 
 console.log("helllooo");
@@ -101,7 +83,7 @@ registerTransform({name: "audioAndId3Metadata", depends:["path","audioStream"], 
     return a.updateIn(["audio"],audio=> {
         if (audio===null)
             audio = Imm.Map();
-        console.log("updating in",audio,as);
+        // console.log("updating in",audio,as);
         return audio.set("duration",as.duration).set("samplerate",as.sampleRate);
      })
     

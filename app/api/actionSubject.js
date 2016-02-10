@@ -1,3 +1,3 @@
-import Subject from "../utils/Subject";
+import Subject from "../utils/subject";
 
 export default Subject();

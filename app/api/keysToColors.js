@@ -21,5 +21,5 @@ export default function getKeyColor(keyString) {
 	// console.log("getting col for",keyString);	
 	if (!keyString)
 		return "#bbbbbb";
-	return tinycolor(colors[keyString.toLowerCase().trim()] || "#aaaaaa").lighten(20).toHexString();
+	return tinycolor(colors[keyString.toLowerCase().trim()] || "#aaaaaa")/*.lighten(20)*/.toHexString();
 }

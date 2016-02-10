@@ -32,7 +32,7 @@ registerTransform({name: "vampChord_HPA", depends:["path","timeToBeat"], transfo
 				var majorMinorSymbol = typeof chord[1] === "string" && chord[1].split("/")[0]  === "min" ? "m":"";
 				var nextTime = dta.getIn([i+1,0]);
 				return Immutable.Map({startTime:parseFloat(d.get(0)), endTime: parseFloat(nextTime), chord: chord[0]+majorMinorSymbol});
-			}));//.filter(d => d.get("chord") !== "N"));
+			}).toArray());//.filter(d => d.get("chord") !== "N"));
 			var warpedStartTimes = timeToBeat(chordStream.map(c => c.get("startTime")));
 			var warpedEndTimes = timeToBeat(chordStream.map(c => c.get("endTime")));
 			var warpedChordStream = most.zip((start, end, origChord) =>  
@@ -63,7 +63,7 @@ registerTransform({name: "vampChord_QM", depends:["path","timeToBeat"], transfor
 				var majorMinorSymbol = chord[1] === "minor" ? "m":"";
 				var nextTime = dta.getIn([i+1,0]);
 				return Immutable.Map({startTime:parseFloat(d.get(0)), endTime: parseFloat(nextTime), chord: chord[0]+majorMinorSymbol});
-			}));//.filter(d => d.get("chord") !== "N"));
+			}).toArray());//.filter(d => d.get("chord") !== "N"));
 			var warpedStartTimes = timeToBeat(chordStream.map(c => c.get("startTime")));
 			var warpedEndTimes = timeToBeat(chordStream.map(c => c.get("endTime")));
 			var warpedChordStream = most.zip((start, end, origChord) =>  

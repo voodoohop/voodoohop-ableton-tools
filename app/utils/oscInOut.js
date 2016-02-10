@@ -5,7 +5,7 @@ import Subject from "./subject";
 import throttledDebounce from "./throttledDebounce";
 import Immutable from "immutable";
 import log from "./streamLog";
-
+import actionStream from "../api/actionSubject";
 
 
 var oscServer = new osc.Server(5555, '0.0.0.0');
@@ -29,8 +29,14 @@ var currentOscSender = new Promise(resolve => resolve(Immutable.Map({})));
 
 var client = new osc.Client('127.0.0.1', 4444);
 
-oscOutput.map(s => s instanceof most.Stream ? s : most.of(s)).join()
+oscOutput
+.tap(log("oscOutputPre"))
 
+// .map(s => s instanceof most.Stream ? s : most.of(s)).join()
+//throttling
+// .zip(a=>a,most.periodic(20,null).during(oscOutput.take(1).delay(500).map(()=>most.never())))
+.bufferedThrottle(20)
+// .merge(actionStream.filter(a => a.get("type")==="oscOutput"))
 .scan((oscSender, oscMessage) => oscSender.then(() => new Promise(resolve => {
 	console.log("sending, ", oscMessage.toJS() );
 	client.send(""+oscMessage.get("trackId"),...oscMessage.get("args").toArray(), function() {
@@ -43,8 +49,6 @@ oscOutput.map(s => s instanceof most.Stream ? s : most.of(s)).join()
 .observe(oscStatus => console.log("osc sent:", oscStatus.toJS()));
 
 
-export {oscOutput, oscInputStream};
+oscOutput.plug(actionStream.filter(a => a.get("type")==="oscOutput"));
 
-setTimeout(() =>
-oscOutput.push(Immutable.fromJS({trackId:"sendAll",args:[]}))
-,50);
+export {oscOutput, oscInputStream};

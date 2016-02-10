@@ -16,14 +16,14 @@ var oscMidiClipInput = oscInputStream
 	.filter(f => f[2] === "midiClip" && f[1]>=0)
 		.map(f => Immutable.fromJS({type: "liveMidiClipInput", trackId: f[1],command:f[3], data: f.slice(4)}));
 		
-var oscMidiClipReceiverTrack = oscInputStream
-	.filter(f => f[0] === "midiClipReceiverTrack")//.observe(log("midiClipReceiverTrack"))
-	.map(f => Immutable.fromJS({type: "midiClipReceiverTrack", trackId: f[1]}));
+var oscClipUpdaeteReceiverTrack = oscInputStream
+	.filter(f => f[0] === "clipUpdateReceiverTrack")//.observe(log("midiClipReceiverTrack"))
+	.map(f => Immutable.fromJS({type: "clipUpdateReceiverTrack", trackId: f[2], numScenes: f[4]}));
 
 
 actionStream.plug(oscMidiClipInput);
 
-actionStream.plug(oscMidiClipReceiverTrack);
+actionStream.plug(oscClipUpdaeteReceiverTrack);
 
 var doStore= (liveMidiInput) => liveMidiInput      
 		.filter(midi => midi.get("command") === "notes")
@@ -55,7 +55,7 @@ var doStore= (liveMidiInput) => liveMidiInput
 
 
 var midiClipStore = doStore(actionStream.filter(a => a.get("type")==="liveMidiClipInput"))
-    .merge(actionStream.filter(a=>a.get("type") === "midiClipReceiverTrack").map(a=> Immutable.Map({trackId: a.get("trackId"), midiclipReceiver:true})))
+    // .merge(actionStream.filter(a=>a.get("type") === "midiClipReceiverTrack").map(a=> Immutable.Map({trackId: a.get("trackId"), midiclipReceiver:true})))
     .scan((store, midiClip) => store.mergeIn([midiClip.get("trackId")], midiClip), Immutable.Map())
     .startWith(Immutable.Map())
 

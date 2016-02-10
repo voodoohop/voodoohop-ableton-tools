@@ -48,7 +48,7 @@ export default function extractWarpMarkers(path, audioMetaData) {
       //var chunk=0;
       // while (position < buffer.length) {
         //outlet(3, f.position);
-        var prevPos = position;
+        // var prevPos = position;
         // var str = buffer.toString();
         // position += chunksize;
         var offset=0;
@@ -79,12 +79,20 @@ export default function extractWarpMarkers(path, audioMetaData) {
       // }
 
       if (markersArr.length == 0) {
-        // post("NO MARKERS FOUND... PRESS SAVE!!", filename);
+        console.log("NO MARKERS FOUND... PRESS SAVE!!", filename);
         // reject("warpmarkers not saved!!!");
-        markersArr= [{beats: 0, ms: 0},{beats: 0, ms:0}, {beats: duration/5000, ms: duration}]
+        markersArr= [{beats: 0, ms: 0},{beats: duration/500, ms: duration}]
         // return;
       }
-
+      
+      const middle=(val1,val2)=> (val2-val1)/2+val1;
+      
+      if (markersArr.length === 2)
+        markersArr = [markersArr[0],
+        {beats:middle(markersArr[0].beats,markersArr[1].beats), ms: middle(markersArr[0].ms,markersArr[1].ms)},
+    //     // {beats:middle(markersArr[0].beats,markersArr[1].beats)+0.0001, ms: middle(markersArr[0].ms,markersArr[1].ms)+0.0001},
+        markersArr[1]];
+      console.log("markers",markersArr);
       var newMarkers = [];
       markersArr.shift(); // throw annoying marker away
       // if (markersArr[0].beats>0)
@@ -108,7 +116,6 @@ export default function extractWarpMarkers(path, audioMetaData) {
         //Postln("info1", info);
       }
       var firstm = newMarkers[0];
-      var secondm = newMarkers[1];
       if (firstm.beats > 0 && firstm.sourcetime > 0) {
         //post("FM",JSON.stringify(firstm),"\n");
         var firstSpeed = firstm.bpm / 60000;
@@ -145,7 +152,6 @@ export default function extractWarpMarkers(path, audioMetaData) {
       //for (var i = 0; i < newMarkers.length; i++) {
       var warpMarkers = Imm.fromJS(newMarkers).map(marker => {
         marker = marker.toJS();
-        var destTime = marker.beats;
         if (marker.desttime < lastDestTime || marker.sourcetime < lastSourceTime)
           return null;
         lastDestTime = Math.max(lastDestTime, marker.desttime);

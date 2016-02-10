@@ -57,7 +57,7 @@ function addToImmStore(storeName,store, item, key) {
 				if (doc === null)
                     doc = {};
                 var mergedDoc = Imm.fromJS(doc).mergeDeep(item);
-                console.log("merged",mergedDoc.toJS());
+                // console.log("merged",mergedDoc.toJS());
                 return mergedDoc.toJS();
               });
         return store.mergeDeep(Imm.Map().set(key,item))
@@ -72,11 +72,15 @@ export function dataStore(storeName, stream, keyFunc = (item)=>item.get("path"))
         endkey: storeName+'\uffff'}
     
     )).tap(log("allDocs")).flatMap(allDocs => { 
-        var saved = allDocs.rows.reduce((store,row) => store.set(row.id.replace(storeName+"_",""),Imm.fromJS(row.doc)),Imm.Map());
-     console.log("presaved",saved.toJS(),allDocs);
+        var saved = allDocs.rows.reduce((store,row) => {
+            console.log("loaded", row.id);
+            return store.set(row.id.replace(storeName+"_",""),Imm.fromJS(row.doc));},Imm.Map());
+     console.log("presaved",allDocs);
     var memStore = stream.tap(log("memStoreToDB"))
     .scan((store,item) => addToImmStore(storeName,store,item,keyFunc(item)), saved).skip(1);
     return memStore.startWith(saved);
-    });
+    })//.startWith(Imm.Map())
+    .tap(log("DataStore"))
+    ;
         //throttledDebounce(500,memStore);    
 }

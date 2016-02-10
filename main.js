@@ -1,3 +1,4 @@
+
 /* eslint no-path-concat: 0, func-names:0 */
 var app = require('app');
 var BrowserWindow = require('browser-window');
@@ -28,9 +29,9 @@ app.on('window-all-closed', function() {
 
 var Positioner = require("electron-positioner");
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({ width: 500, height: 600, 
+  mainWindow = new BrowserWindow({ width: 300, height: 500, 
     // transparent:true, 
-    alwaysOnTop:true,
+    // alwaysOnTop:true,
     frame: false,
 	  
 		'min-width': 151,
@@ -230,6 +231,7 @@ positioner.move('topRight');
     }];
     menu = Menu.buildFromTemplate(template);
     mainWindow.setMenu(menu);
+              mainWindow.toggleDevTools();
     // mainWindow.flashFrame(true);
     // setInterval(function(){
     //     mainWindow.setAlwaysOnTop(true);

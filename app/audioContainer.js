@@ -23,7 +23,7 @@ var BeatClickGrid = component(({startMarker, endMarker,trackId})=> {
 		log("beatclickgrid",beatClickGrid);
 
         return <g>{beatClickGrid.map((xs,i) => {
-            return <rect onClick={(e,f) => beatClick(i*4,trackId,e,f)} key={"_beatclickgrid_"+xs[0]} stroke="white" fill="rgba(0,0,0,0)" opacity="0.4 " strokeWidth="0.08" 
+            return <rect onClick={(e,f) => beatClick(i*4,trackId,e,f)} key={"_beatclickgrid_"+xs[0]} stroke="black" fill="rgba(0,0,0,0)" opacity="0.8 " strokeWidth="0.08" 
                 x={xs[0]} 
                 width={xs[1]-xs[0]} 
                 y={-10} height={127+10} />;

@@ -13,6 +13,7 @@ config.debug = true;
 config.devtool = 'cheap-module-eval-source-map';
 
 config.entry = [
+  'babel-polyfill',
   'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
   './app/index'
 ];

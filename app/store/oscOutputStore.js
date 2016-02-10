@@ -178,7 +178,7 @@ function tomDiff(prev,next,path=Immutable.List()) {
     var res=  prev === next ?
         most.empty()
     :
-        most.from(next.keySeq().filter(k => next.get(k) !== prev.get(k)))
+        most.from(next.keySeq().filter(k => next.get(k) !== prev.get(k)).toArray())
         .flatMap(k => {
             let res = next.get(k).keySeq ? tomDiff(prev.get(k), next.get(k),path.concat([k])) : most.of(Immutable.Map({path:path.concat([k]), value:next.get(k), previousValue:prev.get(k)}));
             return res;
@@ -192,7 +192,8 @@ var grouedOscCommands = groupedLiveData
 // .tap(log("groupedLiveData1"))
 .flatMap(f => f)
 .combine((groupDiff, uiState) => most.from(uiState.get("groupedTracks")
-.map(trackId => Immutable.Map({trackId,path:groupDiff.get("path"), type: groupDiff.getIn(["path",1]), value:groupDiff.get("value")})))
+.map(trackId => Immutable.Map({trackId,path:groupDiff.get("path"), type: groupDiff.getIn(["path",1]), value:groupDiff.get("value")}))
+.toArray())
 ,uiStateStore)
 .flatMap(f => f)
 .filter(f => f.get("value") != 4096 && f.get("value")!= -4096)

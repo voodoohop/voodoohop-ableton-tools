@@ -12,6 +12,18 @@ Stream.prototype.combinePrevious = function(functor) {
     return this.loop((prev,next) => (prev=== null) ? {seed:next,value:null} :  {seed:next,value:functor(prev,next)},null).skip(1)
 };
 
+Stream.prototype.bufferedThrottle = function(interval) {
+    var queue=[];
+    var finished=false;
+    this.observe((item)=> {
+        // console.log("bufferedThrottle new item",item);
+        queue.push(item);
+    }).then(()=>finished=true);
+    
+    return most.periodic(interval,true).flatMap(() => (queue.length === 0 ? (finished?most.empty():most.never()):most.of(queue.shift())));
+}
+
+most.from([1,2,3,4,5,10,11,12]).bufferedThrottle(5000).observe(i=>console.log("bufferedThrottle",i));
 
 // most.from([1, 2, 3, 4]).collect().then(x=>
 //   console.log("collectTest", x));
@@ -23,8 +35,9 @@ export var transforms = {};
 import {mapStackTrace} from "sourcemapped-stacktrace";
 
  function mostify(f, transform=null) {
-   console.log("mostifying",(f && f.toJS && f.toJS())||f);
-   var res= f ===undefined  || f === null ? most.of(Immutable.Map({error:"got falsy value from transfrom "+transform.name})): ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f : (f.hasOwnProperty(Symbol.iterator) && ! (f instanceof String) ? most.from(f) : most.of(f)) ));
+    // return f.hasOwnProperty("source") ?f:most.of(f);
+//    console.log("mostifying",(f && f.toJS && f.toJS())||f);
+   var res= f ===undefined  || f === null ? most.of(Immutable.Map({error:"got falsy value from transfrom "+transform.name})): ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f : (f.hasOwnProperty(Symbol.iterator) && ! (f instanceof String) ? most.from((f.toArray && f.toArray()) || f) : most.of(f)) ));
    
    return res.flatMapError(e => {
           console.error("error1_",transform,e);
@@ -62,7 +75,7 @@ var createInputstreamTransform = (transform, transforms) => {
       :
       most.zip(
         (...dependsValues) => (transform.transform(...dependsValues)),
-        ...(transform.depends.map(dep => transforms[dep](inputStream))
+        ...(transform.depends.map(dep => transforms[dep](inputStream)) 
         ))//.delay(1)
         // .map(f => (f instanceof Promise) ? f : new Promise(resolve => resolve(f))).flatMap(f => most.fromPromise(f)
          
@@ -79,7 +92,7 @@ export var registerTransform = (transform) =>
 export var getTransformed = (requiredTransforms, inputStream) => {
   // console.log("getTransformed", requiredTransforms, transforms);
   return most.zip((...transformed) => transformed.reduce((o,n,i)=> o.set(requiredTransforms[i], n),Immutable.Map()),...requiredTransforms.map(t => transforms[t](inputStream)))
-    // .multicast();
+     .multicast();
 }
 
 registerTransform({ name: "path", transform: input => input, depends: [] })
