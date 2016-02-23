@@ -31,7 +31,7 @@ var Positioner = require("electron-positioner");
 app.on('ready', function() {
   mainWindow = new BrowserWindow({ width: 300, height: 500, 
     // transparent:true, 
-    // alwaysOnTop:true,
+    alwaysOnTop:true,
     frame: false,
 	  
 		'min-width': 151,

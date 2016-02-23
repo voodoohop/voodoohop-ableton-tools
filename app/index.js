@@ -7,7 +7,7 @@ import './photon_tom.css';
 // import DevTools from "./containers/DevTools";
 import {mapStackTrace} from "sourcemapped-stacktrace";
 
-
+import KeyWheel from "./keyWheel";
 // import logger from "./utils/streamLog";
 
 
@@ -44,6 +44,8 @@ import log from "./utils/streamLog";
 import when from 'when';
 
 import ProcessingStatus from "./processingStatus";
+import CpuUsage from "./cpuUsage";
+
 unhandledRejectionsWithSourceMaps(when.Promise);
 
 
@@ -85,10 +87,9 @@ var appState = most.combine((liveData, metaData, midiData, uiState,remoteClipUpd
 
 
 
-import throttledDebounce from "./utils/throttledDebounce";
 import ObjectInspector from 'react-object-inspector';
 
-var debouncedState =  throttledDebounce(50,appState);
+var debouncedState =  appState.throttledDebounce(50);
 var finalState = debouncedState
 .scan((prevState,state) => state.set("tracks", state.get("tracks").map((v,trackId)=> {
     if (prevState === null)
@@ -135,8 +136,10 @@ finalState.observe(state => {
 	// console.error("state",state);
 	// console.table(state.toJS());
 render(
-	<div><PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
-    <center><img src="../open_key_notation_6000.png" width="60%" height="auto"/></center>
+	<div>
+    <div style={{position:"fixed",bottom:"0px",right:"0px",backgroundColor:"rgba(0,0,0,0.1)"}}><CpuUsage usage={state.getIn(["uiState","cpuUsage"])} /></div>
+    <PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
+    <KeyWheel />
     <ProcessingStatus uiState={state.get("uiState")} />
     <ObjectInspector style={{color:"white"}} data={ state.toJS() } />
     </div>,
@@ -144,6 +147,3 @@ render(
 )
 
 }).catch(e => console.error(e));
-
-if (process.env.NODE_ENV !== 'production') {
-}

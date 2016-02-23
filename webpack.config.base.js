@@ -1,6 +1,8 @@
 var path = require('path');
 
-module.exports = {
+
+
+config = {
   module: {
     loaders: [{
       test: /\.jsx?$/,
@@ -11,7 +13,8 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
-    libraryTarget: 'commonjs2'
+    libraryTarget: 'commonjs2',
+    publicPath: 'http://localhost:3000/dist/'
   },
   resolve: {
     extensions: ['', '.js', '.jsx'],
@@ -27,6 +30,11 @@ module.exports = {
     "leveldown",
     "levelup",
     "thomash-node-audio-metadata",
-    "iconv-lite"
+    "iconv-lite",
+    "usage"
   ]
 };
+
+// config.output.;
+
+module.exports = config;

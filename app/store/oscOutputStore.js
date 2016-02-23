@@ -15,7 +15,6 @@ import log from "../utils/streamLog";
 
 import Subject from "../utils/subject";
 
-import throttledDebounce from "../utils/throttledDebounce";
 import {oscOutput} from "../utils/oscInOut";
 // most.combine((tracks,uiState) => tracks.filter((v,trackId)=> uiState.get("groupedTracks").includes(parseInt(trackId))),livedataStore,uiStateStore)
 // .observe(log("oscGrouped"));
@@ -243,58 +242,3 @@ oscOutput.plug(store.tap(log("plugged")));
 
 export default store;
  
-// oscDiff2(
-// 	// clickedLoopCommands, groupedChangeRequest,
-// // livedataStore
-// // groupedChangeRequestDiff(
-//     liveDataInAbleton,livedataStore
- 
-//  ,{grouped:true})
-// //  .skip(1)
-
-// 	// .merge(oscDiff(groupedChangeRequest, {grouped:true}))
-// // .flatMap(diff => )
-// .tap(log("diff2.2"))
-// .map(diff2 => diff2
-	
-// 	.filter(diff=> (diff.get("operation")=== "replace" || diff.get("operation")==="add") && diff.get("type") && diff.get("type") !== "playingPosition" )
-	
-// 	.reduce((loopCommands,cmd) => 
-// 		loopCommands.update(cmd.get("trackId"), (prevList) => concatOscCmd(prevList || Immutable.List(), cmd))
-// 	, Immutable.Map())//.flatten()
-// 	// .map(log("diff3"))
-// )
-
-// .tap(log("diff334"))
-// .flatMap(a => most.from(a.flatten(1).toArray()))
-// .skipRepeatsWith((a,b) => hashMe(a) === hashMe(b))
-// // .flatMap(c => most.from(c.entrySeq().map(e => e[1])))
-// // .filter(diffAccum => diffAccum.size>0)
-// // .tap(log("diff444"))
-// // .flatMap(commands => {
-// // 	// most.from([])
-// // 	var loop_start = loopCommands.get("loop_start");
-// // 	var loop_end = loopCommands.get("loop_end");
-// // 	var cmds = [];
-// // 	if (loop_start.get("value") > loop_end.get("prevVal"))
-// // 		cmds = cmds.concat([loop_end, loop_start]);
-// // 	else
-// // 		cmds = cmds.concat([loop_start, loop_end]);
-// // 	return most.from(cmds);			
-// // })
-// // .msp(diff2 =>)
-// // .flatMap(diff => diff.get("type") === "loop_start" ? most.from([diff.set("type","loop_end").set("value",8196),diff]).zip(m => m, most.periodic(3).take(2))  
-// // 				: (diff.get("type")==="loop_end" ?  most.from([diff.set("type","loop_start").set("value",-8196)]).zip(m => m, most.periodic(3).take(2)) : most.of(diff)) )
-// // .flatMap(o => most.from(o.entrySeq().map(e=>e[1])))
-// // .flatMap(o => most.from(o.toArray()))//.entrySeq().map(e=>e[1])))
-// .tap(log("preOscOut"))
-// .filter(o => o.get("trackId") && o.get("type") && o.get("operation") !== "add")
-// .tap(log("preOscOut"))
-// .map(tc => 
-// 		Immutable.Map({
-// 			trackId: parseInt(tc.get("trackId")),
-// 			args: Immutable.List([tc.get("type"), tc.get("value")])		
-// 		})
-// 	).tap(log("oscOutputcommand")).multicast()
-// 	;
-		

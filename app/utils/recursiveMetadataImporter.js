@@ -36,8 +36,7 @@ var toTagStream = most.fromEvent("file", finder)
   .filter(([path]) => (extensions.reduce((hasExtension, ext) => path.toLowerCase().endsWith(ext) || hasExtension, false)))
   .filter(([filename,stats,path]) => !storedMetadata.has(path))
    
-  //.until(most.fromEvent("done",finder));//.zip(t => t, most.periodic(500,true));
-actionStream.plug(toTagStream.filter(path=>fs.existsSync(path[2]+".asd"))
+ actionStream.plug(toTagStream.filter(path=>fs.existsSync(path[2]+".asd"))
 .bufferedThrottle(500)
 .map(path => Imm.Map({path:path[2], type:"loadMetadata"})) 
 // .tap(console.log.bind(console))  

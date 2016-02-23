@@ -12,19 +12,45 @@ Stream.prototype.combinePrevious = function(functor) {
     return this.loop((prev,next) => (prev=== null) ? {seed:next,value:null} :  {seed:next,value:functor(prev,next)},null).skip(1)
 };
 
+Stream.prototype.throttledDebounce = function(interval) {
+    var shared=this.scan((withId,data)=> ({data, id:withId.id+1}),{id:0}).skip(1).multicast();
+    return shared.throttle(interval).merge(shared.debounce(interval))
+                .skipRepeatsWith((a,b)=>a.id===b.id)
+                .map(d=>d.data);
+};
+
 Stream.prototype.bufferedThrottle = function(interval) {
-    var queue=[];
-    var finished=false;
-    this.observe((item)=> {
-        // console.log("bufferedThrottle new item",item);
-        queue.push(item);
-    }).then(()=>finished=true);
     
-    return most.periodic(interval,true).flatMap(() => (queue.length === 0 ? (finished?most.empty():most.never()):most.of(queue.shift())));
+    return this.loop((lastEmittedTime,newData)=> {
+        // const newQueue= timedQueue.get("queue").push(newData);
+        const timeNow = new Date().getTime();
+        const delay = Math.max(interval - (timeNow-lastEmittedTime),0);
+        // console.log("timeNow",timeNow,"interval",delay,lastEmittedTime);
+        return {value: most.of(newData).delay(delay), seed: delay+timeNow};
+    }
+     ,0)
+     .flatMap(v => v)
+    ;
+    // var queue=[];
+    // var finished=false;
+    // this.observe((item)=> {
+    //     // console.log("bufferedThrottle new item",item);
+    //     queue.push(item);
+    // }).then(()=>finished=true);
+    //return most.create((add,end,error))
+    
+    
+    
+    // return most.periodic(interval,true).flatMap(() => (queue.length === 0 ? (finished?most.empty():most.never()):most.of(queue.shift())));
 }
 
-most.from([1,2,3,4,5,10,11,12]).bufferedThrottle(5000).observe(i=>console.log("bufferedThrottle",i));
+var tst=most.from([1,2,3,4,5,10,11,12,14,515,800]).delay(3000).bufferedThrottle(300)
+.throttledDebounce(1100);
 
+tst.observe(i=>console.log("bufferedThrottle",i));
+tst.collect().then(values => {
+    if (values[values.length-1] !== 800) console.error("warning throttled debounce not working");
+    });
 // most.from([1, 2, 3, 4]).collect().then(x=>
 //   console.log("collectTest", x));
 

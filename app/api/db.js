@@ -9,7 +9,11 @@ import _ from "lodash";
 import Imm from "immutable";
 
 import log from "../utils/streamLog";
-export var pouch = new PouchDB("thomashMusicMusicNow"/*+Math.random()*/);
+import os from "os";
+// import homedir from "homedir";
+// setTimeout(()=>
+console.log("home", os.homedir());
+export var pouch = new PouchDB(os.homedir()+"/.VoodoohopLiveTools"/*+Math.random()*/);
 window.PouchDB = pouch;
 // var remoteDB = new PouchDB('http://localhost:5984/myremotedbtomtom')
 
@@ -23,8 +27,6 @@ window.PouchDB = pouch;
 
 
 console.log("got pouch",pouch);
-
-import throttledDebounce from "../utils/throttledDebounce";
 
 export var fetchOrProcess = (sourceDataStream, extractor) => sourceDataStream.flatMap(key => {
 	console.log("getting key from pouch",key);

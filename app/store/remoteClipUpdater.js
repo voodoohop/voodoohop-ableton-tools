@@ -6,11 +6,11 @@ import Immutable from "immutable";
 import {oscOutput,oscInputStream} from "../utils/oscInOut";
 import log from "../utils/streamLog";
 import {metadataStore} from ".";
-
+import transposeNote from "../utils/transposedNote";
 import most from "most";
 
 
-
+import tinycolor from "tinycolor2";
 metadataStore.take(1).observe((md)=> {
 console.log("md",md.toJS());
 oscOutput.push(Immutable.fromJS({trackId:"sendAll",args:[]}));
@@ -20,7 +20,7 @@ oscOutput.push(Immutable.fromJS({trackId:"sendAll",args:[]}));
 
 var clipUpdateRes = oscInputStream.filter(oscIn => oscIn[0] === "clipUpdateResult")
 .map(u => Immutable.Map({type: "clipUpdateResult", trackId:u[1], scene: u[2], property: u[3], value: u[4]}))
-.tap(log("clipUpdateResultResult"));
+.tap(log("clipUpdateResultResult")).multicast();
 
 var newPathReceived =  clipUpdateRes.filter(c=>c.get("property")==="file_path");
 var metadataNeeded =newPathReceived
@@ -50,13 +50,16 @@ var alreadyGotMetadata = metadataNeeded.filter(m=>m.get("metadata")).tap(log("al
 
 var remoteClipStore= actionStream
 .filter(a=>a.get("type") === "clipUpdateReceiverTrack"  )
+.tap(log("remoteClipUpdate"))
 .map(a=> Immutable.Map({trackId: a.get("trackId"), numScenes: a.get("numScenes")}))
 .merge(clipUpdateRes.map(r => Immutable.Map({trackId:r.get("trackId")})
     .setIn(["clips",r.get("scene")], Immutable.Map().set(r.get("property"),r.get("value"))))//.tap(log("mergeClipUpdateRes"))
 )
 // .combine((remoteClipData,metaData) => ,metadataStore)
 .scan((store,next)=>store.mergeDeep(Immutable.Map().set(next.get("trackId"),next)),Immutable.Map())
+.skipRepeats()
 .tap(log("remoteClipStore"))
+.multicast()
 ;
 
 var clipColorStream = remoteClipStore.combine((remoteClips,metadata)=>{ 
@@ -69,10 +72,11 @@ var clipColorStream = remoteClipStore.combine((remoteClips,metadata)=>{
     {
         scene, 
         trackId, 
-        key:metadata.getIn([clip.get("file_path"),"id3Metadata","initialkey"]),
-        hexColor:getKeyColor(metadata.getIn([clip.get("file_path"),"id3Metadata","initialkey"])),
-        keyColor: parseInt(getKeyColor(metadata.getIn([clip.get("file_path"),"id3Metadata","initialkey"])).replace("#","0x"))
-    })).valueSeq();}
+        key:metadata.getIn([clip.get("file_path"),"id3Metadata","initialkey"])
+    })).valueSeq()
+    .map(data => data.set("hexColor",tinycolor(getKeyColor(data.get("key"))).toHexString()))
+    .map(data => data.set("keyColor", parseInt(data.get("hexColor").replace("#","0x"))))
+;}
     )
     .valueSeq().flatMap(v=>v)
     }, metadataStore)
@@ -86,8 +90,11 @@ var clipColorStream = remoteClipStore.combine((remoteClips,metadata)=>{
 actionStream.plug(
     clipColorStream.map(clipCol =>
     Immutable.fromJS({type:"oscOutput", trackId:clipCol.get("trackId"), args:["clipCommand",clipCol.get("scene"),"set","color",clipCol.get("keyColor")]}))
+    .bufferedThrottle(200)
 );
 
+
+var requestProperties = Immutable.fromJS(["file_path","pitch_coarse"]);
 
 var requestPathActions=remoteClipStore.zip(
     (prev,next) => next.filter((v,k) => !prev.has(k))
@@ -96,15 +103,19 @@ var requestPathActions=remoteClipStore.zip(
  .tap(log("newTrack"))
  .flatMap(
      newTrack => most.from(
-        Immutable.Range(0,newTrack.get("numScenes") || 1).map(scene =>
-         Immutable.fromJS({type:"oscOutput", trackId:newTrack.get("trackId"), args:["clipCommand",scene,"get","file_path"]})
+        Immutable.Range(0,newTrack.get("numScenes") || 1).flatMap(scene =>
+        requestProperties.map(prop =>
+         Immutable.fromJS({type:"oscOutput", trackId:newTrack.get("trackId"), args:["clipCommand",scene,"get",prop]})
+        )
         ).toArray()
      )
- );
+ ).tap(log("requesting"));
  
  //TODO: make throttling not leak a buffer
 actionStream.plug(
-requestPathActions.bufferedThrottle(100).during(requestPathActions.take(1).delay(500).map(()=>most.never())));
+requestPathActions.bufferedThrottle(300)
+//.during(requestPathActions.take(1).delay(500).map(()=>most.never()))
+);
 
 // var clipsWithMetadata = remoteClipStore.combine((remoteClips,metadata) =>,metadataStore)
 

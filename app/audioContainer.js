@@ -10,6 +10,8 @@ import actionSubject from "./api/actionSubject";
 import Waveform from "./waveform";
 import PianoRoll from "./pianoroll";
 
+import {VictoryAnimation} from "victory";
+
 var log=logger("renderContainer");
 
 function beatClick(beat,trackId,e,f) {
@@ -75,19 +77,21 @@ export default component(({uiState,trackId,track}) => {
         return <div> no midi or waveform data yet </div>
     // console.log("detailView",detailViews);
     
-	return <div key={"trackid_detail_"+trackId}><svg style={{overflow:"hidden"}} preserveAspectRatio="none"
+	return <div key={"trackid_detail_"+trackId}><svg style={{overflow:"hidden",backfaceVisibility:"hidden"}} 
 					width={"100%"}  height={"100%"}
 					viewBox={[0,0,viewboxWidth, viewboxHeight].join(" ")}>
+	                   <VictoryAnimation data={{playingPosX}} velocity={0.2} tween="easticInOut">{
+					    (tweened) =>
+                          <g>
 						<defs>
 					    	<mask id={"Mask"+trackId}>
-								<rect stroke="none" fill="white" opacity={0.3} x={0} width={Math.max(playingPosX,1)} y={0} height={200} />
-								<rect stroke="none" fill="white" opacity={1} x={playingPosX} width={endMarker-playingPosX} y={0} height={viewboxHeight} />
+								<rect stroke="none" fill="white" opacity={0.3} x={0} width={Math.max(tweened.playingPosX,1)} y={0} height={200} />
+								<rect stroke="none" fill="white" opacity={1} x={tweened.playingPosX} width={endMarker-tweened.playingPosX} y={0} height={viewboxHeight} />
 								<rect stroke="none" fill="white" opacity={0.3} x={endMarker} width={viewboxWidth-endMarker} y={0} height={viewboxHeight} />
 
     						</mask>
 					   </defs>
-
-					    <g transform={"scale("+(scale)+","+(viewboxHeight/127)+") translate("+(-playingPosX+(visibleBeats/4))+",0)"}>	
+                          <g transform={"scale("+(scale)+","+(viewboxHeight/127)+") translate("+(-tweened.playingPosX+(visibleBeats/4))+",0)"}>	
 						  <g style={{mask:"url(#"+"Mask"+trackId+")"}}>
 							{detailViews}
 						  </g>
@@ -95,6 +99,9 @@ export default component(({uiState,trackId,track}) => {
 
 					      <BeatClickGrid startMarker={liveData.get("start_marker")} endMarker={liveData.get("end_marker")} trackId={trackId}/> 
 						</g>
+                        </g>
+                       }
+                        </VictoryAnimation>
 					</svg>
                     </div>;
 

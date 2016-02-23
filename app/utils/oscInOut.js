@@ -2,7 +2,6 @@ import most from "most";
 
 import osc from "node-osc";
 import Subject from "./subject";
-import throttledDebounce from "./throttledDebounce";
 import Immutable from "immutable";
 import log from "./streamLog";
 import actionStream from "../api/actionSubject";
@@ -32,9 +31,6 @@ var client = new osc.Client('127.0.0.1', 4444);
 oscOutput
 .tap(log("oscOutputPre"))
 
-// .map(s => s instanceof most.Stream ? s : most.of(s)).join()
-//throttling
-// .zip(a=>a,most.periodic(20,null).during(oscOutput.take(1).delay(500).map(()=>most.never())))
 .bufferedThrottle(20)
 // .merge(actionStream.filter(a => a.get("type")==="oscOutput"))
 .scan((oscSender, oscMessage) => oscSender.then(() => new Promise(resolve => {

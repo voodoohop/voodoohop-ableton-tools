@@ -6,8 +6,6 @@ import Immutable from "immutable";
 
 // import {oscInputStream} from "../utils/oscInOut";
 
-import throttledDebounce from "../utils/throttledDebounce";
-
 import log from "../utils/streamLog";
 
 import {oscInputStream} from "../utils/oscInOut";
@@ -45,7 +43,7 @@ import groupedTracksApplier from "./groupedTracksApplier";
 
 var liveDataModified = 
 // groupedTracksApplier(
-        throttledDebounce(25,
+
             liveDataPrepped
           
             .scan((store,newData) => 
@@ -54,8 +52,8 @@ var liveDataModified =
                     .updateIn([newData.get("trackId"),"trackId"],(t) => newData.get("trackId"))
                     .updateIn([newData.get("trackId"),"gain"],(t) => t || 0.4)
 
-            ,Immutable.Map()).skip(1)
-            );
+            ,Immutable.Map()).skip(1).throttledDebounce(25)
+        
 
 // actionStream.plug(liveDataPrepped.tap(log("liveDataPrepped")).filter(d => d.get("type")==="file_path").map(d=> Immutable.Map({type:"loadMetadata", path: d.get("value")})));
 

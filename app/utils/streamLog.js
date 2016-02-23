@@ -6,7 +6,7 @@ import Immutable from "immutable";
 // 	console.log(args);
 // 	return original(...args);
 // });
-var disable = false;
+var disable = process.env["NODE_ENV"] === "production";
 export default function streamLog(identifier) {
 	if (disable)
 		return (args) => args;

@@ -18,7 +18,6 @@ config.entry = [
   './app/index'
 ];
 
-config.output.publicPath = 'http://localhost:3000/dist/';
 
 config.module.loaders.push({
   test: /^((?!\.module).)*\.css$/,
