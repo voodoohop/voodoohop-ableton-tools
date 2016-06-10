@@ -12,7 +12,7 @@ import logger from "../utils/streamLog";
 
 		
 var oscControlInput = oscInputStream.filter(f=> f[0] === "control").map(f => Immutable.fromJS({type: f[1], value:f[2]}))
-	.tap(f=>console.log("oscControl",f.toJS()));
+	.tap(f=>console.log("oscControl",f));
 
 actionStream.plug(oscControlInput);
 
@@ -49,5 +49,5 @@ export default actionStream//.filter(a=> a.get("type") === "globalZoom" || a.get
     }
  }
 , initialState).startWith(initialState)
-.skipRepeats()
+.skipRepeatsWith(Immutable.is)
 .tap(logger("uiState"));

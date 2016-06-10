@@ -1,6 +1,8 @@
 import {note} from "teoria";
 
 function getTransposed(noteString, semitones=0) {
+    if (!noteString)
+    {console.error("no noteString");return "";};
     console.log("transposing",noteString,semitones);
     if (noteString.toUpperCase().indexOf("N") >=0)
         return noteString;

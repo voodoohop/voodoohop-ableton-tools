@@ -105,7 +105,7 @@ var Track = component(function({track,trackId, uiState}) {
     </div><div style={{paddingTop:"10px",height:"100%"}}>
     <AudioContainer uiState={uiState} trackId={trackId} track={track} />   
     </div>
-  <button style ={{right:"0px",bottom:"0px", position:"absolute",opacity:0.6}} className={"ui  button inverted mini floated right toggle "+(grouped ? "yellow" : "blue")}
+  <button style ={{right:"0px",bottom:"0px", position:"absolute",opacity:0.6, display:"none"}} className={"ui  button inverted mini floated right toggle "+(grouped ? "yellow" : "blue")}
     onClick={() => actionStream.push(Immutable.Map({type:"groupButtonClicked", trackId}))}><i className={grouped ? "fa fa-unlink":"fa fa-link"} style={{fontWeight:"bold"}}></i></button>
   </div>
   </div>));

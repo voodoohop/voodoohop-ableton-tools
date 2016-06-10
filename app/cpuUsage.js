@@ -34,15 +34,15 @@ pidof('.*\\/Live.*', function (err, pidLive) {
      var pid =pids[processName];
       console.log("pid for process",processName,pid);
 actionStream.plug(
-most.periodic(300,true)
+most.periodic(30000,true)
     .flatMap(()=> most.fromPromise(new Promise(resolve=>usage.lookup(pid, function(err, result) {
     // console.log("usage result",result,err);
     resolve(result);
 }))))
 .map(res => res.cpu)
-.tap(log("cpuUsage"))
+// .tap(log("cpuUsage"))
 .loop((window, newVal)=>    
-({seed: (window.size > 5 ? window.shift() : window).push(newVal),
+({seed: (window.size > 10 ? window.shift() : window).push(newVal),
     value: window.reduce((total, val)=> total+=val/window.size,0)
  }),Immutable.List())
 .throttledDebounce(3000)
@@ -64,7 +64,7 @@ export default component(({usage})=>
   	 <div style={{textAlign:"center",color:"rgba(255,255,255,0.6)",width:"100%", fontSize: "8px"}}>&nbsp;CPU</div> 
    
     <VictoryPie padding={0} animate={{velocity:0.2}}  width={30} height={30} style={{labels:{display:"none"},data:{stroke:"transparent"}}} 
-        data={[{x:"me",y:usage.get("me"), fill:"red", opacity:0.8},{x:"live",y:usage.get("live"), fill:"green", opacity:0.8},{x:"",y:100-usage.get("live")-usage.get("me"), fill:"rgba(255,255,255,0.1)"}]}
+        data={[{x:"me",y:usage.get("me"), fill:"red", opacity:0.8},{x:"live",y:usage.get("live")||0, fill:"green", opacity:0.8},{x:"",y:100-(usage.get("live")||0)-usage.get("me"), fill:"rgba(255,255,255,0.1)"}]}
     />
   
 </div>

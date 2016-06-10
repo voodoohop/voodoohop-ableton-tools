@@ -70,7 +70,7 @@ registerTransform({name: "vampChord_QM", depends:["path","timeToBeat"], transfor
 				origChord.set("startBeat",start).set("endBeat", end)
 				, warpedStartTimes, warpedEndTimes, chordStream);
 			warpedChordStream.collect().then(chords => {
-				console.log("got QM Chords",Immutable.fromJS(chords).toJS());
+				console.log("got QM Chords",chords);
 				resolve(Immutable.fromJS(chords))
 			});
 			})

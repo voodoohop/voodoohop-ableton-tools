@@ -18,14 +18,15 @@ function beatClick(beat,trackId,e,f) {
 	log("beatClick",beat,trackId,e);
 	actionSubject.push(Immutable.Map({type: "clickedBeat", beat,trackId}));
 }
-
+import MtSvgLines from 'react-mt-svg-lines';    
 var BeatClickGrid = component(({startMarker, endMarker,trackId})=> {
 		var beatClickGrid=Immutable.Range(startMarker,endMarker, 4);
 		beatClickGrid = beatClickGrid.zip(beatClickGrid.skip(1));
 		log("beatclickgrid",beatClickGrid);
 
         return <g>{beatClickGrid.map((xs,i) => {
-            return <rect onClick={(e,f) => beatClick(i*4,trackId,e,f)} key={"_beatclickgrid_"+xs[0]} stroke="black" fill="rgba(0,0,0,0)" opacity="0.8 " strokeWidth="0.08" 
+            return <rect onClick={(e,f) => beatClick(i*4,trackId,e,f)} className="hoverWhite" stroke="black" key={"_beatclickgrid_"+xs[0]} fill="rgba(0,0,0,0)" 
+            opacity="0.8 " strokeWidth="0.08"
                 x={xs[0]} 
                 width={xs[1]-xs[0]} 
                 y={-10} height={127+10} />;
@@ -76,22 +77,34 @@ export default component(({uiState,trackId,track}) => {
     if (detailViews.length==0)
         return <div> no midi or waveform data yet </div>
     // console.log("detailView",detailViews);
-    
-	return <div key={"trackid_detail_"+trackId}><svg style={{overflow:"hidden",backfaceVisibility:"hidden"}} 
+    let tweened = {playingPosX};
+	return <div key={"trackid_detail_"+trackId}>
+
+    <svg style={{overflow:"hidden",backfaceVisibility:"hidden"}} 
 					width={"100%"}  height={"100%"}
 					viewBox={[0,0,viewboxWidth, viewboxHeight].join(" ")}>
-	                   <VictoryAnimation data={{playingPosX}} velocity={0.2} tween="easticInOut">{
-					    (tweened) =>
-                          <g>
-						<defs>
+                 
+	                <defs>
+                       <filter id={"blur1_"+trackId} x="0" y="0" width="100%" height="100%">
+                                <feGaussianBlur is in="SourceGraphic" stdDeviation={0.15}  result="BLURRED" />
+                                 
+                           
+                        </filter>
+                        
+  
 					    	<mask id={"Mask"+trackId}>
 								<rect stroke="none" fill="white" opacity={0.3} x={0} width={Math.max(tweened.playingPosX,1)} y={0} height={200} />
-								<rect stroke="none" fill="white" opacity={1} x={tweened.playingPosX} width={endMarker-tweened.playingPosX} y={0} height={viewboxHeight} />
+								<rect stroke="none" fill="white" opacity={1} x={tweened.playingPosX} width={Math.max(endMarker-tweened.playingPosX,0.1)} y={0} height={viewboxHeight} />
 								<rect stroke="none" fill="white" opacity={0.3} x={endMarker} width={viewboxWidth-endMarker} y={0} height={viewboxHeight} />
 
     						</mask>
-					   </defs>
-                          <g transform={"scale("+(scale)+","+(viewboxHeight/127)+") translate("+(-tweened.playingPosX+(visibleBeats/4))+",0)"}>	
+                              
+                        </defs>
+                          <g>
+						
+       
+					   
+                          <g  transform={"scale("+(scale)+","+(viewboxHeight/127)+") translate("+(-tweened.playingPosX+(visibleBeats/4))+",0)"}>	
 						  <g style={{mask:"url(#"+"Mask"+trackId+")"}}>
 							{detailViews}
 						  </g>
@@ -100,11 +113,14 @@ export default component(({uiState,trackId,track}) => {
 					      <BeatClickGrid startMarker={liveData.get("start_marker")} endMarker={liveData.get("end_marker")} trackId={trackId}/> 
 						</g>
                         </g>
-                       }
-                        </VictoryAnimation>
+            
 					</svg>
+                    
                     </div>;
 
     }
-)
-
+) //  <VictoryAnimation data={{playingPosX}} velocity={0.3} tween="elasticInOut">{
+	//				    (tweened) =>
+    
+            //    }
+            //             </VictoryAnimation>

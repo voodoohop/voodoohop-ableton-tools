@@ -29,7 +29,8 @@ var extensions=".mp3,.m4a,.mp4,.aif,.aiff,.wav".split(",");
 
 var extractMetadata = path => {
   console.log("extracting metadata",path);
-  
+ if (path.toLowerCase().indexOf(".flac")>0)
+    return most.of(Imm.Map({error:"taglib has infinite loop with flac"}))
  var f =new taglib.File(path);
  return most.fromPromise(new Promise((resolve) => f.readTaglibMetadata((res) => {
   //  availableMetadataExtractor.push(extractMetadata);

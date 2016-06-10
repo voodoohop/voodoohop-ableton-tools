@@ -4,7 +4,7 @@ exports = module.exports = pidof;
 
 function pidof(cmd, callback) {
     exec('ps -eo pid,comm', function (err, stdout, stderr) {
-        console.log("pids",stdout)
+        // console.log("pids",stdout)
         if (err) {
             callback(err);
         } else {

@@ -6,7 +6,7 @@ import log from "../utils/streamLog";
 
 export function warpMarkerMap(timeStream, warpMarkerStream) {
 	var twoMarkers=warpMarkerStream.map(f=>f.toJS()).zip((prev,next) => [prev,next],warpMarkerStream.map(f=>f.toJS()).skip(1));
-	twoMarkers.observe(t=> console.log("two",t));
+	// twoMarkers.observe(t=> console.log("two",t));
 	return most.concat(
 		twoMarkers.take(1).map(m => timeStream.takeWhile(t => t < m[0].sourcetime).map(t => (m[1].desttime-m[0].desttime) /(t - m[0].sourcetime)*t+m[0].desttime))
 		,

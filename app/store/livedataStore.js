@@ -52,7 +52,7 @@ var liveDataModified =
                     .updateIn([newData.get("trackId"),"trackId"],(t) => newData.get("trackId"))
                     .updateIn([newData.get("trackId"),"gain"],(t) => t || 0.4)
 
-            ,Immutable.Map()).skip(1).throttledDebounce(25)
+            ,Immutable.Map()).skip(1).throttledDebounce(100)
         
 
 // actionStream.plug(liveDataPrepped.tap(log("liveDataPrepped")).filter(d => d.get("type")==="file_path").map(d=> Immutable.Map({type:"loadMetadata", path: d.get("value")})));

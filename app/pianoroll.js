@@ -18,9 +18,9 @@ var SvgNote = component(({note,pitchSet}) => {
 )
 
 export default component(({notes}) => {
-	console.log("notesFound",notes.toJS());
+	console.log("notesFound",notes);
 	var pitchSet = notes.reduce((pitches, note)=>pitches.add(note.get("pitch")), Immutable.Set());
-	console.log("pitchSet",pitchSet.sort().toList().toJS());
+	console.log("pitchSet",pitchSet.sort().toList());
 	return <g>{notes.toArray().map((note,i) => {
 		return <SvgNote key={"sd"+i}  note={note} pitchSet={pitchSet.sort().toList()}/>
 	})}</g>;

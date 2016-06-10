@@ -10,13 +10,21 @@ var config = Object.create(baseConfig);
 
 config.debug = true;
 
-config.devtool = 'cheap-module-eval-source-map';
+config.devtool = 'inline-source-map';
 
-config.entry = [
+config.entry = {
+ main:[
   'babel-polyfill',
   'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
   './app/index'
-];
+ ]
+//  ,
+//  debug:[
+//   'babel-polyfill',
+//   'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+//   './app/debug'
+//  ]
+};
 
 
 config.module.loaders.push({
@@ -40,7 +48,8 @@ config.plugins.push(
   new webpack.DefinePlugin({
     '__DEV__': true,
     'process.env': {
-      'NODE_ENV': JSON.stringify('development')
+      'NODE_ENV': JSON.stringify('development'),
+      'ELECTRON_ENABLE_LOGGING': true
     }
   }),
   new webpack.IgnorePlugin(/vertx/) 

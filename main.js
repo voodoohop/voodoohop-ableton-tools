@@ -1,19 +1,23 @@
+// var njstrace = require('njstrace').inject();
+
 
 /* eslint no-path-concat: 0, func-names:0 */
-var app = require('app');
-var BrowserWindow = require('browser-window');
+
+var app = require('electron').app;
+var BrowserWindow = require('electron').BrowserWindow;
 var Menu = require('menu');
 var menu;
 var template;
 var most = require("most");
 
+//var process=require("electron").process;
 
-// process.on('uncaughtException', function (err) {
-//   console.error(err);
-//   console.log("Node NOT Exiting...");
-// });
+process.on('uncaughtException', function (err) {
+  console.error(err);
+  console.log("Node NOT Exiting...");
+});
 
-// require('electron-debug')();
+require('electron-debug')();
 
 // require('crash-reporter').start({companyName:"voodoohop"});
 var electron=require("electron");
@@ -21,19 +25,50 @@ console.log("app",electron);
 electron.app = app;
 
 var mainWindow = null;
+var debugWindow = null;
+
+
+const ipcMain = require('electron').ipcMain;
+
+ipcMain.on("stateUpdate", (err ,state) => {
+ //console.log("stateUpdate",state);
+    debugWindow && debugWindow.webContents.send("stateUpdate",state)
+}
+)
+
+const onTopShortCut = electron.globalShortcut;
+const onTopDefinition=['ctrl+shift+v',function() {
+    // console.log('ctrl+shift+v is pressed');
+    mainWindow.setAlwaysOnTop(!mainWindow.isAlwaysOnTop());
+    if (!mainWindow.isAlwaysOnTop())
+      mainWindow.hide();
+    else
+      mainWindow.show();  
+  }];
 
 app.on('window-all-closed', function() {
   if (process.platform !== 'darwin') app.quit();
 });
 
-
+app.commandLine.appendSwitch('remote-debugging-port', '9222');    
 var Positioner = require("electron-positioner");
 app.on('ready', function() {
+    //    BrowserWindow.addDevToolsExtension('node_modules/remotedev-extension/dist');
+    
+//  BrowserWindow.addDevToolsExtension('node_modules/storyboard/chromeExtension');
+  
+  
+    var ret = onTopShortCut.register(...onTopDefinition);
+
+  if (!ret) {
+    console.error('global shortcut registration failed');
+  }
+  
   mainWindow = new BrowserWindow({ width: 300, height: 500, 
     // transparent:true, 
     alwaysOnTop:true,
-    frame: false,
-	  
+    // frame: false,
+	  titleBarStyle:"hidden",
 		'min-width': 151,
 		'min-height': 126,
 		// 'standard-window': false,
@@ -47,17 +82,19 @@ app.on('ready', function() {
     allowRunningInsecureContent: true,
     // experimentalCanvasFeatures:true,
     // overlayFullscreenVideo:true,
-      darkTheme: true
+      darkTheme: true,
 
     // zoomFactor:1
+    title:"VOODOOHOPDJTools"
     });
     
     // window.mainWindow = mainWindow;
     //, transparent:true,frame:false });
+    
 var positioner = new Positioner(mainWindow);
 
 // Moves the window top right on the screen.
-positioner.move('topRight');
+positioner.move('bottomLeft');
 
   console.log("hey");
   mainWindow.webContents.on('did-finish-load', function() {
@@ -67,19 +104,33 @@ positioner.move('topRight');
     //  new taglib.File(f[0]).readTaglibMetadata(
     //  setInterval(() =>
     //  ipcs.write("heyyy"),500);
-  });
+  })
+  if (false && process.env.NODE_ENV!=="production")
+     debugWindow = new BrowserWindow(
+         { width:600, height:600, frame:true, title:"Debug",transparent:true });
 
-  
   if (process.env.HOT) {
     mainWindow.loadURL('file://' + __dirname + '/app/hot-dev-app.html');
+    // mainWindow.toggleDevTools(true);
+    if (debugWindow)
+    setTimeout(()=> {
+     debugWindow.loadURL('file://' + __dirname+ '/app/debug.html');
+    //  
+    //  debugWindow.toggleDevTools(true);
+
+    }
+    ,5);
   } else {
     mainWindow.loadURL('file://' + __dirname + '/app/app.html');
   }
-
+    console.log("mainwin",mainWindow.show,mainWindow.minimized,mainWindow.minimize);;
+console.log(mainWindow.prototype  );
   mainWindow.on('closed', function() {
     mainWindow = null;
   });
-
+// app on ready 
+ 
+// debugWindow.on() 
   // if (process.env.NODE_ENV === 'development') {
   //   mainWindow.openDevTools();
   // }
@@ -117,38 +168,45 @@ positioner.move('topRight');
           app.quit();
         }
       }]
-    }, {
-      label: 'Edit',
-      submenu: [{
-        label: 'Undo',
-        accelerator: 'Command+Z',
-        selector: 'undo:'
-      }, {
-        label: 'Redo',
-        accelerator: 'Shift+Command+Z',
-        selector: 'redo:'
-      }, {
-        type: 'separator'
-      }, {
-        label: 'Cut',
-        accelerator: 'Command+X',
-        selector: 'cut:'
-      }, {
-        label: 'Copy',
-        accelerator: 'Command+C',
-        selector: 'copy:'
-      }, {
-        label: 'Paste',
-        accelerator: 'Command+V',
-        selector: 'paste:'
-      }, {
-        label: 'Select All',
-        accelerator: 'Command+A',
-        selector: 'selectAll:'
-      }]
-    }, {
+    }, 
+    // {
+    //   label: 'Edit',
+    //   submenu: [{
+    //     label: 'Undo',
+    //     accelerator: 'Command+Z',
+    //     selector: 'undo:'
+    //   }, {
+    //     label: 'Redo',
+    //     accelerator: 'Shift+Command+Z',
+    //     selector: 'redo:'
+    //   }, {
+    //     type: 'separator'
+    //   }, {
+    //     label: 'Cut',
+    //     accelerator: 'Command+X',
+    //     selector: 'cut:'
+    //   }, {
+    //     label: 'Copy',
+    //     accelerator: 'Command+C',
+    //     selector: 'copy:'
+    //   }, {
+    //     label: 'Paste',
+    //     accelerator: 'Command+V',
+    //     selector: 'paste:'
+    //   }, {
+    //     label: 'Select All',
+    //     accelerator: 'Command+A',
+    //     selector: 'selectAll:'
+    //   }]
+    // },
+    
+     {
       label: 'View',
       submenu: [{
+        label: 'On Top',
+        accelerator: onTopDefinition[0],
+        click: onTopDefinition[1]
+      },{
         label: 'Reload',
         accelerator: 'Command+R',
         click: function() {
@@ -231,7 +289,7 @@ positioner.move('topRight');
     }];
     menu = Menu.buildFromTemplate(template);
     mainWindow.setMenu(menu);
-              mainWindow.toggleDevTools();
+    // debugWindow.setMenu(menu);
     // mainWindow.flashFrame(true);
     // setInterval(function(){
     //     mainWindow.setAlwaysOnTop(true);

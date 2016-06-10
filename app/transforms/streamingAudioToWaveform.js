@@ -26,8 +26,9 @@ var shell = require('shelljs');
 export function getWebAudioBuffer(path) {
 // return 	pathStream.map(path => {
 
-		if (path.trim().toLowerCase().indexOf(".aif")>0) {
+		if (path.trim().toLowerCase().indexOf(".aif")>0 ) {
 			return most.fromPromise(new Promise(resolve => {
+                console.log("executing ","ffmpeg -i \""+path+"\" /tmp/decoded.wav");
 				shell.exec("rm /tmp/decoded.wav", () =>
 				shell.exec("ffmpeg -i \""+path+"\" /tmp/decoded.wav", (res)=> {console.log("reser",res); resolve(getWebAudioBuffer("/tmp/decoded.wav"))})
 				);
@@ -60,7 +61,10 @@ export function getWebAudioBuffer(path) {
 // .await()
 	
 	// console.log("ab",audioBuffer);
-	return most.fromPromise(new Promise(resolve => audioBuffer.observe(res => resolve(res)).catch(e => console.error(e))));
+	return most.fromPromise(new Promise((resolve,reject) => audioBuffer.observe(res => resolve(res)).catch(e => {
+        console.error(e)
+        reject(e);
+        })));
 // })
 };
 
@@ -166,7 +170,7 @@ function warpMap(buffer,warpMarkers) {
                 console.log("firstBeat",firstBeat); 
                 resolve({pixelsPerBeat,waveform:newBuffer, firstBeat: (firstBeat), duration: warpedDuration})
             })
-            .drain();
+            .drain().catch(console.error.bind(console));
 			
 		}, error => console.error("warpedTimesError",error))
 	// return buffer;

@@ -1,4 +1,12 @@
-import "./utils/fixWhenErrorLog";
+// @flow
+
+require('babel-runtime/core-js/promise').default = require('bluebird');
+global.Promise = require("bluebird");
+// var njstrace = require('njstrace').inject();
+Promise.onPossiblyUnhandledRejection(function(error){
+    throw error;
+});
+// import "./utils/fixWhenErrorLog";
 import React from 'react';
 import { render } from 'react-dom';
 
@@ -13,10 +21,8 @@ import KeyWheel from "./keyWheel";
 
 import Immutable from "immutable";
 
-// import elasticsearch from 'elasticsearch';
-// var client = new elasticsearch.Client({
-//   host: 'http://localhost:9200'
-// });
+// import Dock from "react-dock";
+import ObjectInspector from 'react-object-inspector';
 
 
 import actionSubject from "./api/actionSubject";
@@ -37,38 +43,61 @@ import PlayingTracks from "./playingTracksView";
     
 import transposedNote from "./utils/transposedNote";
 
-import {livedataStore, metadataStore, uiStateStore, oscOutputStore, midiClipStore, remoteClipUpdater} from "./store";
+import {livedataStore, metadataStore, uiStateStore, oscOutputStore, midiClipStore, remoteClipUpdater,globalHarmonyStore} from "./store";
 
 import log from "./utils/streamLog";
-
-import when from 'when';
 
 import ProcessingStatus from "./processingStatus";
 import CpuUsage from "./cpuUsage";
 
-unhandledRejectionsWithSourceMaps(when.Promise);
+var installDevTools = require("immutable-devtools");
 
+installDevTools(Immutable);
+// RemoteDev Extension: Apply default options & start remotedev-server
+//  require('remotedev-extension')({
+//    port: 5678,
+//    runserver: true
+//  });
+// import elasticsearch from 'elasticsearch';
+// var client = new elasticsearch.Client({
+//   host: 'http://localhost:9200'
+// });
+
+
+    
+// var remote = require("remote");
+// var BrowserWindow = remote.require("browser-window");
+// var windows = BrowserWindow.getAllWindows();
+// console.log("windows",windows);
+// Look for the popup window and then...
+// windows[1].openDevTools();
+
+
+// actionSubject.observe(log("actionStream"))
 
 window.actionStream = actionSubject;
 window.Imm = Immutable;
 window.most = most;
 
-function unhandledRejectionsWithSourceMaps(Promise) {
-	Promise.onPotentiallyUnhandledRejection = function(r) {
-		// setTimeout(function() {
-			if(!r.handled) {
-				throw r.value;
-			}
-		// }, 0);
-	};
+// function unhandledRejectionsWithSourceMaps(Promise) {
+// 	Promise.onPotentiallyUnhandledRejection = function(r) {
+// 		// setTimeout(function() {
+// 			if(!r.handled) {
+// 				throw r.value;
+// 			}
+// 		// }, 0);
+// 	};
 
-	Promise.onPotentiallyUnhandledRejectionHandled = function(r) {
-		setTimeout(function() {
-			console.log('Handled previous rejection', String(r.value));
-		}, 0);
-	};
-}
-
+// 	Promise.onPotentiallyUnhandledRejectionHandled = function(r) {
+// 		setTimeout(function() {
+// 			console.log('Handled previous rejection', String(r.value));
+// 		}, 0);
+// 	};
+// }
+// unhandledRejectionsWithSourceMaps(when.Promise);
+// var storyboard = require("storyboard");
+// var wsServer = require("storyboard/lib/listeners/wsServer");
+// storyboard.addListener(wsServer,{port:8090});
 
 
 var appState = most.combine((liveData, metaData, midiData, uiState,remoteClipUpdater) => 
@@ -82,12 +111,9 @@ var appState = most.combine((liveData, metaData, midiData, uiState,remoteClipUpd
          midiData: midiData.get(trackId) || null, trackId:trackId})
         .filter(v=> v !== null && v !== undefined) 
          })}	)
-	,livedataStore.tap(ld => console.table(ld.map(v => v).toJS())), metadataStore, midiClipStore, uiStateStore, remoteClipUpdater)
+	,livedataStore.tap(ld => console.table(ld.map(v => v.toJS()))), metadataStore, midiClipStore, uiStateStore, remoteClipUpdater)
     
 
-
-
-import ObjectInspector from 'react-object-inspector';
 
 var debouncedState =  appState.throttledDebounce(50);
 var finalState = debouncedState
@@ -102,7 +128,7 @@ var finalState = debouncedState
      if (!pitch)
         pitch=0;
     // console.log("table",);
-    console.table([pv.get("liveData").toJS(),v.get("liveData").toJS()]);
+    // console.table([pv.get("liveData"),v.get("liveData")]);
     if (pv.getIn(["liveData","pitch"]) === pitch && pv.getIn(["liveData","file_path"]) === v.getIn(["liveData","file_path"]) && pv.getIn(["liveData","transposedChords"]))
         return v
             .setIn(["liveData","transposedChords"],pv.getIn(["liveData","transposedChords"]))
@@ -127,23 +153,39 @@ actionSubject.plug(
     s.get("tracks").toArray()
     .filter(t => t.get("midiData") && t.get("fileData") && !t.getIn(["fileData","midiMetadata"]))
     .map(t => Immutable.Map({
-        type:"mergeMetadata", 
+        type:"mergeMetadata",   
         data:Immutable.Map({midiMetadata: t.get("midiData")}), 
         path: t.getIn(["fileData","path"])}))
 )));
 
+const ipcRenderer = require('electron').ipcRenderer;
+import {toJSON as immToJson, fromJSON as immFromJson} from "transit-immutable-js";
+
+var sizeReducer=(v) => v && v.size ? v.remove("waveform").take(10).map(sizeReducer) : v;
+
+
 finalState.observe(state => {
 	// console.error("state",state);
-	// console.table(state.toJS());
+ console.table(state.toJS());
+ipcRenderer.send("stateUpdate",immToJson(sizeReducer(state)));    
+
 render(
 	<div>
-    <div style={{position:"fixed",bottom:"0px",right:"0px",backgroundColor:"rgba(0,0,0,0.1)"}}><CpuUsage usage={state.getIn(["uiState","cpuUsage"])} /></div>
+    <div style={{position:"fixed",bottom:"0px",right:"0px",backgroundColor:"rgba(0,0,0,0.1)"}}>
+    <CpuUsage usage={state.getIn(["uiState","cpuUsage"])} />
+    </div>
     <PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
     <KeyWheel />
-    <ProcessingStatus uiState={state.get("uiState")} />
-    <ObjectInspector style={{color:"white"}} data={ state.toJS() } />
+        {process.env["NODE_ENV"] == "production" ? <div /> :
+        <div>
+        <ProcessingStatus state={state} uiState={state.get("uiState")} />
+        <ObjectInspector style={{color:"white"}} data={ state.toJS() } initialExpandedPaths={["*","*","*"]} />
+        </div>
+    }
     </div>,
   	document.getElementById('root')
 )
 
 }).catch(e => console.error(e));
+    // <ProcessingStatus state={state} uiState={state.get("uiState")} />
+    // <ObjectInspector style={{color:"white"}} data={ state.toJS() } initialExpandedPaths={["*","*","*"]} />

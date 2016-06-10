@@ -15,6 +15,14 @@ h2 {
   color: black;
 }
 
+.hoverWhite:hover {
+    stroke:white;
+}
+
+.hoverWhite:hover {
+    stroke:black;
+}
+
 p {
   font-size: 24px;
 }

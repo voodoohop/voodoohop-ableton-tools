@@ -201,7 +201,9 @@ var grouedOscCommands = groupedLiveData
 
 
 var mergedCommands = clickedLoopCommands
-.merge(grouedOscCommands)
+.merge(grouedOscCommands).multicast();
+
+var mergedCommands2 = mergedCommands
 .combine((oscCommand, liveData)=> {
     var type = oscCommand.get("type");
     var trackId =oscCommand.get("trackId");
@@ -209,26 +211,29 @@ var mergedCommands = clickedLoopCommands
     var prevValue = liveData.getIn([trackId, type]);
     if (prevValue == value)
         return most.empty();
+    var command = most.of(oscCommand);
+
     if (type !== "loop_start" && type !== "loop_end")
         return most.of(oscCommand);
-    var command = most.of(oscCommand);
-    if (type === "loop_start" && liveData.getIn([trackId,"loop_end"])<value)
+    if (type === "loop_start" && liveData.getIn([trackId,"loop_end"])<=value)
        // cmds.push(Immutable.Map({trackId, type:"loop_end", value: value+256}));
-       command = command.delay(200);
-    if (type === "loop_end" && liveData.getIn([trackId,"loop_start"])>value)
+       command = command.delay(20);
+    if (type === "loop_end" && liveData.getIn([trackId,"loop_start"])>=value)
 //        cmds.push(Immutable.Map({trackId, type:"loop_start", value: value-256}));
-       command = command.delay(200);
+       command = command.delay(20);
  
  //   cmds.push(oscCommand);
     return command;
 }
-,livedataStore)
+,livedataStore
+.sampleWith(mergedCommands)
+)
 .flatMap(f=>f);
 
 
-var store = mergedCommands
+var store = mergedCommands2
 // .filter(f => f.get("type"))
-// .tap(log("mergedCommands"))
+//.tap(log("mergedCommands"))
 .map(tc => 
 		Immutable.Map({
 			trackId: parseInt(tc.get("trackId")),

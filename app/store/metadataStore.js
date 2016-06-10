@@ -52,13 +52,23 @@ var createMetadataStore = (actionStream) => {
         .tap(log("metadata loaded"))
         .flatMapError(e => { console.error("metadata load error",e); return (Immutable.Map({ error: e })); })
         .tap(() => getNextTransformed.push(true))
+        // .filter(m => )
         .multicast();
         
    actionStream.plug(loadPaths.map(path=> Immutable.Map({type:"metadataLoading",path})));
    actionStream.plug(metadata.map(m=>Immutable.Map({type:"metadataLoaded", metadata:m})));
+
    
-    var pathsToBeWatched = metadata.flatMap(m => most.from(m.toArray().filter(e => e.has && e.has("path") && e.get("path")).map(e =>
-        Immutable.Map({ target: m, watchPath: e.get("path"), watchStat: e.get("pathStat") }))))
+    var metadataStore = dataStore("audioMetaData",metadata
+        .merge(actionStream.filter(a => a.get("type")=== "mergeMetadata").map(a => a.get("data").set("path", a.get("path"))))
+        .tap(log("sending to store")))
+        .flatMapError(e=> { console.error(e); return Immutable.Map({ error: e }); })
+
+   var preloadedMetadataToWatch=metadataStore.take(1).flatMap(m => most.from(m.toArray())).tap(log("preloadedMetadaToWatch"));
+    var pathsToBeWatched = metadata
+            .merge(preloadedMetadataToWatch.tap(log("metadata loading for problem")))
+            .flatMap(m => most.from(m.toArray().filter(e => e.has && e.get("path"))
+            .map(e => Immutable.Map({ target: m, watchPath: e.get("path"), watchStat: e.get("pathStat") })))).multicast();
 
 
 
@@ -82,12 +92,6 @@ var createMetadataStore = (actionStream) => {
     pathsChangedFile.observe(log("pathsChangedFile")).catch(e => console.error(e));
     actionStream.plug(pathsChangedFile.map(p => Immutable.Map({ type: "reloadMetadata", path: p.get("target").get("path") })));//observe(p => console.log("pathsChanged",p.toJS()));
 
-
-   
-    var metadataStore = dataStore("audioMetaData",metadata
-        .merge(actionStream.filter(a => a.get("type")=== "mergeMetadata").map(a => a.get("data").set("path", a.get("path"))))
-        .tap(log("sending to store")))
-        .flatMapError(e=> { console.error(e); return Immutable.Map({ error: e }); })
 
     return metadataStore.tap(log("metadataStore"));
 }

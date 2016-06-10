@@ -11,18 +11,25 @@ import most from "most";
 
 
 import tinycolor from "tinycolor2";
-metadataStore.take(1).observe((md)=> {
-console.log("md",md.toJS());
+
+
+
+const requestProperties = Immutable.fromJS(["pitch_coarse","file_path"]);
+
+
+metadataStore.take(1).delay(500).observe((md)=> {
+console.log("md",md);
 oscOutput.push(Immutable.fromJS({trackId:"sendAll",args:[]}));
 }
-);
+).catch(console.error.bind(console));
 
 
-var clipUpdateRes = oscInputStream.filter(oscIn => oscIn[0] === "clipUpdateResult")
+
+var clipUpdateRes = oscInputStream.filter(oscIn => oscIn[0] === "clipPropertyChange")
 .map(u => Immutable.Map({type: "clipUpdateResult", trackId:u[1], scene: u[2], property: u[3], value: u[4]}))
 .tap(log("clipUpdateResultResult")).multicast();
 
-var newPathReceived =  clipUpdateRes.filter(c=>c.get("property")==="file_path");
+var newPathReceived =  clipUpdateRes.filter(c=>c.get("property")==="file_path" && c.get("value")).tap(log("newPathReceived"));
 var metadataNeeded =newPathReceived
 .sample((metadata,pathNeeded) => {
     // console.log("mdta",metadata.toJS(),"pathNeeded",pathNeeded.toJS());
@@ -31,9 +38,9 @@ var metadataNeeded =newPathReceived
     trackId:pathNeeded.get("trackId"), 
     scene:pathNeeded.get("scene"),
     metadata: metadata.get(pathNeeded.get("value"))
- });}, metadataStore,newPathReceived);
+ });}, metadataStore,newPathReceived).tap(log("metadataNeeded"));
 
-var waitingForMetadata = metadataNeeded.filter(m=>!m.get("metadata"));
+var waitingForMetadata = metadataNeeded.filter(m=>!m.get("metadata")).tap(log("waitingForMetadata"));
 //.combine((waiting, metadata)=> ,metadataStore);
 
 actionStream.plug(waitingForMetadata.map(w => w.set("type","loadMetadata")));
@@ -48,84 +55,137 @@ var alreadyGotMetadata = metadataNeeded.filter(m=>m.get("metadata")).tap(log("al
 
 // actionStream.plug(most.periodic(100,()=>Immutable.fromJS({type:"oscOutput", trackId:1, args:["clipCommand",Math.floor(Math.random()*5),"set","color",Math.floor(16777216*Math.random())]})).map(f=>f()))
 
+var TrackStoreRecord = Immutable.Record({numScenes: 0,midi:0, trackId:-1,clips: Immutable.Map()}, "TrackStorage");
+
 var remoteClipStore= actionStream
 .filter(a=>a.get("type") === "clipUpdateReceiverTrack"  )
 .tap(log("remoteClipUpdate"))
-.map(a=> Immutable.Map({trackId: a.get("trackId"), numScenes: a.get("numScenes")}))
-.merge(clipUpdateRes.map(r => Immutable.Map({trackId:r.get("trackId")})
-    .setIn(["clips",r.get("scene")], Immutable.Map().set(r.get("property"),r.get("value"))))//.tap(log("mergeClipUpdateRes"))
-)
-// .combine((remoteClipData,metaData) => ,metadataStore)
-.scan((store,next)=>store.mergeDeep(Immutable.Map().set(next.get("trackId"),next)),Immutable.Map())
-.skipRepeats()
-.tap(log("remoteClipStore"))
-.multicast()
-;
+.flatMap(a=> most.from([{path:[a.get("trackId"), "trackId"],value:a.get("trackId")},{path:[a.get("trackId"), "numScenes"],value:a.get("numScenes")},{path:[a.get("trackId"), "midi"],value:a.get("midi")}]))
+.merge(clipUpdateRes.map(r => ({path:[r.get("trackId"), "clips",r.get("scene"),r.get("property")],value:r.get("value")})))
 
-var clipColorStream = remoteClipStore.combine((remoteClips,metadata)=>{ 
-    console.log("remoteClips",remoteClips.toJS());
-    return remoteClips.map((trackClips,trackId)=> {
-        console.log("trackClips",trackClips.toJS());
-        if (!trackClips.get("clips"))
-            return Immutable.List();
-        return  trackClips.get("clips").filter(clip => metadata.get(clip.get("file_path"))).map((clip,scene) => Immutable.Map(
-    {
-        scene, 
-        trackId, 
-        key:metadata.getIn([clip.get("file_path"),"id3Metadata","initialkey"])
-    })).valueSeq()
-    .map(data => data.set("hexColor",tinycolor(getKeyColor(data.get("key"))).toHexString()))
-    .map(data => data.set("keyColor", parseInt(data.get("hexColor").replace("#","0x"))))
-;}
-    )
-    .valueSeq().flatMap(v=>v)
-    }, metadataStore)
-    .loop((alreadyColored, clips)=> {
-        const colorNow = clips.filter(clip => !alreadyColored.has(clip.toString()));
-        return {seed: alreadyColored.concat(colorNow.map(clip => clip.toString())), value: most.from(colorNow.toArray())};
-    },Immutable.Set())
-    .flatMap(cs=>cs)
-    .tap(log("coloredClips"));
+.tap(log("remoteClipStoreData"))
+
+.scan((store,{path,value}) => {
+    if (!store.has(path[0]))
+        store = store.set(path[0], Immutable.Map({numScenes: 0,midi:0, trackId:-1,clips: Immutable.Map()}));        
+    return store.updateIn(path, () =>  value);
+ }, Immutable.Map())
+ .map(store => store.map(track => track.update("clips", clips => clips.filter(clip => clip.get("file_path")))))
+// .skip(1) 
+
+.skipRepeatsWith(Immutable.is)
+ .throttledDebounce(100)
+
+.map(m => m.filter((v,k) => v.get("trackId")>=0 && v.get("numScenes")>0 && v.has("clips")))
+.tap(log("before keyseq test"))
+// .map(tracks => tracks.map(m =>m.update("clips",Immutable.List(),clips=>clips.filter(clip => clip.keySeq().isSuperset(requestProperties.toArray())))))
+// .skipRepeats()
+
+// .tap(clipStore => log("remoteClipStore2")(clipStore.getIn([0,"clips"])))
+// .startWith(Immutable.Map())
+.skipRepeatsWith(Immutable.is)
+.tap(tracks => log("remoteClipStoreFlat")(tracks.flatMap(track => track.get("clips"))))
+.tap( log("remoteClipStore"))
+
+.multicast();
+
+
+var HarmonyColor = Immutable.Record({key:"-",hexColor:"#aaa",keyColor:0});
+
+var ClipDataRecord= Immutable.Record({file_path:null, pitch_coarse:0, harmonyColor: new HarmonyColor(),name:null});
+
+var ClipRecord= Immutable.Record({scene: -1,trackId:-1, clip: new ClipDataRecord()});
+
+function createClipRecord(track, scene) {
+    console.log("typeof scene",track,scene);
+    var record= new ClipRecord({scene, trackId:track.get("trackId")});
+    return record.set("clip",track.getIn(["clips",scene]));
+}
+
+var clipStreams = remoteClipStore.flatMap(tracks=>most.from(tracks.valueSeq().toArray()))
+.flatMap(track => most.from(track.get("clips").map((clip, scene) => Immutable.Map({key:Immutable.Map({trackId: track.get("trackId"),scene}),clip:clip.remove("playing_position") })).toArray()))
+.loop((clipStreamMap, trackStream) =>Immutable.is(clipStreamMap.get(trackStream.get("key")),trackStream.get("clip")) ?  {seed:clipStreamMap,value:most.empty()} : {seed:clipStreamMap.set(trackStream.get("key"),trackStream.get("clip")), value: most.of(trackStream)}, Immutable.Map())
+.flatMap(f=>f)
+.filter(cr => cr.get("clip") && cr.getIn(["clip","name"]))
+
+
+function getTransposedNote(clip,metadata) {
+    return transposeNote(metadata.getIn([clip.get("file_path"),"id3Metadata","initialkey"]),clip.get("pitch_coarse")||0)
+};
+
+function getMetadataName(clip,metadata) {
+    var origName = clip.get("name").replace(/\[(.*)\]\ /,"").trim();
+    
+    var name = metadata.getIn([clip.get("file_path"),"id3Metadata","artist"]) ?  metadata.getIn([clip.get("file_path"),"id3Metadata","artist"])+" - "+metadata.getIn([clip.get("file_path"),"id3Metadata","title"]):origName;
+    return name;
+};
+
+
+var clipColorStream = clipStreams
+    .combine((clipRecord,metadata) => {
+        const key = getTransposedNote(clipRecord.get("clip"),metadata);
+        const metadataName  = getMetadataName(clipRecord.get("clip"),metadata);
+        const hexColor = tinycolor(getKeyColor(key)).toHexString();
+        const keyColor = parseInt(hexColor.replace("#","0x"));
+        return clipRecord.setIn(["clip","harmonyColor"],Immutable.Map({key,hexColor,keyColor}))
+        .setIn(["clip","metadataName"],metadataName);
+     },metadataStore)
+    // .tap(log("wannaColour"))
+    // .loop((alreadyColored, clips)=> {
+    //     const hashKey = (now) => ""+now.get("scene")+"_"+now.get("trackId")+"_"+now.get("file_path");
+
+    //     const colorNow = clips
+    //     .filter(clip => {
+    //         const existsAlready=alreadyColored.get(hashKey(clip));
+    //         // console.log(clip);
+    //         return !existsAlready || existsAlready.toString() !== clip.toString();});
+    //     // colorNow.map(t => t.toString()).forEach(log("colorNow"));
+    //     return {seed: colorNow.reduce((before,newOne)=> before.set(hashKey(newOne), newOne),alreadyColored), value: colorNow.toArray()};
+    // },Immutable.Map())
+    // .flatMap(cs=> most.from(cs))
+    // .skipRepeatsWith(Immutable.is)
+    
+    
+    .tap(log("coloredClips"))
+    .multicast();
+
+    // var atEnd = clipColorStream.map(({clip}) => clip.get("playing_position")<16).skipRepeats().filter(f=>f);
+    // var notAtEnd = clipColorStream.map(({clip}) => clip.get("playing_position")>=16).skipRepeats().filter(f=>f);
+    // var flashNearEnd = clipColorStream.flatMap((clipRecord)=> most.generate(function*() {
+    //     var flashNeutral=true;
+    //     while (true) {
+    //     yield new Promise((resolve)=> setTimeout(()=> {
+    //         resolve(clip=> flashNeutral?clipRecord.setIn(["clip","harmonyColor","keyColor"], 0x666666):clipRecord);
+    //         console.log("flashing")
+    //         flashNeutral= !flashNeutral;
+    //     },300))
+    //     }
+    // })).during(atEnd.map(notAtEnd));
+
+//TODO: use flash near end
+
+
+const pitchedInfo = pitch => pitch==0? "" : (pitch> 0? " +"+pitch : ""+pitch) ;
+
+const clipPrefix = clipRecord => "["+clipRecord.getIn(["clip","harmonyColor","key"])+pitchedInfo(clipRecord.getIn(["clip","pitch_coarse"]))+"]";
 
 actionStream.plug(
-    clipColorStream.map(clipCol =>
-    Immutable.fromJS({type:"oscOutput", trackId:clipCol.get("trackId"), args:["clipCommand",clipCol.get("scene"),"set","color",clipCol.get("keyColor")]}))
-    .bufferedThrottle(200)
+    clipColorStream
+    // merge(flashNearEnd)
+    .flatMap(clipRecord => most.from([
+        ["color",clipRecord.getIn(["clip","harmonyColor","keyColor"])],
+        ["name",clipPrefix(clipRecord) + " " + clipRecord.getIn(["clip","metadataName"]).replace(/\[(.*)\]\ /,"").trim()]
+        
+    ].map(setProps =>
+        Immutable.fromJS(
+            {
+                type: "oscOutput",
+                trackId: clipRecord.getIn(["key","trackId"]), 
+                args:["clipCommand",clipRecord.getIn(["key","scene"]),"set"].concat(setProps)
+            })
+    
+    )))
+    .bufferedThrottle(5, "oscColorizeActionStream")
 );
-
-
-var requestProperties = Immutable.fromJS(["file_path","pitch_coarse"]);
-
-var requestPathActions=remoteClipStore.zip(
-    (prev,next) => next.filter((v,k) => !prev.has(k))
- ,remoteClipStore.skip(1))
- .flatMap(newTracks => most.from(newTracks.toArray()))
- .tap(log("newTrack"))
- .flatMap(
-     newTrack => most.from(
-        Immutable.Range(0,newTrack.get("numScenes") || 1).flatMap(scene =>
-        requestProperties.map(prop =>
-         Immutable.fromJS({type:"oscOutput", trackId:newTrack.get("trackId"), args:["clipCommand",scene,"get",prop]})
-        )
-        ).toArray()
-     )
- ).tap(log("requesting"));
- 
- //TODO: make throttling not leak a buffer
-actionStream.plug(
-requestPathActions.bufferedThrottle(300)
-//.during(requestPathActions.take(1).delay(500).map(()=>most.never()))
-);
-
-// var clipsWithMetadata = remoteClipStore.combine((remoteClips,metadata) =>,metadataStore)
 
 export default remoteClipStore;
-// oscOutput.push(actionStream.filter(a => a.get("type") ===));
-
-
-
-
-// actionStream.plug(clipUpdateRes 
-//     .filter(r => r.get("property") === "file_path")
-//     .map(r=> Immutable.Map({type:"loadMetadata", path: r.get("value")}))
-// )

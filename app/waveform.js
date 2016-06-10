@@ -60,7 +60,7 @@ var WaveformPoly = component(({durationBeats, waveformData, trackId,chords, musi
 		points = points.concat([points.first()]).toArray();
 		// log("points",i,points,segment.toJS());
 		points=points.map((p)=> [p[0]/pixelsPerBeat, (p[1]/2+0.5)*127].join(","));
-		return <polyline key={""+segment.get("startOffset")+"_"+segment.get("endOffset")} 
+		return <polyline style={{filter:"url(#blur1_"+trackId+")"}} key={""+segment.get("startOffset")+"_"+segment.get("endOffset")} 
 			stroke="none"
 					  fill={tinycolor(keysToColors(segment.get("chord"))).lighten(10).toHexString()}
 					  points={points.join(" ")} 

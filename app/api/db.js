@@ -13,7 +13,7 @@ import os from "os";
 // import homedir from "homedir";
 // setTimeout(()=>
 console.log("home", os.homedir());
-export var pouch = new PouchDB(os.homedir()+"/.VoodoohopLiveTools"/*+Math.random()*/);
+export var pouch = new PouchDB(os.homedir()+"/.VoodoohopLiveTools_2"/*+Math.random()*/);
 window.PouchDB = pouch;
 // var remoteDB = new PouchDB('http://localhost:5984/myremotedbtomtom')
 
@@ -75,7 +75,7 @@ export function dataStore(storeName, stream, keyFunc = (item)=>item.get("path"))
     
     )).tap(log("allDocs")).flatMap(allDocs => { 
         var saved = allDocs.rows.reduce((store,row) => {
-            console.log("loaded", row.id);
+            // console.log("loaded", row.id);
             return store.set(row.id.replace(storeName+"_",""),Imm.fromJS(row.doc));},Imm.Map());
      console.log("presaved",allDocs);
     var memStore = stream.tap(log("memStoreToDB"))

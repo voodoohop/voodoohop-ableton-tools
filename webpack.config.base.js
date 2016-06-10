@@ -2,7 +2,7 @@ var path = require('path');
 
 
 
-config = {
+var config = {
   module: {
     loaders: [{
       test: /\.jsx?$/,
@@ -12,7 +12,7 @@ config = {
   },
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: "[name]bundle.js",
     libraryTarget: 'commonjs2',
     publicPath: 'http://localhost:3000/dist/'
   },

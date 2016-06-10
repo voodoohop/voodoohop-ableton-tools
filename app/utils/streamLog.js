@@ -7,11 +7,12 @@ import Immutable from "immutable";
 // 	return original(...args);
 // });
 var disable = process.env["NODE_ENV"] === "production";
-export default function streamLog(identifier) {
+export default function streamLog(identifier, transformer=(a=>a)) {
 	if (disable)
 		return (args) => args;
 	return (...args) => {
-		console.log("---"+identifier, ...args.map(a => a === undefined ? undefined : ((a===null) ? null: (a.toJS && a.toJS()) || a)  ));
+		console.log("---"+identifier, 
+        ...args.map(transformer).map(a => a === undefined ? undefined : ((a===null) ? null: a)  ));
 		return args[0];
 	}
 }

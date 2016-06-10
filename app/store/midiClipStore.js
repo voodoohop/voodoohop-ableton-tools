@@ -18,7 +18,7 @@ var oscMidiClipInput = oscInputStream
 		
 var oscClipUpdaeteReceiverTrack = oscInputStream
 	.filter(f => f[0] === "clipUpdateReceiverTrack")//.observe(log("midiClipReceiverTrack"))
-	.map(f => Immutable.fromJS({type: "clipUpdateReceiverTrack", trackId: f[2], numScenes: f[4]}));
+	.map(f => Immutable.fromJS({type: "clipUpdateReceiverTrack", trackId: f[2], numScenes: f[4], midi:f[6] && f[8]}));
 
 
 actionStream.plug(oscMidiClipInput);

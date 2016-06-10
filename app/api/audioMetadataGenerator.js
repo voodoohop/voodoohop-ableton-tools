@@ -1,11 +1,22 @@
+
+
 var most = require("most");
 var Stream = require('most').Stream;
 
+
+import {toJSON as immToJson, fromJSON as immFromJson} from "transit-immutable-js";
+
+import log from"../utils/streamLog";
 import Immutable from "immutable";
 
+const logger = log("bufferedThrottleLog");
 
 Stream.prototype.collect = function () {
   return this.reduce((xs, x) => { xs.push(x); return xs; }, []);
+};
+
+Stream.prototype.skipImmRepeats=function(){
+    return this.skipRepeatsWith(Immutable.is);
 };
 
 Stream.prototype.combinePrevious = function(functor) {
@@ -13,24 +24,79 @@ Stream.prototype.combinePrevious = function(functor) {
 };
 
 Stream.prototype.throttledDebounce = function(interval) {
+    // console.log("thisIs",this);
     var shared=this.scan((withId,data)=> ({data, id:withId.id+1}),{id:0}).skip(1).multicast();
     return shared.throttle(interval).merge(shared.debounce(interval))
                 .skipRepeatsWith((a,b)=>a.id===b.id)
-                .map(d=>d.data);
+                .map(d=>d.data).multicast();
 };
 
-Stream.prototype.bufferedThrottle = function(interval) {
+// var storyboard=require("storyboard");
+
+// var getSources = (context) =>
+//   context.source ? [context.source] : context.sources || [];
+
+// var getSinks = (context) =>
+//   context.sink ? [context.sink] : context.sinks || [];
+
+// var findParentLogger = (source,displayName) => {
+//     var sources = (source.loggerStory && source.loggerStory) || getSources(source).map(s => findParentLogger(s,displayName));
+//     if (sources.length===0)
+//         sources = [storyboard.mainStory];
+//     var result = lodash.uniq(lodash.flatten(sources));
+//     var primaryParent = result.shift();
+//     return primaryParent.child({title:displayName,extraParents:result});
+//    // .child({src: source.loggerDisplayName}))
+//     //return sources;
+// }
+// var lodash=require("lodash");
+
+// var hasChildLogger = (context) => context.loggerStory || getSinks(context).filter(hasChildLogger).length > 0;
+
+// Stream.prototype.log = function(displayName) {
+// //     this.loggerDisplayName = displayName;
+// //    this.loggerStory = findParentLogger(this,displayName);
+
+
+//  console.log("loggerThis",this);
+//    var res= this.tap(data => {
+//     let childLogger=getSinks(res).filter(hasChildLogger).length > 0;
+//      console.log("loggingThis",data,childLogger,res);
+//        res.loggerStory.warn(displayName,{attachInline:(data.toJS && data.toJS())||data });
+//          if (!childLogger)   {
+//             console.log("loggingClosing"); 
+//             res.loggerStory.close();
+//          }
+//    });
+   
+//   res.loggerDisplayName = displayName;
+//    res.loggerStory =  findParentLogger(res,displayName);
+
     
-    return this.loop((lastEmittedTime,newData)=> {
+//  return res;
+// }
+
+Stream.prototype.bufferedThrottle = function(interval,streamName=null) {
+    // return this;
+    if(!streamName)
+        streamName=Math.floor(Math.random()*1000);
+    let totalScheduled = 0;
+    return this.loop((nextScheduled,newData)=> {
         // const newQueue= timedQueue.get("queue").push(newData);
         const timeNow = new Date().getTime();
-        const delay = Math.max(interval - (timeNow-lastEmittedTime),0);
-        // console.log("timeNow",timeNow,"interval",delay,lastEmittedTime);
-        return {value: most.of(newData).delay(delay), seed: delay+timeNow};
+        const delay = Math.max(interval - (timeNow-nextScheduled),0);
+        
+        totalScheduled++;       
+        logger({streamName,totalScheduled,timeNow,delay,delta:nextScheduled-timeNow});
+        if (delay <=0 )
+            return {value:most.of(newData), seed: timeNow};
+        return {value: most.of(newData).delay(delay), seed:timeNow+delay};
     }
      ,0)
      .flatMap(v => v)
-    ;
+     .tap(() => {totalScheduled--; logger({totalScheduled,streamName});})
+    //  .tap(() => )
+    //  .multicast();
     // var queue=[];
     // var finished=false;
     // this.observe((item)=> {
@@ -42,6 +108,34 @@ Stream.prototype.bufferedThrottle = function(interval) {
     
     
     // return most.periodic(interval,true).flatMap(() => (queue.length === 0 ? (finished?most.empty():most.never()):most.of(queue.shift())));
+}
+
+function tomStreamDiff(stream) {
+    return stream.combinePrevious(tomDiff);//.flatMap(f=>f);
+}
+
+function tomDiff(prev,next,path=Immutable.List(), newDocument=null) {
+    if (prev===undefined)
+        prev= Immutable.Map();
+    
+    if (newDocument===null)
+        newDocument = next;
+    // console.log("diffing1",prev,next);
+     console.log("diffing", prev.toJS ? prev.toJS() :prev, next.toJS ? next.toJS() :next );
+    var res=  prev.is(next) ?
+        most.empty()
+    :
+        most.from(next.keySeq().filter(k => next.get(k) !== prev.get(k)).toArray())
+        .flatMap(k => {
+            let res = next.get(k).keySeq ? tomDiff(prev.get(k), next.get(k),path.concat([k]),newDocument) : most.of(Immutable.Map({newDocument,path:path.concat([k]), value:next.get(k), previousValue:prev.get(k)}));
+            return res;
+        });
+    // console.log("res",res);
+    return res;
+};
+
+Stream.prototype.immutableDiff = function() {
+    return tomStreamDiff(this);
 }
 
 var tst=most.from([1,2,3,4,5,10,11,12,14,515,800]).delay(3000).bufferedThrottle(300)
@@ -66,7 +160,10 @@ import {mapStackTrace} from "sourcemapped-stacktrace";
    var res= f ===undefined  || f === null ? most.of(Immutable.Map({error:"got falsy value from transfrom "+transform.name})): ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f : (f.hasOwnProperty(Symbol.iterator) && ! (f instanceof String) ? most.from((f.toArray && f.toArray()) || f) : most.of(f)) ));
    
    return res.flatMapError(e => {
-          console.error("error1_",transform,e);
+          console.error("error1_",transform);
+          
+          
+          console.error(e);
           return most.of(Immutable.Map({error:e}));
         })
  }
@@ -96,6 +193,7 @@ var createInputstreamTransform = (transform, transforms) => {
           
         //   else
           console.error("error1_",transform, e);
+          console.error(e);
           return most.of(Immutable.Map({error:e}));
         }).multicast()
       :
@@ -106,6 +204,16 @@ var createInputstreamTransform = (transform, transforms) => {
         // .map(f => (f instanceof Promise) ? f : new Promise(resolve => resolve(f))).flatMap(f => most.fromPromise(f)
          
         .flatMap(e => mostify(e,transform))
+        .flatMapError(e => {
+        // if (e && e.stack)
+        //      mapStackTrace(e.stack,st => console.error("error_",st));
+          
+        //   else
+          console.error("error1_", e);
+          
+          console.error(e);
+          return most.of(Immutable.Map({error:e}));
+        })
          .multicast()
     )}
 };
@@ -117,8 +225,15 @@ export var registerTransform = (transform) =>
 
 export var getTransformed = (requiredTransforms, inputStream) => {
   // console.log("getTransformed", requiredTransforms, transforms);
-  return most.zip((...transformed) => transformed.reduce((o,n,i)=> o.set(requiredTransforms[i], n),Immutable.Map()),...requiredTransforms.map(t => transforms[t](inputStream)))
-     .multicast();
+  return most.zip((...transformed) => transformed.reduce((o,n,i)=> o.set(requiredTransforms[i], n),Immutable.Map()),...requiredTransforms.map(t => transforms[t](inputStream).flatMapError(e => {
+        // if (e && e.stack)
+        //      mapStackTrace(e.stack,st => console.error("error_",st));
+          
+        //   else
+          console.error("error1_", e);
+          return most.of(Immutable.Map({error:e}));
+        })))
+     .tap(log("transformResult")).multicast();
 }
 
 registerTransform({ name: "path", transform: input => input, depends: [] })
