@@ -73,8 +73,6 @@ installDevTools(Immutable);
 // windows[1].openDevTools();
 
 
-// actionSubject.observe(log("actionStream"))
-
 window.actionStream = actionSubject;
 window.Imm = Immutable;
 window.most = most;

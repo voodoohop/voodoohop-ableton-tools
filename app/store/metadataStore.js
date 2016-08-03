@@ -25,7 +25,7 @@ var createMetadataStore = (actionStream) => {
     var getNextTransformed = Subject(true);
 
     var loadPaths = actionStream.filter(a => a.get("type") === "loadMetadata"
-     || a.get("type") === "reloadMetadata"
+     || a.get("type") === "reloadMetadata" || a.get("type") === "livePathReceived"
      )
         .loop((paths, f) => {
             if (f.get("type") === "reloadMetadata")
@@ -47,10 +47,11 @@ var createMetadataStore = (actionStream) => {
     
     var metadata = getTransformed(["path", "pathStat", "id3Metadata", "audioMetadata", "warpMarkers", "waveform"],//, "vampChord_HPA", "vampChord_QM"],
         loadPaths.tap(log("got path to load"))
-            .tap(log("actually requesting metadata load")))
+            // .tap(log("actually requesting metadata load"))
+            )
         // .skipRepeats()
         .tap(log("metadata loaded"))
-        .flatMapError(e => { console.error("metadata load error",e); return (Immutable.Map({ error: e })); })
+        .flatMapError(e => { console.error("metadata load error",e); return (Immutable.fromJS({ error: e })); })
         .tap(() => getNextTransformed.push(true))
         // .filter(m => )
         .multicast();
@@ -62,20 +63,24 @@ var createMetadataStore = (actionStream) => {
     var metadataStore = dataStore("audioMetaData",metadata
         .merge(actionStream.filter(a => a.get("type")=== "mergeMetadata").map(a => a.get("data").set("path", a.get("path"))))
         .tap(log("sending to store")))
-        .flatMapError(e=> { console.error(e); return Immutable.Map({ error: e }); })
+        .flatMapError(e=> { console.error(e); return Immutable.fromJS({ error: e }); })
 
-   var preloadedMetadataToWatch=metadataStore.take(1).flatMap(m => most.from(m.toArray())).tap(log("preloadedMetadaToWatch"));
+    // var preloadedMetadataToWatch=metadataStore.take(1).flatMap(m => most.from(m.toArray())).tap(log("preloadedMetadaToWatch"));
+    
     var pathsToBeWatched = metadata
-            .merge(preloadedMetadataToWatch.tap(log("metadata loading for problem")))
-            .flatMap(m => most.from(m.toArray().filter(e => e.has && e.get("path"))
-            .map(e => Immutable.Map({ target: m, watchPath: e.get("path"), watchStat: e.get("pathStat") })))).multicast();
+            // .merge(preloadedMetadataToWatch.tap(log("metadata loading for problem")))
+            .flatMap(m => most.from([m,m.get("warpMarkers")].filter(e => e.has && e.get("path")))
+            // .tap(log("goingToWatch"))
+            .map(e => Immutable.Map({ target: m, watchPath: e.get("path"), watchStat: e.get("pathStat") }))).multicast();
 
 
 
-    pathsToBeWatched.observe(log("pathsToBeWatched")).catch(e => console.error(e));
+    pathsToBeWatched.map(p => p.toJS()).observe(log("pathsToBeWatched")).catch(e => console.error(e));
 
 
-    var pathsChangedSinceStart = pathsToBeWatched.flatMap(p => most.fromPromise(new Promise(resolve => {
+    var pathsChangedSinceStart = pathsToBeWatched
+            .tap(p=> console.log("watchtimes", p.get("watchPath"), new Date(fs.statSync(p.get("watchPath")).mtime).getTime(), new Date(p.get("watchStat").get("mtime")).getTime()))
+    .flatMap(p => most.fromPromise(new Promise(resolve => {
         let watcher = null;
         // console.log("trying to watch path", p);
         console.log("watching", p.get("watchPath"));
@@ -86,11 +91,13 @@ var createMetadataStore = (actionStream) => {
         // .tap(log("pathsChangedFile22"))
     // .merge()
         .filter(p=> p.get("watchStat") !== undefined)
+
         .filter(p => new Date(fs.statSync(p.get("watchPath")).mtime).getTime() - new Date(p.get("watchStat").get("mtime")).getTime() > 0)
         .merge(pathsChangedSinceStart)
-        .tap(log("pathChanged, sending reloadMetadata"));
-    pathsChangedFile.observe(log("pathsChangedFile")).catch(e => console.error(e));
-    actionStream.plug(pathsChangedFile.map(p => Immutable.Map({ type: "reloadMetadata", path: p.get("target").get("path") })));//observe(p => console.log("pathsChanged",p.toJS()));
+        .tap(log("watching pathChanged, sending reloadMetadata"));
+    
+    // pathsChangedFile.observe(log("pathsChangedFile")).catch(e => console.error(e));
+    actionStream.plug(pathsChangedFile.tap(log("pathsChangedFile")).map(p => Immutable.Map({ type: "reloadMetadata", path: p.get("target").get("path") })));//observe(p => console.log("pathsChanged",p.toJS()));
 
 
     return metadataStore.tap(log("metadataStore"));

@@ -52,6 +52,8 @@ import actionStream from "../api/actionSubject";
 var liveIn = prepLiveInput(actionStream
 .filter(a => a.get("type")==="liveDataInput"));
 
+actionStream.plug(liveIn.filter(l => l.get("type") === "file_path").map(l => Immutable.Map({type:"livePathReceived", path: l.get("value")})));
+
 // addLiveDataSource(liveIn.delay(1).sample(
 // 	(storedNow, liveAccum) =>{ 
 // 	console.log("merging",storedNow.toJS(),liveAccum.toJS());

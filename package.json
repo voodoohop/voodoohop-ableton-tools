@@ -43,7 +43,7 @@
   ],
   "homepage": "https://github.com/chentsulin/electron-react-boilerplate#readme",
   "devDependencies": {
-    "electron-rebuild": "^1.1.3",
+    "electron-rebuild": "0.37.8",
     "flow-bin": "^0.24.2",
     "immutable-devtools": "0.0.7",
     "react-desktop": "^0.1.70",
@@ -53,6 +53,7 @@
     "remote-redux-devtools": "^0.3.2"
   },
   "dependencies": {
+    "@most/create": "^1.1.1",
     "@most/hold": "^1.2.0",
     "actions-recorder": "^1.6.4-alpha1",
     "asar": "^0.11.0",
@@ -82,7 +83,7 @@
     "electron-packager": "^7.0.1",
     "electron-positioner": "^2.0.3",
     "electron-prebuilt": "0.37.8",
-    "electron-rebuild": "^1.1.3",
+    "electron-rebuild": "0.37.8",
     "emit-stream": "^0.1.2",
     "encoding": "^0.1.12",
     "eslint": "^2.9.0",
@@ -103,7 +104,7 @@
     "lodash": "^4.12.0",
     "minimist": "^1.2.0",
     "mocha": "^2.4.5",
-    "most": "^0.19.3",
+    "most": "^0.19.7",
     "most-react": "^1.0.0",
     "most-rx": "^1.1.2",
     "nexusui": "^1.0.8",

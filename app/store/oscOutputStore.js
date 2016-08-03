@@ -126,7 +126,8 @@ console.log("liveDataStore",livedataStore);
 
 
 var clickedLoopAction = 
-actionStream.tap(log("actionStream")).filter(a => a.get("type") === "clickedBeat");
+actionStream
+.filter(a => a.get("type") === "clickedBeat");
 
 
 export var clickedLoopCommands = clickedLoopAction.map((action)=>

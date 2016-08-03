@@ -1,4 +1,5 @@
 import most from 'most'
+import create from '@most/create'
 
 const now = fn => setTimeout(fn, 0)
 
@@ -7,7 +8,7 @@ function Subject(initial = null) {
   let _end
   let _error
 
-  const stream = most.create((add, end, error) => {
+  const stream = create((add, end, error) => {
     _add = add
     _end = end
     _error = error

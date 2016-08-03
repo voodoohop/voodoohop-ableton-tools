@@ -2,6 +2,7 @@ import React from 'react';
 import component from "omniscient";
 // import { dom } from 'react-reactive-class';
 import most from "most";
+import create from '@most/create'
 import Immutable from "immutable";
 
 var installDevTools = require("immutable-devtools")
@@ -33,7 +34,7 @@ var windowSizeStream = most.fromEvent("resize",window).map(getBounds).startWith(
 
 // windowSizeStream.drain();
 
-var ipcIn = most.create((add) =>
+var ipcIn = create((add) =>
 ipcRenderer.on("stateUpdate",(e,data)=>add(data)))
 .tap(log("stateIn"));
 // const ipcRenderer = require('electron').ipcRenderer;

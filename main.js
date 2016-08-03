@@ -5,7 +5,7 @@
 
 var app = require('electron').app;
 var BrowserWindow = require('electron').BrowserWindow;
-var Menu = require('menu');
+var Menu = require('electron').Menu;
 var menu;
 var template;
 var most = require("most");
@@ -47,7 +47,8 @@ const onTopDefinition=['ctrl+shift+v',function() {
   }];
 
 app.on('window-all-closed', function() {
-  if (process.platform !== 'darwin') app.quit();
+  if (process.platform !== 'darwin') 
+  app.quit();
 });
 
 app.commandLine.appendSwitch('remote-debugging-port', '9222');    
@@ -127,6 +128,7 @@ positioner.move('bottomLeft');
 console.log(mainWindow.prototype  );
   mainWindow.on('closed', function() {
     mainWindow = null;
+    app.quit();
   });
 // app on ready 
  
