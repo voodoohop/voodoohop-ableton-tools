@@ -16,9 +16,12 @@ import {oscInputStream} from "../utils/oscInOut";
 // import {liveDataMidiLinker} from "./mididataLinker";
 
 
-var oscInput= oscInputStream	
+var oscInput= oscInputStream
+        // .tap(log("preLiveDataInput"))	
 		.filter(f => f[2] === "playingClip" && f[1]>=0)
-		.map(f => Immutable.fromJS({type: "liveDataInput", trackId: f[1], data: f.slice(3)}));
+		.map(f => Immutable.fromJS({type: "liveDataInput", trackId: f[1], data: f.slice(3)}))
+        
+        ;
 
 		
 
@@ -45,7 +48,6 @@ var liveDataModified =
 // groupedTracksApplier(
 
             liveDataPrepped
-          
             .scan((store,newData) => 
                 
                 store.setIn([newData.get("trackId"),newData.get("type")],newData.get("value"))

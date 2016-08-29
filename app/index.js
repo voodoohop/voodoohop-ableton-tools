@@ -43,7 +43,7 @@ import PlayingTracks from "./playingTracksView";
     
 import transposedNote from "./utils/transposedNote";
 
-import {livedataStore, metadataStore, uiStateStore, oscOutputStore, midiClipStore, remoteClipUpdater,globalHarmonyStore} from "./store";
+import {livedataStore, metadataStore, uiStateStore, midiClipStore, remoteClipUpdater,globalHarmonyStore} from "./store";
 
 import log from "./utils/streamLog";
 
@@ -109,12 +109,13 @@ var appState = most.combine((liveData, metaData, midiData, uiState,remoteClipUpd
          midiData: midiData.get(trackId) || null, trackId:trackId})
         .filter(v=> v !== null && v !== undefined) 
          })}	)
-	,livedataStore.tap(ld => console.table(ld.map(v => v.toJS()))), metadataStore, midiClipStore, uiStateStore, remoteClipUpdater)
+	,livedataStore, metadataStore, midiClipStore, uiStateStore, remoteClipUpdater)
     
 
 
 var debouncedState =  appState.throttledDebounce(50);
 var finalState = debouncedState
+
 .scan((prevState,state) => state.set("tracks", state.get("tracks").map((v,trackId)=> {
     if (prevState === null)
         return v;
@@ -174,7 +175,7 @@ render(
     </div>
     <PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
     <KeyWheel />
-        {process.env["NODE_ENV"] == "production" ? <div /> :
+        {process.env["NODE_ENV"] !== "production" ? <div /> :
         <div>
         <ProcessingStatus state={state} uiState={state.get("uiState")} />
         <ObjectInspector style={{color:"white"}} data={ state.toJS() } initialExpandedPaths={["*","*","*"]} />
