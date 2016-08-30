@@ -19,9 +19,7 @@ import {oscInputStream} from "../utils/oscInOut";
 var oscInput= oscInputStream
         // .tap(log("preLiveDataInput"))	
 		.filter(f => f[2] === "playingClip" && f[1]>=0)
-		.map(f => Immutable.fromJS({type: "liveDataInput", trackId: f[1], data: f.slice(3)}))
-        
-        ;
+		.map(f => Immutable.fromJS({type: "liveDataInput", trackId: f[1], data: f.slice(3)}));
 
 		
 

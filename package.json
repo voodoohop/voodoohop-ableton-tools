@@ -50,7 +50,7 @@
     "redux-devtools": "^3.3.1",
     "redux-devtools-dock-monitor": "^1.1.1",
     "redux-devtools-log-monitor": "^1.0.11",
-    "remote-redux-devtools": "^0.3.2"
+    "remote-redux-devtools": "^0.4.3"
   },
   "dependencies": {
     "@most/create": "^1.1.1",
@@ -104,7 +104,7 @@
     "lodash": "^4.12.0",
     "minimist": "^1.2.0",
     "mocha": "^2.4.5",
-    "most": "^0.19.7",
+    "most": "^1.0.1",
     "most-react": "^1.0.0",
     "most-rx": "^1.1.2",
     "nexusui": "^1.0.8",
