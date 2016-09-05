@@ -10,7 +10,7 @@ import actionStream from "./api/actionSubject";
 // import log from "./utils/
 import {VictoryPie} from "victory";
 
-var usage = require('usage');
+import usage from 'usage';
 
 var pidMe = process.pid // you can use any valid PID instead
 // console.log("process pid",pid);

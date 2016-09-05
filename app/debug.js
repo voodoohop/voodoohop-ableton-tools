@@ -5,7 +5,7 @@ import most from "most";
 import create from '@most/create'
 import Immutable from "immutable";
 
-var installDevTools = require("immutable-devtools")
+import installDevTools from "immutable-devtools";
 installDevTools.default(Immutable);
 // import Waveform from "./waveform";
 
@@ -16,7 +16,7 @@ import {VictoryPie} from "victory";
 
 
 import TreeChart from './lib/TreeChart';
-var usage = require('usage');
+import usage from 'usage';
 
 console.log("hey");
 import { render } from 'react-dom';

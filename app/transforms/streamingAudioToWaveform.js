@@ -73,7 +73,7 @@ export function getWebAudioBuffer(path) {
 registerTransform({name: "audioBuffer", depends:["path"], transform: getWebAudioBuffer});
 
 
-var _ = require("lodash");
+import _  from "lodash";
 // var MediaStreamRecorder = require("msr");
 
 

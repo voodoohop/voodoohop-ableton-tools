@@ -1,7 +1,7 @@
 import MulticastSource from 'most/lib/source/MulticastSource';
 import Stream from 'most/lib/Stream';
 
-module.exports = function model(actions, store) {
+export default function model(actions, store) {
 	var updates = actions.scan(function(store, action) {
 		return store.map(action);
 	}, store);

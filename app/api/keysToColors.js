@@ -40,7 +40,7 @@ var colors=
 	}
 ;
 
-var tinycolor=require( "tinyColor2");
+import tinycolor from  "tinyColor2";
 console.log("colors",colors);
 export default function getKeyColor(keyString) {
 	// console.log("getting col for",keyString);	

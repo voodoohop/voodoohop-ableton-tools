@@ -162,7 +162,7 @@ actionSubject.plug(
         path: t.getIn(["fileData","path"])}))
 )));
 
-const ipcRenderer = require('electron').ipcRenderer;
+import {ipcRenderer}  from 'electron';
 import {toJSON as immToJson, fromJSON as immFromJson} from "transit-immutable-js";
 
 var sizeReducer=(v) => v && v.size ? v.remove("waveform").take(10).map(sizeReducer) : v;

@@ -8,7 +8,7 @@ import most from "most";
 
 import {registerTransform} from "../api/audioMetadataGenerator";
 
-var path=require("path");
+import path from "path";
 console.log("path",path);
 
 import {parse} from "csv";

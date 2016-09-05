@@ -1,6 +1,6 @@
 import { exec as exec } from 'child_process';;
 
-exports = module.exports = pidof;
+;
 
 function pidof(cmd, callback) {
     exec('ps -eo pid,comm', function (err, stdout, stderr) {
@@ -27,3 +27,6 @@ pidof.parse = function (data, cmd) {
 
     return null;
 };
+
+
+export default pidof;
