@@ -27,7 +27,7 @@ import KeyWheel from "./keyWheel";
 import Immutable from "immutable";
 
 // import Dock from "react-dock";
-import ObjectInspector from 'react-object-inspector';
+import ObjectInspector from 'react-json-tree';
 
 
 import actionSubject from "./api/actionSubject";
@@ -170,8 +170,8 @@ var sizeReducer=(v) => v && v.size ? v.remove("waveform").take(10).map(sizeReduc
 
 finalState.observe(state => {
 	// console.error("state",state);
- console.table(state.toJS());
-ipcRenderer.send("stateUpdate",immToJson(sizeReducer(state)));    
+//  console.table(state.toJS());
+// ipcRenderer.send("stateUpdate",immToJson(sizeReducer(state)));    
 
 render(
 	<div>
@@ -182,8 +182,8 @@ render(
     <KeyWheel />
         {process.env["NODE_ENV"] === "production" ? <div /> :
         <div>
-        <ProcessingStatus state={state} uiState={state.get("uiState")} />
-        <ObjectInspector style={{color:"white"}} data={ state.toJS() } initialExpandedPaths={["*","*","*"]} />
+      
+        <ObjectInspector style={{color:"white"}} data={state} initialExpandedPaths={["*","*","*"]} />
         </div>
     }
     </div>,
@@ -191,5 +191,6 @@ render(
 )
 
 }).catch(e => console.error(e));
+
     // <ProcessingStatus state={state} uiState={state.get("uiState")} />
     // <ObjectInspector style={{color:"white"}} data={ state.toJS() } initialExpandedPaths={["*","*","*"]} />

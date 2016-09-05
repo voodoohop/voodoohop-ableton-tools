@@ -7,7 +7,7 @@ import baseConfig from './webpack.config.base';
 const config = merge(baseConfig, {
   devtool: 'cheap-module-source-map',
 
-  entry: './app/index',
+  entry: ['babel-polyfill','./app/index'],
 
   output: {
     publicPath: '../dist/'
@@ -44,7 +44,8 @@ const config = merge(baseConfig, {
         warnings: false
       }
     }),
-    new ExtractTextPlugin('style.css', { allChunks: true })
+    new ExtractTextPlugin('style.css', { allChunks: true }),
+    new webpack.IgnorePlugin(/vertx/) 
   ],
 
   target: 'electron-renderer'
