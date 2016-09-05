@@ -7,8 +7,8 @@
 // include("utils.js");
 // var self2= this;
 
-var Imm = require("immutable");
-var fs = require("fs");
+import Imm from "immutable";
+import fs from "fs";
 
 var post = console.log.bind(console);
 

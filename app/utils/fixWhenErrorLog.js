@@ -1,4 +1,4 @@
-var when = require('when');
+import when from 'when';
 
 unhandledRejectionsWithSourceMaps(when.Promise);
 

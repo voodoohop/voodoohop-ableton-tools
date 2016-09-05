@@ -1,7 +1,7 @@
 
 
-var most = require("most");
-var Stream = require('most').Stream;
+import most from "most";
+import { Stream as Stream } from 'most';;
 
 
 import {toJSON as immToJson, fromJSON as immFromJson} from "transit-immutable-js";

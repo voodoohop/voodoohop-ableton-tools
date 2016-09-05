@@ -1,4 +1,4 @@
-var exec = require('child_process').exec;
+import { exec as exec } from 'child_process';;
 
 exports = module.exports = pidof;
 

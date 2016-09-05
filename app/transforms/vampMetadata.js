@@ -1,6 +1,6 @@
 
-var fs = require("fs");
-var Immutable = require("immutable");
+import fs from "fs";
+import Immutable from "immutable";
 
 // var WaveformData = require("waveform-data");
 // import doThePeaks from "./doThePeaks.js";

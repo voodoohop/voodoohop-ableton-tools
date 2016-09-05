@@ -10,9 +10,9 @@ import log from "../utils/streamLog";
 import most from "most";
 
 
-var taglib = require("thomash-node-audio-metadata");
+import taglib from "thomash-node-audio-metadata";
 
-var filewalker = require('filewalker');
+import filewalker from 'filewalker';
 // require("node-find-files");
 
 

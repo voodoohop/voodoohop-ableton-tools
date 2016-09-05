@@ -1,5 +1,5 @@
-var MulticastSource = require('most/lib/source/MulticastSource');
-var Stream = require('most/lib/Stream');
+import MulticastSource from 'most/lib/source/MulticastSource';
+import Stream from 'most/lib/Stream';
 
 module.exports = function model(actions, store) {
 	var updates = actions.scan(function(store, action) {

@@ -13,7 +13,7 @@ import fs from "fs";
 
 import log from "../utils/streamLog";
 
-var taglib = require("thomash-node-audio-metadata");
+import taglib from "thomash-node-audio-metadata";
 
 // var filewalker = require('filewalker');
 // require("node-find-files");

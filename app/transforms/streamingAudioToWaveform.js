@@ -2,8 +2,8 @@
 
 // var lame = require('lame');
 
-var fs = require("fs");
-var Immutable = require("immutable");
+import fs from "fs";
+import Immutable from "immutable";
 
 // var WaveformData = require("waveform-data");
 import doThePeaks from "./doThePeaks.js";
@@ -21,7 +21,7 @@ var audioElements = {};
 
 import {AIFFDecoder} from "../lib/audiofile";
 import log from "../utils/streamLog";
-var shell = require('shelljs');
+import shell from 'shelljs';
 
 export function getWebAudioBuffer(path) {
 // return 	pathStream.map(path => {

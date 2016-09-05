@@ -6,9 +6,9 @@
 
 
 var self2 = this;
-var asyncjs = require("async");
+import asyncjs from "async";
 // var Promise = require("promise").Promise;
-var Imm = require("immutable");
+import Imm from "immutable";
 // inlets = 1;
 // outlets = 2;
 //var bucketSize=256;
