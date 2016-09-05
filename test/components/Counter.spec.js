@@ -20,11 +20,17 @@ function setup() {
   };
   const component = renderIntoDocument(<Counter counter={1} {...actions} />);
   return {
+<<<<<<< HEAD
     component: component,
     actions: actions,
     buttons: scryRenderedDOMComponentsWithTag(component, 'button').map(button => {
       return button;
     }),
+=======
+    component,
+    actions,
+    buttons: scryRenderedDOMComponentsWithTag(component, 'button').map(button => button),
+>>>>>>> 9d0782912ae4100825089e1678a684966bedee59
     p: findRenderedDOMComponentWithClass(component, 'counter')
   };
 }

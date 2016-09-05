@@ -1,51 +1,53 @@
-/* eslint strict: 0 */
-'use strict';
 
-var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var webpackTargetElectronRenderer = require('webpack-target-electron-renderer');
-var baseConfig = require('./webpack.config.base');
+import webpack from 'webpack';
+import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import merge from 'webpack-merge';
+import baseConfig from './webpack.config.base';
 
+const config = merge(baseConfig, {
+  devtool: 'cheap-module-source-map',
 
-var config = Object.create(baseConfig);
+  entry: './app/index',
 
-config.devtool = 'source-map';
+  output: {
+    publicPath: '../dist/'
+  },
 
-config.entry = './app/index';
+  module: {
+    loaders: [
+      {
+        test: /\.global\.css$/,
+        loader: ExtractTextPlugin.extract(
+          'style-loader',
+          'css-loader'
+        )
+      },
 
-config.output.publicPath = '/dist/';
+      {
+        test: /^((?!\.global).)*\.css$/,
+        loader: ExtractTextPlugin.extract(
+          'style-loader',
+          'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
+        )
+      }
+    ]
+  },
 
-config.module.loaders.push({
-  test: /^((?!\.module).)*\.css$/,
-  loader: ExtractTextPlugin.extract(
-    'style-loader',
-    'css-loader'
-  )
-}, {
-  test: /\.module\.css$/,
-  loader: ExtractTextPlugin.extract(
-    'style-loader',
-    'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
-  )
-},{ test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/, loader: 'url-loader?limit=100000' });
+  plugins: [
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {
+        screw_ie8: true,
+        warnings: false
+      }
+    }),
+    new ExtractTextPlugin('style.css', { allChunks: true })
+  ],
 
-config.plugins.push(
-  new webpack.optimize.OccurenceOrderPlugin(),
-  new webpack.DefinePlugin({
-    '__DEV__': false,
-    'process.env': {
-      'NODE_ENV': JSON.stringify('production')
-    }
-  }),
-  new webpack.optimize.UglifyJsPlugin({
-    compressor: {
-      screw_ie8: true,
-      warnings: false
-    }
-  }),
-  new ExtractTextPlugin('style.css', { allChunks: true })
-);
+  target: 'electron-renderer'
+});
 
-config.target = webpackTargetElectronRenderer(config);
-
-module.exports = config;
+export default config;

@@ -1,60 +1,56 @@
-/* eslint strict: 0 */
-'use strict';
 
-var webpack = require('webpack');
-var webpackTargetElectronRenderer = require('webpack-target-electron-renderer');
-var baseConfig = require('./webpack.config.base');
+/* eslint max-len: 0 */
+import webpack from 'webpack';
+import merge from 'webpack-merge';
+import baseConfig from './webpack.config.base';
 
+const port = process.env.PORT || 3000;
 
-var config = Object.create(baseConfig);
+export default merge(baseConfig, {
+  debug: true,
 
-config.debug = true;
+  devtool: 'inline-source-map', //cheap-module-eval-source-map,
 
-config.devtool = 'inline-source-map';
+  entry: [
+     'babel-polyfill',
+    `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,
+    './app/index'
+  ],
+  output: {
+    publicPath: `http://localhost:${port}/dist/`
+  },
 
-config.entry = {
- main:[
-  'babel-polyfill',
-  'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
-  './app/index'
- ]
-//  ,
-//  debug:[
-//   'babel-polyfill',
-//   'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
-//   './app/debug'
-//  ]
-};
+  module: {
+    loaders: [
+      {
+        test: /\.global\.css$/,
+        loaders: [
+          'style-loader',
+          'css-loader?sourceMap'
+        ]
+      },
 
+      {
+        test: /^((?!\.global).)*\.css$/,
+        loaders: [
+          'style-loader',
+          'css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
+        ]
+      },{ test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/, loader: 'url-loader?limit=100000' }
+    ]
+  },
 
-config.module.loaders.push({
-  test: /^((?!\.module).)*\.css$/,
-  loaders: [
-    'style-loader',
-    'css-loader'
-  ]
-}, {
-  test: /\.module\.css$/,
-  loaders: [
-    'style-loader',
-    'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!',
-  ]
-},{ test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/, loader: 'url-loader?limit=100000' });
-
-
-config.plugins.push(
-  new webpack.HotModuleReplacementPlugin(),
-  new webpack.NoErrorsPlugin(),
-  new webpack.DefinePlugin({
-    '__DEV__': true,
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin(),
+    new webpack.DefinePlugin({
     'process.env': {
       'NODE_ENV': JSON.stringify('development'),
       'ELECTRON_ENABLE_LOGGING': true
     }
-  }),
-  new webpack.IgnorePlugin(/vertx/) 
-);
+    }),
+    new webpack.IgnorePlugin(/vertx/) 
+  ],
 
-config.target = webpackTargetElectronRenderer(config);
-
-module.exports = config;
+  target: 'electron-renderer'
+});

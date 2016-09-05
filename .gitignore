@@ -32,3 +32,8 @@ node_modules
 # App packaged
 dist
 release
+<<<<<<< HEAD
+=======
+main.js
+main.js.map
+>>>>>>> 9d0782912ae4100825089e1678a684966bedee59

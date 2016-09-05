@@ -1,3 +1,90 @@
+<<<<<<< HEAD
+=======
+# 0.10.0 (2016.4.18)
+
+#### Improvements
+
+- **Use Babel in main process with Webpack build:** [#201](https://github.com/chentsulin/electron-react-boilerplate/pull/201)
+- **Change targets to built-in support by webpack:** [#197](https://github.com/chentsulin/electron-react-boilerplate/pull/197)
+- **use es2015 syntax for webpack configs:** [#195](https://github.com/chentsulin/electron-react-boilerplate/pull/195)
+- **Open application when webcontent is loaded:** [#192](https://github.com/chentsulin/electron-react-boilerplate/pull/192)
+- **Upgraded dependencies**
+
+#### Bug fixed
+
+- **Fix `npm list electron-prebuilt` in package.js:** [#188](https://github.com/chentsulin/electron-react-boilerplate/pull/188)
+
+
+# 0.9.0 (2016.3.23)
+
+#### Improvements
+
+- **Added [redux-logger](https://github.com/fcomb/redux-logger)**
+- **Upgraded [react-router-redux](https://github.com/reactjs/react-router-redux) to v4**
+- **Upgraded dependencies**
+- **Added `npm run dev` command:** [#162](https://github.com/chentsulin/electron-react-boilerplate/pull/162)
+- **electron to v0.37.2**
+
+#### Breaking Changes
+
+- **css module as default:** [#154](https://github.com/chentsulin/electron-react-boilerplate/pull/154).
+- **set default NODE_ENV to production:** [#140](https://github.com/chentsulin/electron-react-boilerplate/issues/140)
+
+
+# 0.8.0 (2016.2.17)
+
+#### Bug fixed
+
+- **Fix lint errors**
+- **Fix Webpack publicPath for production builds**: [#119](https://github.com/chentsulin/electron-react-boilerplate/issues/119).
+- **package script now chooses correct OS icon extension**
+
+#### Improvements
+
+- **babel 6**
+- **Upgrade Dependencies**
+- **Enable CSS source maps**
+- **Add json-loader**: [#128](https://github.com/chentsulin/electron-react-boilerplate/issues/128).
+- **react-router 2.0 and react-router-redux 3.0**
+
+
+# 0.7.1 (2015.12.27)
+
+#### Bug fixed
+
+- **Fixed npm script on windows 10:** [#103](https://github.com/chentsulin/electron-react-boilerplate/issues/103).
+- **history and react-router version bump**: [#109](https://github.com/chentsulin/electron-react-boilerplate/issues/109), [#110](https://github.com/chentsulin/electron-react-boilerplate/pull/110).
+
+#### Improvements
+
+- **electron 0.36**
+
+
+
+# 0.7.0 (2015.12.16)
+
+#### Bug fixed
+
+- **Fixed process.env.NODE_ENV variable in webpack:** [#74](https://github.com/chentsulin/electron-react-boilerplate/pull/74).
+- **add missing object-assign**: [#76](https://github.com/chentsulin/electron-react-boilerplate/pull/76).
+- **packaging in npm@3:** [#77](https://github.com/chentsulin/electron-react-boilerplate/pull/77).
+- **compatibility in windows:** [#100](https://github.com/chentsulin/electron-react-boilerplate/pull/100).
+- **disable chrome debugger in production env:** [#102](https://github.com/chentsulin/electron-react-boilerplate/pull/102).
+
+#### Improvements
+
+- **redux**
+- **css-modules**
+- **upgrade to react-router 1.x**
+- **unit tests**
+- **e2e tests**
+- **travis-ci**
+- **upgrade to electron 0.35.x**
+- **use es2015**
+- **check dev engine for node and npm**
+
+
+>>>>>>> 9d0782912ae4100825089e1678a684966bedee59
 # 0.6.5 (2015.11.7)
 
 #### Improvements
@@ -17,14 +104,22 @@
 
 #### Improvements
 
+<<<<<<< HEAD
 - **Initialize ExtractTextPlugin once:** #64.
+=======
+- **Initialize ExtractTextPlugin once:** [#64](https://github.com/chentsulin/electron-react-boilerplate/issues/64).
+>>>>>>> 9d0782912ae4100825089e1678a684966bedee59
 
 
 # 0.6.2 (2015.10.18)
 
 #### Bug fixed
 
+<<<<<<< HEAD
 - **Babel plugins production env not be set properly:** #57.
+=======
+- **Babel plugins production env not be set properly:** [#57](https://github.com/chentsulin/electron-react-boilerplate/issues/57).
+>>>>>>> 9d0782912ae4100825089e1678a684966bedee59
 
 
 # 0.6.1 (2015.10.17)
@@ -45,7 +140,11 @@
 
 #### Improvements
 
+<<<<<<< HEAD
 - **Run tests with babel-register:** #29.
+=======
+- **Run tests with babel-register:** [#29](https://github.com/chentsulin/electron-react-boilerplate/issues/29).
+>>>>>>> 9d0782912ae4100825089e1678a684966bedee59
 
 
 # 0.5.1 (2015.10.12)

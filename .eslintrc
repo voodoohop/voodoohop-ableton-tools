@@ -1,4 +1,8 @@
 {
+<<<<<<< HEAD
+=======
+  "parser": "babel-eslint",
+>>>>>>> 9d0782912ae4100825089e1678a684966bedee59
   "extends": "airbnb",
   "env": {
     "browser": true,
@@ -6,6 +10,7 @@
     "node": true
   },
   "rules": {
+<<<<<<< HEAD
     "react/jsx-uses-react": 2,
     "react/jsx-uses-vars": 2,
     "react/react-in-jsx-scope": 2,
@@ -18,4 +23,28 @@
   "plugins": [
     "react"
   ]
+=======
+    "consistent-return": 0,
+    "comma-dangle": 0,
+    "no-use-before-define": 0,
+    "import/no-unresolved": [2, { "ignore": ["electron"] }],
+    "import/no-extraneous-dependencies": 0,
+    "react/jsx-no-bind": 0,
+    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
+    "react/prefer-stateless-function": 0,
+    # https://github.com/eslint/eslint/issues/6274
+    "generator-star-spacing": 0
+  },
+  "plugins": [
+    "import",
+    "react"
+  ],
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "webpack.config.eslint.js"
+      }
+    }
+  }
+>>>>>>> 9d0782912ae4100825089e1678a684966bedee59
 }

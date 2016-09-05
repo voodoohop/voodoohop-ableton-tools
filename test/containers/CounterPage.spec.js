@@ -19,10 +19,15 @@ function setup(initialState) {
     </Provider>
   );
   return {
+<<<<<<< HEAD
     app: app,
     buttons: scryRenderedDOMComponentsWithTag(app, 'button').map(button => {
       return button;
     }),
+=======
+    app,
+    buttons: scryRenderedDOMComponentsWithTag(app, 'button').map(button => button),
+>>>>>>> 9d0782912ae4100825089e1678a684966bedee59
     p: findRenderedDOMComponentWithClass(app, 'counter')
   };
 }

@@ -1,4 +1,4 @@
-// @flow
+
 
 require('babel-runtime/core-js/promise').default = require('bluebird');
 global.Promise = require("bluebird");
@@ -6,12 +6,17 @@ global.Promise = require("bluebird");
 Promise.onPossiblyUnhandledRejection(function(error){
     throw error;
 });
-// import "./utils/fixWhenErrorLog";
+
 import React from 'react';
 import { render } from 'react-dom';
+import { Provider } from 'react-redux';
+import './app.global.css';
 
-import './app.css';
-import './photon_tom.css';
+
+// import "./utils/fixWhenErrorLog";
+
+// import './app.css';
+import './photon_tom.global.css';
 // import DevTools from "./containers/DevTools";
 import {mapStackTrace} from "sourcemapped-stacktrace";
 
@@ -175,7 +180,7 @@ render(
     </div>
     <PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
     <KeyWheel />
-        {process.env["NODE_ENV"] !== "production" ? <div /> :
+        {process.env["NODE_ENV"] === "production" ? <div /> :
         <div>
         <ProcessingStatus state={state} uiState={state.get("uiState")} />
         <ObjectInspector style={{color:"white"}} data={ state.toJS() } initialExpandedPaths={["*","*","*"]} />
