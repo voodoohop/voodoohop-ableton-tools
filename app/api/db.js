@@ -14,7 +14,7 @@ import os from "os";
 // setTimeout(()=>
 console.log("home", os.homedir());
 export var pouch = new PouchDB(os.homedir()+"/.VoodoohopLiveTools_2"/*+Math.random()*/);
-window.PouchDB = pouch;
+// window.PouchDB = pouch;
 // var remoteDB = new PouchDB('http://localhost:5984/myremotedbtomtom')
 
 // pouch.replicate.to(remoteDB).on('complete', function () {
