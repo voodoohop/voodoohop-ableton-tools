@@ -2,6 +2,7 @@
   "name": "VoodoohopLiveTools",
   "version": "0.3.0",
   "description": "VOODOOHOP Live Tools",
+  "main": "main.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --recursive --require ./test/setup.js test/**/*.spec.js",
     "test-watch": "npm test -- --watch",
@@ -45,7 +46,6 @@
   ],
   "homepage": "https://github.com/chentsulin/electron-react-boilerplate#readme",
   "devDependencies": {
-    "immutable-devtools": "0.0.7",
     "react-desktop": "^0.1.70",
     "redux-devtools": "^3.3.1",
     "redux-devtools-dock-monitor": "^1.1.1",
@@ -88,7 +88,6 @@
     "json-loader": "^0.5.4",
     "minimist": "^1.2.0",
     "mocha": "^3.0.2",
-    "node-libs-browser": "^1.0.0",
     "react-addons-test-utils": "^15.3.1",
     "redux-logger": "^2.6.1",
     "sinon": "^1.17.5",
@@ -100,6 +99,8 @@
     "webpack-merge": "^0.14.1"
   },
   "dependencies": {
+        "immutable-devtools": "^0.0.7",
+        "node-libs-browser": "^1.0.0",
     "@most/create": "^1.1.1",
     "@most/hold": "^1.2.0",
     "actions-recorder": "^1.6.4-alpha1",

@@ -1,8 +1,19 @@
-import { app, BrowserWindow, Menu, shell } from 'electron';
+import { app, BrowserWindow, Menu, shell,ipcMain, globalShortcut } from 'electron';
+
+
+import electronDebug from 'electron-debug';
 
 let menu;
 let template;
 let mainWindow = null;
+
+import most from "most";
+
+
+process.on('uncaughtException', function (err) {
+  console.error(err);
+  console.log("Node NOT Exiting...");
+});
 
 
 if (process.env.NODE_ENV === 'development') {
@@ -32,14 +43,46 @@ const installExtensions = async () => {
   }
 };
 
-app.on('ready', async () => {
-  await installExtensions();
 
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 1024,
-    height: 728
-  });
+
+
+const onTopDefinition=['ctrl+shift+v', function() {
+    // console.log('ctrl+shift+v is pressed');
+    mainWindow.setAlwaysOnTop(!mainWindow.isAlwaysOnTop());
+    if (!mainWindow.isAlwaysOnTop())
+      mainWindow.hide();
+    else
+      mainWindow.show();  
+  }];
+
+app.commandLine.appendSwitch('remote-debugging-port', '9222'); 
+
+import Positioner from "electron-positioner";
+
+app.on('ready', async () => {
+    await installExtensions();
+  mainWindow = new BrowserWindow({ 
+    width: 300, 
+    height: 500, 
+    // transparent:true, 
+    alwaysOnTop:true,
+    // frame: false,
+	  titleBarStyle:"hidden",
+		'min-width': 151,
+		'min-height': 126,
+		// 'standard-window': false,
+		'use-content-size': true,
+    // experimentalFeatures: true,    
+    // Boolean - Allow an https page to display content like images from http URLs. Default is `false`. 
+    allowDisplayingInsecureContent: true,
+    // Boolean - Allow a https page to run JavaScript, CSS or plugins from http URLs. Default is `false`. 
+    allowRunningInsecureContent: true,
+    // experimentalCanvasFeatures:true,
+    // overlayFullscreenVideo:true,
+    darkTheme: true,
+    // zoomFactor:1
+    title:"VoodoohopLiveTools"
+    });
 
   mainWindow.loadURL(`file://${__dirname}/app/app.html`);
 
@@ -66,9 +109,27 @@ app.on('ready', async () => {
     });
   }
 
+  
+  const ret = globalShortcut.register(...onTopDefinition);
+
+  if (!ret) {
+    console.error('global shortcut registration failed');
+  }
+
+  mainWindow.on('closed', function() {
+    mainWindow = null;
+    app.quit();
+  });
+// app on ready 
+ 
+// debugWindow.on() 
+  // if (process.env.NODE_ENV === 'development') {
+  //   mainWindow.openDevTools();
+  // }
+
   if (process.platform === 'darwin') {
     template = [{
-      label: 'Electron',
+      label: 'VOODOOHOP',
       submenu: [{
         label: 'About ElectronReact',
         selector: 'orderFrontStandardAboutPanel:'
@@ -99,42 +160,19 @@ app.on('ready', async () => {
           app.quit();
         }
       }]
-    }, {
-      label: 'Edit',
-      submenu: [{
-        label: 'Undo',
-        accelerator: 'Command+Z',
-        selector: 'undo:'
-      }, {
-        label: 'Redo',
-        accelerator: 'Shift+Command+Z',
-        selector: 'redo:'
-      }, {
-        type: 'separator'
-      }, {
-        label: 'Cut',
-        accelerator: 'Command+X',
-        selector: 'cut:'
-      }, {
-        label: 'Copy',
-        accelerator: 'Command+C',
-        selector: 'copy:'
-      }, {
-        label: 'Paste',
-        accelerator: 'Command+V',
-        selector: 'paste:'
-      }, {
-        label: 'Select All',
-        accelerator: 'Command+A',
-        selector: 'selectAll:'
-      }]
-    }, {
+    }, 
+    
+     {
       label: 'View',
-      submenu: (process.env.NODE_ENV === 'development') ? [{
+      submenu: [{
+        label: 'On Top',
+        accelerator: onTopDefinition[0],
+        click: onTopDefinition[1]
+      },{
         label: 'Reload',
         accelerator: 'Command+R',
         click() {
-          mainWindow.webContents.reload();
+          mainWindow.restart();
         }
       }, {
         label: 'Toggle Full Screen',
@@ -147,51 +185,6 @@ app.on('ready', async () => {
         accelerator: 'Alt+Command+I',
         click() {
           mainWindow.toggleDevTools();
-        }
-      }] : [{
-        label: 'Toggle Full Screen',
-        accelerator: 'Ctrl+Command+F',
-        click() {
-          mainWindow.setFullScreen(!mainWindow.isFullScreen());
-        }
-      }]
-    }, {
-      label: 'Window',
-      submenu: [{
-        label: 'Minimize',
-        accelerator: 'Command+M',
-        selector: 'performMiniaturize:'
-      }, {
-        label: 'Close',
-        accelerator: 'Command+W',
-        selector: 'performClose:'
-      }, {
-        type: 'separator'
-      }, {
-        label: 'Bring All to Front',
-        selector: 'arrangeInFront:'
-      }]
-    }, {
-      label: 'Help',
-      submenu: [{
-        label: 'Learn More',
-        click() {
-          shell.openExternal('http://electron.atom.io');
-        }
-      }, {
-        label: 'Documentation',
-        click() {
-          shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme');
-        }
-      }, {
-        label: 'Community Discussions',
-        click() {
-          shell.openExternal('https://discuss.atom.io/c/electron');
-        }
-      }, {
-        label: 'Search Issues',
-        click() {
-          shell.openExternal('https://github.com/atom/electron/issues');
         }
       }]
     }];
@@ -213,7 +206,7 @@ app.on('ready', async () => {
       }]
     }, {
       label: '&View',
-      submenu: (process.env.NODE_ENV === 'development') ? [{
+      submenu: [{
         label: '&Reload',
         accelerator: 'Ctrl+R',
         click() {
@@ -230,12 +223,6 @@ app.on('ready', async () => {
         accelerator: 'Alt+Ctrl+I',
         click() {
           mainWindow.toggleDevTools();
-        }
-      }] : [{
-        label: 'Toggle &Full Screen',
-        accelerator: 'F11',
-        click() {
-          mainWindow.setFullScreen(!mainWindow.isFullScreen());
         }
       }]
     }, {
@@ -264,5 +251,20 @@ app.on('ready', async () => {
     }];
     menu = Menu.buildFromTemplate(template);
     mainWindow.setMenu(menu);
+
+
+    
+  const positioner = new Positioner(mainWindow);
+
+  // Moves the window top right on the screen.
+  positioner.move('bottomLeft');
+
+
   }
+    // client.create(mainWindow);
+
+electronDebug({
+    showDevTools: true
+});
+
 });

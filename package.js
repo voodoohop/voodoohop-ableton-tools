@@ -50,7 +50,7 @@ if (version) {
   // use the same version as the currently-installed electron-prebuilt
   exec('npm list electron --dev', (err, stdout) => {
     if (err) {
-      DEFAULT_OPTS.version = '1.2.0';
+      DEFAULT_OPTS.version = '1.3.5';
     } else {
       DEFAULT_OPTS.version = stdout.split('electron@')[1].replace(/\s/g, '');
     }

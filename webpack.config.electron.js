@@ -38,6 +38,12 @@ export default merge(baseConfig, {
 
   externals: [
     'font-awesome',
-    'source-map-support'
+    'source-map-support',
+    "pouchdb",
+    "leveldown",
+    "levelup",
+    "thomash-node-audio-metadata",
+    "iconv-lite",
+    "usage"
   ]
 });

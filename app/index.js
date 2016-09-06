@@ -16,7 +16,8 @@ import './app.global.css';
 // import "./utils/fixWhenErrorLog";
 
 // import './app.css';
-import './photon_tom.global.css';
+// import './photontom.global.css';
+
 // import DevTools from "./containers/DevTools";
 import {mapStackTrace} from "sourcemapped-stacktrace";
 
@@ -180,12 +181,9 @@ render(
     </div>
     <PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
     <KeyWheel />
-        {process.env["NODE_ENV"] === "production" ? <div /> :
-        <div>
-      
-        <ObjectInspector style={{color:"white"}} data={state} initialExpandedPaths={["*","*","*"]} />
-        </div>
-    }
+        { process.env["NODE_ENV"] !== "development" ? 
+            <div /> : <div> <ObjectInspector style={{color:"white"}} data={state} initialExpandedPaths={["*","*","*"]} /> </div>
+        }
     </div>,
   	document.getElementById('root')
 )

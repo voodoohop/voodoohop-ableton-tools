@@ -7,8 +7,8 @@ import baseConfig from './webpack.config.base';
 const config = merge(baseConfig, {
   devtool: 'cheap-module-source-map',
 
-  entry: ['babel-polyfill','./app/index'],
-
+  entry: //['babel-polyfill','./app/index'],
+      "./app/index",
   output: {
     publicPath: '../dist/'
   },
@@ -29,6 +29,10 @@ const config = merge(baseConfig, {
           'style-loader',
           'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
         )
+      },
+      { 
+        test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/, 
+        loader: 'url-loader?limit=100000' 
       }
     ]
   },
@@ -47,8 +51,10 @@ const config = merge(baseConfig, {
     new ExtractTextPlugin('style.css', { allChunks: true }),
     new webpack.IgnorePlugin(/vertx/) 
   ],
-
+  
   target: 'electron-renderer'
 });
+
+console.log("production config:", config);
 
 export default config;
