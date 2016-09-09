@@ -7,7 +7,7 @@ import {oscOutput,oscInputStream} from "../utils/oscInOut";
 import log from "../utils/streamLog";
 import {metadataStore} from ".";
 import transposeNote from "../utils/transposedNote";
-import most from "most";
+import * as most from 'most';
 
 
 import tinycolor from "tinycolor2";

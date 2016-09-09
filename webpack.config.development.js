@@ -9,10 +9,9 @@ const port = process.env.PORT || 3000;
 export default merge(baseConfig, {
   debug: true,
 
-  devtool: 'inline-source-map', //cheap-module-eval-source-map,
+  devtool: 'inline-source-map',
 
   entry: [
-     'babel-polyfill',
     `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,
     './app/index'
   ],
@@ -36,7 +35,11 @@ export default merge(baseConfig, {
           'style-loader',
           'css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
         ]
-      },{ test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/, loader: 'url-loader?limit=100000' }
+      },
+      { 
+        test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/, 
+        loader: 'url-loader?limit=100000' 
+      }
     ]
   },
 
@@ -49,7 +52,7 @@ export default merge(baseConfig, {
       'ELECTRON_ENABLE_LOGGING': true
     }
     }),
-    new webpack.IgnorePlugin(/vertx/) 
+    new webpack.IgnorePlugin(/vertx/)
   ],
 
   target: 'electron-renderer'

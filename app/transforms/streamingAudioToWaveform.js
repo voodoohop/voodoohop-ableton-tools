@@ -7,7 +7,7 @@ import Immutable from "immutable";
 
 // var WaveformData = require("waveform-data");
 import doThePeaks from "./doThePeaks.js";
-import most from "most";
+import * as most from 'most';
 
 
 import AudioReader from "../lib/audioreader.js";
@@ -26,15 +26,22 @@ import shell from 'shelljs';
 export function getWebAudioBuffer(path) {
 // return 	pathStream.map(path => {
 
-		if (path.trim().toLowerCase().indexOf(".aif")>0 ) {
-			return most.fromPromise(new Promise(resolve => {
-                console.log("executing ","ffmpeg -i \""+path+"\" /tmp/decoded.wav");
-				shell.exec("rm /tmp/decoded.wav", () =>
-				shell.exec("ffmpeg -i \""+path+"\" /tmp/decoded.wav", (res)=> {console.log("reser",res); resolve(getWebAudioBuffer("/tmp/decoded.wav"))})
-				);
-			})).flatMap(p => p)//.flatMap(p=>p);
+		var audioBuffer;
+		if (false &&path.trim().toLowerCase().indexOf(".aif")>0 ) {
+			// return most.fromPromise(new Promise(resolve => {
+      //           console.log("executing ","ffmpeg -i \""+path+"\" /tmp/decoded.wav");
+			// 	shell.exec("rm /tmp/decoded.wav", () =>
+			// 	shell.exec("ffmpeg -i \""+path+"\" /tmp/decoded.wav", (res)=> {console.log("reser",res); resolve(getWebAudioBuffer("/tmp/decoded.wav"))})
+			// 	);
+			// })).flatMap(p => p)//.flatMap(p=>p);
+			audioBuffer = 
+				most.fromPromise(new Promise((resolve,reject)=> fs.readFile(path,"utf8",(err,data)=>{
+						console.log("calling decoder in 5s for data:", data.length); 
+						setTimeout(()=>resolve(new AIFFDecoder().decode(data)),10);
+					}))).tap(log("aiffaudiobuffer"));
+		} else {
 
-		}
+
 		// 	return most.of(new Promise((resolve,reject)=> fs.readFile(path,"utf8",(err,data)=>{
 		// 		console.log("calling decoder in 5s for data:", data.length); 
 		// 		setTimeout(()=>resolve(new AIFFDecoder().decode(data)),10);
@@ -48,7 +55,7 @@ export function getWebAudioBuffer(path) {
 
 	var readStream = new Promise((resolve,reject) => fs.readFile(path, (err,data) => err ? reject(err):resolve(data)));
 	
-	var audioBuffer = most.fromPromise(readStream)
+	audioBuffer = most.fromPromise(readStream)
 		// .tap(b => console.log("audiobuffer1",b))
 
 	// .scan((chunks,chunk) => Buffer.concat([chunks,chunk]), new Buffer([])).skip(5)
@@ -56,15 +63,12 @@ export function getWebAudioBuffer(path) {
 		//console.log("chunk",chunk); 
 		return most.fromPromise(AudioReader(new Uint8Array(chunk).buffer, offlineAudioCtx)).map(b => b.buffer || b)
 	//    .tap(b => console.log("audiobuffer",b));
-	})//new Promise((resolve,reject) => offlineAudioCtx.decodeAudioData(new Uint8Array(chunk).buffer,resolve,reject))})
+	}).tap(log("otheraudiobuffer"));//new Promise((resolve,reject) => offlineAudioCtx.decodeAudioData(new Uint8Array(chunk).buffer,resolve,reject))})
 	//.observe(chunk => console.log("chunk",chunk)).catch(e => console.error(e));
 // .await()
-	
+		}
 	// console.log("ab",audioBuffer);
-	return most.fromPromise(new Promise((resolve,reject) => audioBuffer.observe(res => resolve(res)).catch(e => {
-        console.error(e)
-        reject(e);
-        })));
+	return audioBuffer;
 // })
 };
 
@@ -84,16 +88,19 @@ const downsampleFactor = 16;
 registerTransform({name: "audioStream", depends:["audioBuffer"], transform: buffer => {
 	// console.log("sending buffer",buffer);//,buffer.channels[0].length);
 	if (buffer.channels) {
-		buffer.getChannelData = (i) => {
-			var c = buffer.channels[i];
-			var downSampled = [];
-			for (var j=0;j<c.length;j+=downsampleFactor)
-				downSampled.push(c[j]);
-			return downSampled;
-			//  buffer.channels[i].reduce((downSampled, sample, i)=>i % 8 === 0 ? downSampled.concat([sample]):downSampled,[]);;
-		}
+		buffer.getChannelData = (i) => 
+			buffer.channels[i];
+		// {
+
+		// 	var c = buffer.channels[i];
+		// 	var downSampled = [];
+		// 	for (var j=0;j<c.length;j+=downsampleFactor)
+		// 		downSampled.push(c[j]);
+		// 	return downSampled;
+		// 	//  buffer.channels[i].reduce((downSampled, sample, i)=>i % 8 === 0 ? downSampled.concat([sample]):downSampled,[]);;
+		// }
 		buffer.duration = buffer.length/buffer.sampleRate;
-		buffer.sampleRate=buffer.sampleRate/downsampleFactor;
+		buffer.sampleRate=buffer.sampleRate;///downsampleFactor;
 	
 	}
 	if (!buffer.getChannelData)
@@ -209,3 +216,60 @@ registerTransform({name: "waveform", depends:["path","audioStream","warpMarkers"
 //   .tap(n => console.log("calculated",n.toJS()))//.map(n => Immutable.fromJS(n));//(new Immutable.Range(audioMetadata.get("duration")*audioMetadata.get("sample_rate")));
   .flatMapError(e => Immutable.fromJS({error:"no warpMarkers saved"}))
 }});
+
+function smoothArray( values, smoothing ){ 
+//   values = values.toJS(); 
+  var value = values[0]; // start with the first input
+  var newValues = [value];
+//   console.log("values",values);
+  for (var i=1, len=values.length; i<len; ++i){
+    var currentValue = values[i];
+    value += (currentValue - value) / smoothing;
+    newValues.push(value);
+  }
+//   console.log("newVals",newValues);
+  return newValues;
+}
+
+
+registerTransform({name: "waveformLPF", depends:["path","audioStream","warpMarkers"], transform: (path,audioStream,warpMarkers) => {
+//    console.log("AUDIOSTREAMLPF",audioStream,warpMarkers.toJS());
+  
+  return most.fromPromise(warpMap({buffer: split(smoothArray(audioStream.buffer,100),512), duration: audioStream.duration},warpMarkers))
+//   .map((v,i) => )
+//   .map(n => warpMap(n,warpMarkers))
+
+  .map(w => {
+	  console.log("w",w);
+ 	 return w.waveform.reduce((minmax,n,pos) => {
+		//  if (n.length===0)
+		//  	return minmax;
+	//   var mappedPos = warpMap()
+	  minmax.min.push(lodash.min(n)); 
+	  minmax.max.push(lodash.max(n));
+	  minmax.size = pos+1;
+	  return minmax;
+  
+  },{min:[],max:[], pixelsPerBeat: w.pixelsPerBeat, firstBeat: w.firstBeat, path})})
+//   .map(n => ({min: warpMap(n.min)}))
+// .tap(n => console.log("precalculated",n))
+  .map(n => _.extend(n, {min:smoothArray(n.min,2), max:smoothArray(n.max,2)}))
+  .map( n =>  {
+	//   var resampledMin = resample(n.min, 4096,-1);
+	//   var resampledMax = resample(n.max, 4096);
+	  return Immutable.fromJS(n);//{min: resampledMin, max: resampledMax, pixelsPerBeat: n.pixelsPerBeat* resampledMin.length/n.max.length, firstBeat: n.firstBeat * resampledMin.length/n.min.length})
+  })
+
+//   .tap(n => console.log("calculated",n.toJS()))//.map(n => Immutable.fromJS(n));//(new Immutable.Range(audioMetadata.get("duration")*audioMetadata.get("sample_rate")));
+  .flatMapError(e => Immutable.fromJS({error:"no warpMarkers saved"}))
+}});
+
+// registerTransform({name: "waveformLPF", depends:["waveform"], transform: (waveform) => {
+// //    console.log("AUDIOSTREAM",audioStream,warpMarkers.toJS());
+//   console.log("doing LPF",waveform.toJS());
+//   const lopass= waveform.update("min", data => smoothArray(data,4)).update("max",data => smoothArray(data,4));
+// console.log("done LPF",lopass.toJS());
+// 	return lopass;
+// //   .tap(n => console.log("calculated",n.toJS()))//.map(n => Immutable.fromJS(n));//(new Immutable.Range(audioMetadata.get("duration")*audioMetadata.get("sample_rate")));
+// //   .flatMapError(e => Immutable.fromJS({error:"no waveform LPF possible"}))
+// }});

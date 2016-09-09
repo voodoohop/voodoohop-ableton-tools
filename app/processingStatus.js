@@ -1,7 +1,7 @@
 import React from 'react';
 import component from "omniscient";
 // import { dom } from 'react-reactive-class';
-import most from "most";
+import * as most from 'most';
 import Immutable from "immutable";
 // import Waveform from "./waveform";
 

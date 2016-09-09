@@ -7,7 +7,7 @@ import "../transforms/vampMetadata.js";
 import fs from "fs";
 
 import log from "../utils/streamLog";
-import most from "most";
+import * as most from 'most';
 
 
 import taglib from "thomash-node-audio-metadata";

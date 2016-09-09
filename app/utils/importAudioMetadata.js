@@ -1,6 +1,6 @@
 import Subject from "./subject.js";
 // import gen from "../api/audioMetadataGenerator";
-import most from "most";
+import * as most from 'most';
 // import {fetchOrProcess} from "../api/db";
 
 

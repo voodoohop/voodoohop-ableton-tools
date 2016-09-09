@@ -2,7 +2,7 @@ import log from "../utils/streamLog";
 
 import diff from "immutablediff";
 import Immutable from "immutable";
-import most from "most";
+import * as most from 'most';
 
 function doDiff(stream,options) {
        return stream.map(a => diff(a.get("original"),a.get("compare")))

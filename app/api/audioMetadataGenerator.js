@@ -1,12 +1,13 @@
 
 
-import most from "most";
-import { Stream as Stream } from 'most';;
+import * as most from 'most';
+
+const Stream = most.Stream;
 
 
 import {toJSON as immToJson, fromJSON as immFromJson} from "transit-immutable-js";
 
-import log from"../utils/streamLog";
+import log from "../utils/streamLog";
 import Immutable from "immutable";
 
 const logger = log("bufferedThrottleLog");

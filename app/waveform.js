@@ -1,7 +1,7 @@
 import React from 'react';
 import component from "omniscient";
 // import { dom } from 'react-reactive-class';
-import most from "most";
+import * as most from 'most';
 import Immutable from "immutable";
 // import Waveform from "./waveform";
 
@@ -16,13 +16,13 @@ import keysToColors from "./api/keysToColors";
 
 
 
-var WaveformPoly = component(({durationBeats, waveformData, trackId,chords, musicalKey,start}) => {
+var WaveformPoly = component(({durationBeats, gain, waveformData, trackId,chords, musicalKey,start}) => {
 		// if (!chords)
 			chords = Immutable.fromJS([{chord: musicalKey, startBeat: 0, endBeat: durationBeats}]);
 		// log("waveform args", duration, viewboxWidth, viewboxHeight, waveformData.toJS(), trackId,chords.toString());
         //TODO: make waveforms optionally half length
 		
-		// var takeRange = (waveSeq,startIndex=0, endIndex=Infinity) => 
+		// var takeRan ge = (waveSeq,startIndex=0, endIndex=Infinity) => 
 		// 		waveSeq
 		// 			.skipWhile((val,i) => i < startIndex)
 		// 			.takeWhile((val,i) => i < endIndex);
@@ -52,16 +52,19 @@ var WaveformPoly = component(({durationBeats, waveformData, trackId,chords, musi
 		// log("segmented",segmentedByChord);
 		 
 				 console.timeEnd("renderWaveformTime");
-
-	return <g>{segmentedByChord.map((segment,i) => {
+		// var scaleByGain = {transform:"scaleY("+((Math.exp(gain/0.4)-1)/1.5)+")"};
+		const scaleTransform = `scaleY(${((Math.exp(gain/0.4)-1)/1.5)})`;
+		const horizontalTransform = `translateX(${start}px)`;
+		console.log("scaleTransform",scaleTransform);
+	return <g style={{transform: horizontalTransform}}>{segmentedByChord.map((segment,i) => {
 		var points = segment.get("max").map((v,i) => [i+segment.get("startOffset"),v]).concat(segment.get("min").map((v,i) => [i+segment.get("startOffset"),v]).reverse());
 		if (points.size===0)
 			return null;
 		points = points.concat([points.first()]).toArray();
 		// log("points",i,points,segment.toJS());
 		points=points.map((p)=> [p[0]/pixelsPerBeat, (p[1]/2+0.5)*127].join(","));
-		return <polyline style={{filter:"url(#blur1_"+trackId+")"}} key={""+segment.get("startOffset")+"_"+segment.get("endOffset")} 
-			stroke="none"
+		return <polyline style={{transform: scaleTransform, transformOrigin:"left center", filter:"url(#blur1_"+trackId+")", }} key={""+segment.get("startOffset")+"_"+segment.get("endOffset")} 
+			
 					  fill={tinycolor(keysToColors(segment.get("chord"))).lighten(10).toHexString()}
 					  points={points.join(" ")} 
                      
@@ -70,9 +73,10 @@ var WaveformPoly = component(({durationBeats, waveformData, trackId,chords, musi
 		 
 		</g>;
 	});
-    
 
-export default component(({waveform, chords, musicalKey,trackId, gain}) => {
+import _ from "lodash";
+
+export default component(({waveform, chords, musicalKey,trackId, gain, style}) => {
 		 log("waveformprops",waveform, chords, musicalKey, trackId, gain);
 		// var waveform = props.waveform;
 		// log("reactThis",waveform&&waveform.toJS());
@@ -86,7 +90,7 @@ export default component(({waveform, chords, musicalKey,trackId, gain}) => {
 		// var chords = props.chords;
 		// log("pts",points);
 		// var beatToPos = (beat) => beat;//*waveform.get("pixelsPerBeat")*viewboxWidth/waveform.get("size");
-		var start = -1*(waveform.get("firstBeat"))+0;
+		var start = 1*(waveform.get("firstBeat"))+0;
 		// var beatLines=Immutable.Range(start,durationBeats-start, 32);
 		// log("bealines",chords && chords.toJS(), beatLines.toJS());
  		// var waveformPolyline =;
@@ -95,8 +99,11 @@ export default component(({waveform, chords, musicalKey,trackId, gain}) => {
         				 console.timeEnd("renderWaveformTime");
        console.time("renderWaveformTime");
     //    console.log("gainIs",gain);
-        return <g style={{transform:"scaleY("+((Math.exp(gain/0.4)-1)/1.5)+")",transformOrigin:"center"}}>
-                    <WaveformPoly start={start} durationBeats={durationBeats} musicalKey={musicalKey} waveformData={waveform} trackId={trackId} chords={chords}/>
+		const compositeStyle= _.defaults({
+			// transform:"scaleY("+((Math.exp(gain/0.4)-1)/1.5)+")"
+		/*,transformOrigin:"0% 0%"*/}, style);
+        return <g style={compositeStyle} >
+                    <WaveformPoly gain={gain} start={start} durationBeats={durationBeats} musicalKey={musicalKey} waveformData={waveform} trackId={trackId} chords={chords}/>
                </g>;
        			// { beatLines.map(x =>
 					//   	<line key={x} stroke={tinycolor(color).complement().toHexString()} opacity="0.3" strokeWidth="2" x1={x} x2={x} y1={0} y2={127} />				

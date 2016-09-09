@@ -32,7 +32,8 @@ const installExtensions = async () => {
 
     const extensions = [
       'REACT_DEVELOPER_TOOLS',
-      'REDUX_DEVTOOLS'
+      'REDUX_DEVTOOLS',
+      'IMMUTABLE_DEVTOOLS'
     ];
     const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
     for (const name of extensions) {
@@ -64,14 +65,15 @@ app.on('ready', async () => {
   mainWindow = new BrowserWindow({ 
     width: 300, 
     height: 500, 
-    // transparent:true, 
+    transparent:true, 
     alwaysOnTop:true,
     // frame: false,
-	  titleBarStyle:"hidden",
+    titleBarStyle: 'hidden-inset',
+	  // titleBarStyle:"hidden-inset",
 		'min-width': 151,
 		'min-height': 126,
 		// 'standard-window': false,
-		'use-content-size': true,
+		// 'use-content-size': true,
     // experimentalFeatures: true,    
     // Boolean - Allow an https page to display content like images from http URLs. Default is `false`. 
     allowDisplayingInsecureContent: true,
@@ -80,8 +82,10 @@ app.on('ready', async () => {
     // experimentalCanvasFeatures:true,
     // overlayFullscreenVideo:true,
     darkTheme: true,
-    // zoomFactor:1
-    title:"VoodoohopLiveTools"
+    // mobable:true,
+    // zoomFactor:0.2,
+    title:"VoodoohopLiveTools",
+    backgroundColor: '#2e2c29'
     });
 
   mainWindow.loadURL(`file://${__dirname}/app/app.html`);
@@ -90,13 +94,13 @@ app.on('ready', async () => {
     mainWindow.show();
     mainWindow.focus();
   });
-
+  // mainWindow.setIgnoreMouseEvents(true)
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
 
   if (process.env.NODE_ENV === 'development') {
-    mainWindow.openDevTools();
+    // mainWindow.openDevTools();
     mainWindow.webContents.on('context-menu', (e, props) => {
       const { x, y } = props;
 

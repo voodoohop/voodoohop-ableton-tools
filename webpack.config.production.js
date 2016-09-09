@@ -55,6 +55,6 @@ const config = merge(baseConfig, {
   target: 'electron-renderer'
 });
 
-console.log("production config:", config);
+// console.log("production config:", config);
 
 export default config;

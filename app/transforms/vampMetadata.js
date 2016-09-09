@@ -4,7 +4,7 @@ import Immutable from "immutable";
 
 // var WaveformData = require("waveform-data");
 // import doThePeaks from "./doThePeaks.js";
-import most from "most";
+import * as most from 'most';
 
 import {registerTransform} from "../api/audioMetadataGenerator";
 

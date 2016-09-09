@@ -1,7 +1,7 @@
 import React from 'react';
 import component from "omniscient";
 // import { dom } from 'react-reactive-class';
-import most from "most";
+import * as most from 'most';
 import Immutable from "immutable";
 // import Waveform from "./waveform";
 
@@ -64,7 +64,8 @@ export default component(({usage})=>
   	 <div style={{textAlign:"center",color:"rgba(255,255,255,0.6)",width:"100%", fontSize: "8px"}}>&nbsp;CPU</div> 
    
     <VictoryPie padding={0} animate={{velocity:0.2}}  width={30} height={30} style={{labels:{display:"none"},data:{stroke:"transparent"}}} 
-        data={[{x:"me",y:usage.get("me"), fill:"red", opacity:0.8},{x:"live",y:usage.get("live")||0, fill:"green", opacity:0.8},{x:"",y:100-(usage.get("live")||0)-usage.get("me"), fill:"rgba(255,255,255,0.1)"}]}
+        data={[{x:"me",y:usage.get("me")},{x:"live",y:usage.get("live")||0},{x:"",y:100-(usage.get("live")||0)-usage.get("me")}]}
+        colorScale={["green","red","rgba(255,255,255,0.1)"]}
     />
   
 </div>

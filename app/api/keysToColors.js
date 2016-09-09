@@ -44,7 +44,10 @@ import tinycolor from  "tinyColor2";
 console.log("colors",colors);
 export default function getKeyColor(keyString) {
 	// console.log("getting col for",keyString);	
-	if (!keyString)
-		return "#bbbbbb";
+	if (keyString === undefined)
+		return "#aaaaaa";
+	if (keyString === null) {
+		return keyString;
+	}
 	return tinycolor(colors[keyString.toLowerCase().trim()] || "#aaaaaa")/*.lighten(20)*/.toHexString();
 }

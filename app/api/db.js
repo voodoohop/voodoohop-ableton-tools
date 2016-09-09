@@ -1,10 +1,10 @@
-import PouchDB from "pouchdb";
-import upsert from "pouchdb-upsert";
-PouchDB.plugin(upsert);
+import nedb from 'nedb';
 
 import Subject from "../utils/subject";
-import most from "most";
+import * as most from 'most';
 import _ from "lodash";
+
+// import promisify from "es6-promisify";
 
 import Imm from "immutable";
 
@@ -13,7 +13,8 @@ import os from "os";
 // import homedir from "homedir";
 // setTimeout(()=>
 console.log("home", os.homedir());
-export var pouch = new PouchDB(os.homedir()+"/.VoodoohopLiveTools_2"/*+Math.random()*/);
+const db = new nedb({filename: os.homedir()+"/.VoodoohopLiveTools3.db"/*+Math.random()*/, autoload: true});
+
 // window.PouchDB = pouch;
 // var remoteDB = new PouchDB('http://localhost:5984/myremotedbtomtom')
 
@@ -21,24 +22,34 @@ export var pouch = new PouchDB(os.homedir()+"/.VoodoohopLiveTools_2"/*+Math.rand
 //   // yay, we're done!
 //   console.log("replicated to couchDB");
 // }).on('error', function (err) {
-//   // boo, something went wrong!
+//   // boo, something went wrong!`
 // });
 // Congratulations, all changes from the localDB have been replicated to the remoteDB.
 
 
-console.log("got pouch",pouch);
+console.log("got nedb",db);
+const dbFind = (...args) => 
+    new Promise((resolve,reject) =>             
+            db.find(...args, (err,docs) => {
+                console.log("got docs",docs,"error",err);
+                if (err) reject(err) 
+                    else 
+                    resolve(docs);
+                return;               
+            })
+        );
 
 export var fetchOrProcess = (sourceDataStream, extractor) => sourceDataStream.flatMap(key => {
-	console.log("getting key from pouch",key);
-	return most.fromPromise(pouch.get(key)).flatMapError(e => { 
+	// console.log("getting key from pouch",key);
+	return most.fromPromise(dbFind({_id: key})).flatMapError(e => { 
 		console.log("returning from error",e);
 		// processInputStream.push(key);
-		return most.fromPromise(extractor(key)).tap(data => pouch.put(data.set("path",key).toJS(),key));
+		return most.fromPromise(extractor(key)).tap(data => db.update({_id:key}, {$set: data.set("path",key).toJS()},{ upsert: true }));
 	})
 	}).map(o => Imm.fromJS(o));
 	
 	
-export var db = pouch;
+// export db;
 
 // export var storeStream(name, stream);
 
@@ -52,37 +63,42 @@ import {defaultsDeep} from "lodash";
 function addToImmStore(storeName,store, item, key) {
     // if (!item.has(key) && item.has("type"))
     //     return store.setIn()
-    
+    const storePrefix = storeName+"_";
     // if (item.has(key)) {
-        console.log("upserting",item.toJS());
-        db.upsert(storeName+"_"+key, doc => {
-				if (doc === null)
-                    doc = {};
-                var mergedDoc = Imm.fromJS(doc).mergeDeep(item);
-                // console.log("merged",mergedDoc.toJS());
-                return mergedDoc.toJS();
-              });
-        return store.mergeDeep(Imm.Map().set(key,item))
+        const mergedStore = store.mergeDeep(Imm.Map({[key]:item}));
+        const dbKey = storePrefix+key;
+        // console.log("upserting",item.toJS());
+        db.update({_id: dbKey}, mergedStore.get(key).set("_id",dbKey).toJS(), {upsert:true});
+        return mergedStore;
     // };
 }
 
-export function dataStore(storeName, stream, keyFunc = (item)=>item.get("path")) {
+export function dataStore(storeName, newMetadataStreamFunc, keyFunc = (item)=>item.get("path")) {
+    const storePrefix = storeName+"_";
+    const regex = new RegExp(`/^${storePrefix}/`);
+    const preSaved = most.fromPromise(dbFind({
+        // _id:regex
+        })).map(allDocs => 
+            allDocs.reduce((store,doc) => 
+                store.set(doc["_id"].replace(storePrefix,""),Imm.fromJS(doc))
+                , Imm.Map()) 
+            );
+
+
+    // allDocs({
+    //     include_docs: true,
+    //     startkey: storeName,
+    //     endkey: storeName+'\uffff'}
     
-    return most.fromPromise(db.allDocs({
-        include_docs: true,
-        startkey: storeName,
-        endkey: storeName+'\uffff'}
+    // ))
     
-    )).tap(log("allDocs")).flatMap(allDocs => { 
-        var saved = allDocs.rows.reduce((store,row) => {
-            // console.log("loaded", row.id);
-            return store.set(row.id.replace(storeName+"_",""),Imm.fromJS(row.doc));},Imm.Map());
-     console.log("presaved",allDocs);
-    var memStore = stream.tap(log("memStoreToDB"))
-    .scan((store,item) => addToImmStore(storeName,store,item,keyFunc(item)), saved).skip(1);
-    return memStore.startWith(saved);
-    })//.startWith(Imm.Map())
-    .tap(log("DataStore"))
-    ;
+    return preSaved
+        .tap(log("presavedDocs"))
+        .flatMap(saved => { 
+            const memStore = newMetadataStreamFunc(saved).tap(log("memStoreToDB"))
+                            .scan((store,item) => addToImmStore(storeName,store,item,keyFunc(item)), saved).skip(1);
+            return memStore.startWith(saved);
+    })
+    .tap(log("DataStore"));
         //throttledDebounce(500,memStore);    
 }

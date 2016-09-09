@@ -1,4 +1,4 @@
-import most from "most";
+import * as most from 'most';
 
 import Immutable from "immutable";
 

@@ -35,7 +35,7 @@ import actionSubject from "./api/actionSubject";
 
 // actionSubject.observe(a => console.log("actionSubject", (a.toJS && a.toJS()) || a)).catch(e => console.error(e));
 
-import most from "most";
+import * as most from 'most';
 
 import importMetadata from "./utils/importAudioMetadata.js";
 
@@ -181,7 +181,7 @@ render(
     </div>
     <PlayingTracks availableTracks={state.get("tracks")} uiState={state.get("uiState")} />
     <KeyWheel />
-        { process.env["NODE_ENV"] !== "development" ? 
+        { process.env["NODE_ENV"] !== "development" || true ? 
             <div /> : <div> <ObjectInspector style={{color:"white"}} data={state} initialExpandedPaths={["*","*","*"]} /> </div>
         }
     </div>,

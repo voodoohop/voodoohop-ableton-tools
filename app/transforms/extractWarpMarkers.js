@@ -92,11 +92,11 @@ export default function extractWarpMarkers(path, audioMetaData) {
         {beats:middle(markersArr[0].beats,markersArr[1].beats), ms: middle(markersArr[0].ms,markersArr[1].ms)},
     //     // {beats:middle(markersArr[0].beats,markersArr[1].beats)+0.0001, ms: middle(markersArr[0].ms,markersArr[1].ms)+0.0001},
         markersArr[1]];
-      console.log("markers",markersArr);
+      // console.log("markers",markersArr);
       var newMarkers = [];
       markersArr.shift(); // throw annoying marker away
-      // if (markersArr[0].beats>0)
-      //   markersArr.unshift({beats:0, ms:0});
+      if (markersArr[0].beats>0)
+        markersArr.unshift({beats:0, ms:0});
       var fm = markersArr[0];
       //var tm = markersArr[2];
       var lm = markersArr[markersArr.length - 1];
@@ -116,18 +116,23 @@ export default function extractWarpMarkers(path, audioMetaData) {
         //Postln("info1", info);
       }
       var firstm = newMarkers[0];
-      if (firstm.beats > 0 && firstm.sourcetime > 0) {
-        //post("FM",JSON.stringify(firstm),"\n");
+      if (firstm.sourcetime > 0) {
+        // console.log("FirstMarker",JSON.stringify(firstm),"\n");
+      
         var firstSpeed = firstm.bpm / 60000;
         var info2 = {
-          sourcetime: firstm.sourcetime - firstm.beats / firstSpeed,
+          sourcetime: 0,//firstm.sourcetime - firstm.beats / firstSpeed,
           bpm: firstm.bpm,
-          beats: 0
+          beats: firstm.beats-(firstm.sourcetime*firstSpeed)
         };
-        newMarkers.unshift(info2);
+        
+          
+        newMarkers.unshift(info2);  
       }
 
       newMarkers[0].desttime = newMarkers[0].beats / refBpm * 60 * 1000;
+        // console.log("first two markers");
+            // console.table(newMarkers);
       var lm2 = newMarkers[newMarkers.length - 1];
       // lm
       var lastBpm = newMarkers[newMarkers.length - 1].bpm;
@@ -142,7 +147,8 @@ export default function extractWarpMarkers(path, audioMetaData) {
         newMarkers[i].desttime = newMarkers[i - 1].desttime + (newMarkers[i].sourcetime - newMarkers[i - 1].sourcetime) * relSpeed;
         //Postln("calculated desttime",i,newMarkers[i].desttime);
       }
-
+  // console.log("second two markers");
+  //           console.table(newMarkers);
       //outlet(2, refBpm);
       var lastSourceTime = -999999999;
       var lastDestTime = -999999999;
@@ -174,10 +180,12 @@ export default function extractWarpMarkers(path, audioMetaData) {
         destTimes.push(marker.desttime / duration);
         return markerObj;
       }).filter(w => w !== null);
-      post("time (marker extract):", new Date().getTime() - startTime);
+      console.log("time (marker extract):", new Date().getTime() - startTime);
       // outlet(1, warpMarkers.size);
       // Postln("sending dictionary content:",JSON.stringify(dict_to_jsobj(markers)));
-      var res = Imm.fromJS({ path: filename, pathStat: JSON.parse(JSON.stringify(fs.statSync(filename))), warpMarkers: warpMarkers, baseBpm: refBpm, durationBeats: beatss-fm.beats });
+      console.log("final warp markers");
+      console.table(warpMarkers.toJS());
+      var res = Imm.Map({ path: filename, pathStat: Imm.fromJS(JSON.parse(JSON.stringify(fs.statSync(filename)))), warpMarkers: warpMarkers, baseBpm: refBpm, durationBeats: beatss-fm.beats });
       //clipDict.replace("metaData",audioMetaData);
       //outlet(0, "dictionary", audioMetaData.name);
       // f.close();

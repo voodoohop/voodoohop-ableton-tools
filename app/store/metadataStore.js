@@ -1,10 +1,10 @@
 import Immutable from "immutable";
 
-import most from "most";
+import * as most from 'most';
 
 import {getTransformed} from "../api/audioMetadataGenerator";
 
-import {db, dataStore} from "../api/db";
+import {dataStore} from "../api/db";
 
 
 import actionStream from "../api/actionSubject";
@@ -22,11 +22,24 @@ var createMetadataStore = (actionStream) => {
 
 	
 
-    var getNextTransformed = Subject(true);
+    // const getNextTransformed = Subject(true);
+    // console.log("pushMethod",getNextTransformed.push);
 
-    var loadPaths = actionStream.filter(a => a.get("type") === "loadMetadata"
-     || a.get("type") === "reloadMetadata" || a.get("type") === "livePathReceived"
-     )
+
+    
+    // getNextTransformed.skip(1).debounce(10000).constant("timeout").tap(log("metadata load timedOut")).observe(getNextTransformed.push);
+    
+    
+    
+
+        
+//    actionStream.plug(loadPaths.map(path=> Immutable.Map({type:"metadataLoading",path})));
+
+   
+    const metadataStore = dataStore("audioMetaData",(saved) => { 
+        console.log("loading paths paths",saved.toJS());
+            const loadPaths = actionStream.filter(a => a.get("type") === "loadMetadata"
+     || a.get("type") === "reloadMetadata" || a.get("type") === "livePathReceived")
         .loop((paths, f) => {
             if (f.get("type") === "reloadMetadata")
               return {value: f.get("path"), seed:paths};
@@ -35,39 +48,26 @@ var createMetadataStore = (actionStream) => {
                 return { value: null, seed: paths };
             else
                 return { value: path, seed: paths.add(path) };
-        }, Immutable.Set()).filter(p => p !== null)
+        }, Immutable.Set(saved.keySeq())).filter(p => p !== null)
         .bufferedThrottle(100)
-        .zip(d => d, getNextTransformed)
+        // .zip(d => d, getNextTransformed)
         .tap(log("loadPaths"))
         .multicast();
-    
-    // getNextTransformed.skip(1).debounce(10000).constant("timeout").tap(log("metadata load timedOut")).observe(getNextTransformed.push);
-    
-    
-    
-    var metadata = getTransformed(["path", "pathStat", "id3Metadata", "audioMetadata", "warpMarkers", "waveform"],//, "vampChord_HPA", "vampChord_QM"],
+
+    var metadata = getTransformed(["path", "pathStat", "id3Metadata", "audioMetadata", "warpMarkers", "waveform","waveformLPF"],//, "vampChord_HPA", "vampChord_QM"],
         loadPaths.tap(log("got path to load"))
             // .tap(log("actually requesting metadata load"))
             )
         // .skipRepeats()
         .tap(log("metadata loaded"))
         .flatMapError(e => { console.error("metadata load error",e); return (Immutable.fromJS({ error: e })); })
-        .tap(() => getNextTransformed.push(true))
+        // .tap(() => getNextTransformed.push(true))
         // .filter(m => )
         .multicast();
         
-   actionStream.plug(loadPaths.map(path=> Immutable.Map({type:"metadataLoading",path})));
-   actionStream.plug(metadata.map(m=>Immutable.Map({type:"metadataLoaded", metadata:m})));
+    actionStream.plug(metadata.map(m=>Immutable.Map({type:"metadataLoaded", metadata:m})));
 
-   
-    var metadataStore = dataStore("audioMetaData",metadata
-        .merge(actionStream.filter(a => a.get("type")=== "mergeMetadata").map(a => a.get("data").set("path", a.get("path"))))
-        .tap(log("sending to store")))
-        .flatMapError(e=> { console.error(e); return Immutable.fromJS({ error: e }); })
-
-    // var preloadedMetadataToWatch=metadataStore.take(1).flatMap(m => most.from(m.toArray())).tap(log("preloadedMetadaToWatch"));
-    
-    var pathsToBeWatched = metadata
+    var pathsToBeWatched = metadata.merge(most.from(saved.valueSeq().toArray()))
             // .merge(preloadedMetadataToWatch.tap(log("metadata loading for problem")))
             .flatMap(m => most.from([m,m.get("warpMarkers")].filter(e => e.has && e.get("path")))
             // .tap(log("goingToWatch"))
@@ -97,7 +97,17 @@ var createMetadataStore = (actionStream) => {
         .tap(log("watching pathChanged, sending reloadMetadata"));
     
     // pathsChangedFile.observe(log("pathsChangedFile")).catch(e => console.error(e));
-    actionStream.plug(pathsChangedFile.tap(log("pathsChangedFile")).map(p => Immutable.Map({ type: "reloadMetadata", path: p.get("target").get("path") })));//observe(p => console.log("pathsChanged",p.toJS()));
+    actionStream.plug(pathsChangedFile.tap(log("pathsChangedFile")).map(p => Immutable.Map({ type: "reloadMetadata", path: p.get("target").get("path") })));
+
+
+        return metadata
+            .merge(actionStream.filter(a => a.get("type")=== "mergeMetadata").map(a => a.get("data").set("path", a.get("path"))))
+            .tap(log("sending to store"))
+        })
+        .flatMapError(e=> { console.error(e); return Immutable.fromJS({ error: e }); })
+    
+    // var preloadedMetadataToWatch=metadataStore.take(1).flatMap(m => most.from(m.toArray())).tap(log("preloadedMetadaToWatch"));
+//observe(p => console.log("pathsChanged",p.toJS()));
 
 
     return metadataStore.tap(log("metadataStore"));

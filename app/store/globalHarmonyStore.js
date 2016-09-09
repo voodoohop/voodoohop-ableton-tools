@@ -1,6 +1,6 @@
 import Immutable from "immutable";
 
-import most from "most";
+import * as most from 'most';
 
 import actionStream from "../api/actionSubject";
 
