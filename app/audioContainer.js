@@ -60,7 +60,7 @@ export default component(({uiState,trackId,track}) => {
 	var viewboxWidth=1000;
 	var viewboxHeight=200;
 	var visibleBeats = uiState.get("visibleBeats");
-	 console.log("children");
+	//  console.log("children");
 	
 	var scale=viewboxWidth/visibleBeats;
 	var playingPosX=liveData.get("playingPosition") || 0;

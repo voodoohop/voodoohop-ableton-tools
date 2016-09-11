@@ -2,7 +2,7 @@ body {
   position: relative;
   color: black;
   height: 100vh;
-  background-color: rgba(0,0,0,0.3);
+  background-color: rgba(0,0,0,0.8);
   font-family: Arial, Helvetica, Helvetica Neue;
   overflow-y: hidden;
   -webkit-app-region: drag; 

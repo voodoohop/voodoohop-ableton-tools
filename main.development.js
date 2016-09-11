@@ -67,8 +67,8 @@ app.on('ready', async () => {
     height: 500, 
     transparent:true, 
     alwaysOnTop:true,
-    // frame: false,
-    titleBarStyle: 'hidden-inset',
+    frame: false,
+    // titleBarStyle: 'hidden',
 	  // titleBarStyle:"hidden-inset",
 		'min-width': 151,
 		'min-height': 126,
@@ -84,8 +84,8 @@ app.on('ready', async () => {
     darkTheme: true,
     // mobable:true,
     // zoomFactor:0.2,
-    title:"VoodoohopLiveTools",
-    backgroundColor: '#2e2c29'
+    title:"VoodoohopLiveTools"
+    // backgroundColor: 'rgba(0,0,0,0.5)'
     });
 
   mainWindow.loadURL(`file://${__dirname}/app/app.html`);

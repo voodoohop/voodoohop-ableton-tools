@@ -16,7 +16,7 @@ import tinyColor from "tinyColor2";
 
 
 export default component(props => 
-<VictoryPie innerRadius={60} width={280} 
+<VictoryPie innerRadius={85} width={350} 
 
     data={
         openKeySequence.map(note => ({x:""+note+"/"+transposedNote(note,9)+"m",y:1}))
