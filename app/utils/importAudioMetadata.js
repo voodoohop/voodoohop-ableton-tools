@@ -9,12 +9,15 @@ import actionStream from "../api/actionSubject";
 
 import "../transforms/vampMetadata.js";
 
+// import {remote} from "electron";
 import fs from "fs";
 
 import log from "../utils/streamLog";
 
 import taglib from "thomash-node-audio-metadata";
 
+import AV  from 'av';
+      import 'flac.js';
 // var filewalker = require('filewalker');
 // require("node-find-files");
 
@@ -26,11 +29,72 @@ var extensions=".mp3,.m4a,.mp4,.aif,.aiff,.wav".split(",");
 // import metadataStore from "../store/metadataStore";
   //  .drain();  
 
+var mm = require('musicmetadata');
 
 const extractMetadata = path => {
   console.log("extracting metadata",path);
- if (path.toLowerCase().indexOf(".flac")>0)
-    return most.of(Imm.Map({error:"taglib has infinite loop with flac"}))
+
+ if (path.toLowerCase().indexOf(".flac")>0) {
+ 
+// create a new parser from a node ReadStream
+//  var flac = require("flac-metadata");
+
+var flacData = fs.readFileSync(path);
+// var stream = require('stream');
+
+// Initiate the source
+// var bufferStream = new stream.PassThrough();
+
+// Write your buffer
+
+
+
+
+// var processor = new flac.Processor({ parseMetaDataBlocks: true });
+// processor.on("postprocess", function(mdb) {
+//   console.log(mdb.toString(),mdb);
+// });
+// processor.on("preprocess", function(mdb) {
+//   console.log("preproc",JSON.stringify(mdb));
+// });
+
+// bufferStream.pipe(processor);
+
+
+// var mm = require('musicmetadata');
+
+// var parser = mm(bufferStream, { duration: true },function (err, metadata) {
+//   if (err) throw err;
+//   console.log("mmmetadata",metadata);
+// });
+
+// var FLAC = require('flac-parser')
+ 
+
+// var parser = bufferStream.pipe(new FLAC());
+
+// parser.on('data', function(tag){
+//     console.log(tag.type)  // => 'samplesInStream'
+//     console.log(tag.value) // => 443520
+// })
+
+// bufferStream.end(flacData);
+
+
+    return most.fromPromise(new Promise((resolve,reject) => {
+       
+
+      var asset = AV.Asset.fromBuffer(flacData);
+      asset.get("duration", duration => {
+        asset.get("metadata", metadata => {
+          asset.get("format", audio => {
+            console.log("flac audio format",audio);
+            resolve(Imm.Map({metadata:Imm.fromJS(metadata),audio: Imm.fromJS(audio).mapKeys(k => k.toLowerCase().replace("channelsperframe","channels")).set("duration",duration).set("length",Math.round(duration/1000))}))
+          })
+        });
+      })
+    })).tap(log("loaded flac metadata"))
+ }
  var f =new taglib.File(path);
  return most.fromPromise(new Promise((resolve) => f.readTaglibMetadata((res) => {
   //  availableMetadataExtractor.push(extractMetadata);
@@ -142,7 +206,7 @@ const normalizeKeyFormat = (data) =>
 
 const normalizeMetadata = (metadata$) => metadata$
 .map(res => 
-  res.update("audio", (audio) => audio ? audio.update("duration", (duration) => duration / 1000):null)
+  res.updateIn(["audio","duration"],1000, (duration) => duration / 1000)
 )
 .map(normalizeKeyFormat)
 

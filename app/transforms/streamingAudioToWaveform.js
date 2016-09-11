@@ -23,23 +23,14 @@ import {AIFFDecoder} from "../lib/audiofile";
 import log from "../utils/streamLog";
 import shell from 'shelljs';
 
+
+import {Asset}  from 'av';
+import 'flac.js';
+
 export function getWebAudioBuffer(path) {
 // return 	pathStream.map(path => {
 
-		var audioBuffer;
-		if (false &&path.trim().toLowerCase().indexOf(".aif")>0 ) {
-			// return most.fromPromise(new Promise(resolve => {
-      //           console.log("executing ","ffmpeg -i \""+path+"\" /tmp/decoded.wav");
-			// 	shell.exec("rm /tmp/decoded.wav", () =>
-			// 	shell.exec("ffmpeg -i \""+path+"\" /tmp/decoded.wav", (res)=> {console.log("reser",res); resolve(getWebAudioBuffer("/tmp/decoded.wav"))})
-			// 	);
-			// })).flatMap(p => p)//.flatMap(p=>p);
-			audioBuffer = 
-				most.fromPromise(new Promise((resolve,reject)=> fs.readFile(path,"utf8",(err,data)=>{
-						console.log("calling decoder in 5s for data:", data.length); 
-						setTimeout(()=>resolve(new AIFFDecoder().decode(data)),10);
-					}))).tap(log("aiffaudiobuffer"));
-		} else {
+		// var audioBuffer;
 
 
 		// 	return most.of(new Promise((resolve,reject)=> fs.readFile(path,"utf8",(err,data)=>{
@@ -48,17 +39,66 @@ export function getWebAudioBuffer(path) {
 				
 		// 		}))).await();
 
-	console.log("getStreamWaveform", path);
-	var offlineAudioCtx = new OfflineAudioContext(1, 1, 11025);
-	// var audioCtx
 
 
 	var readStream = new Promise((resolve,reject) => fs.readFile(path, (err,data) => err ? reject(err):resolve(data)));
 	
-	audioBuffer = most.fromPromise(readStream)
+	var audioBuffer_src = most.fromPromise(readStream);
+	var audioBuffer;
+
+
+
+	console.log("getStreamWaveform", path);
+	var offlineAudioCtx = new OfflineAudioContext(1, 1, 11025);
+
+
+	if (path.trim().toLowerCase().indexOf(".flac")>0 ) {
+			// return most.fromPromise(new Promise(resolve => {
+      //           console.log("executing ","ffmpeg -i \""+path+"\" /tmp/decoded.wav");
+			// 	shell.exec("rm /tmp/decoded.wav", () =>
+			// 	shell.exec("ffmpeg -i \""+path+"\" /tmp/decoded.wav", (res)=> {console.log("reser",res); resolve(getWebAudioBuffer("/tmp/decoded.wav"))})
+			// 	);
+			// })).flatMap(p => p)//.flatMap(p=>p);
+			// audioBuffer = s,chunk) => Buffer.concat([chunks,chunk]), new Buffer([])).skip(5)
+			audioBuffer = audioBuffer_src
+			.map(Asset.fromBuffer)
+			.tap(log("loaded flac asset"))
+			.flatMap(asset => most.fromPromise(new Promise((resolve,reject) => {
+
+			asset.decodeToBuffer((buffer)=>{
+    var channels = asset.format.channelsPerFrame;
+    var samples = buffer.length/channels;
+    var audioBuf = offlineAudioCtx.createBuffer(channels, samples, asset.format.sampleRate);
+    var audioChans = [];
+    for(var i = 0; i < channels; i++) {
+        audioChans.push(audioBuf.getChannelData(i));
+    }
+    for(var i = 0; i < buffer.length; i++) {
+        audioChans[i % channels][Math.round(i/channels)] = buffer[i];
+    }
+    // Do something with your fancy new audioBuffer
+		resolve(audioBuf);
+	});
+      // 	asset.get("duration", duration => {
+      //   asset.get("metadata", metadata => {
+      //     asset.get("format", audio => {
+      //       console.log("flac audio format",audio);
+      //       resolve(Imm.Map({metadata:Imm.fromJS(metadata),audio: Imm.fromJS(audio).mapKeys(k => k.toLowerCase().replace("channelsperframe","channels")).set("duration",duration).set("length",Math.round(duration/1000))}))
+      //     })
+      //   });
+      // })
+    	})))
+
+			.tap(log("loaded flac data"))
+		
+	} else {
+
+	// var audioCtx
+
 		// .tap(b => console.log("audiobuffer1",b))
 
 	// .scan((chunks,chunk) => Buffer.concat([chunks,chunk]), new Buffer([])).skip(5)
+	audioBuffer = audioBuffer_src
 	.flatMap(chunk => {
 		//console.log("chunk",chunk); 
 		return most.fromPromise(AudioReader(new Uint8Array(chunk).buffer, offlineAudioCtx)).map(b => b.buffer || b)
