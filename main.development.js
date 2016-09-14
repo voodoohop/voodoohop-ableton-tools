@@ -65,7 +65,7 @@ app.on('ready', async () => {
   mainWindow = new BrowserWindow({ 
     width: 300, 
     height: 500, 
-    transparent:true, 
+    // transparent:true, 
     alwaysOnTop:true,
     frame: false,
     // titleBarStyle: 'hidden',
@@ -84,8 +84,8 @@ app.on('ready', async () => {
     darkTheme: true,
     // mobable:true,
     // zoomFactor:0.2,
-    title:"VoodoohopLiveTools"
-    // backgroundColor: 'rgba(0,0,0,0.5)'
+    title:"VoodoohopLiveTools",
+    backgroundColor: 'rgba(0,0,0,1)'
     });
 
   mainWindow.loadURL(`file://${__dirname}/app/app.html`);

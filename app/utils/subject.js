@@ -1,9 +1,9 @@
-import most from 'most'
-import create from '@most/create'
+
+import create from '@most/create';
 
 const now = fn => setTimeout(fn, 0)
 
-function Subject(initial = null) {
+export default function Subject(initial = null) {
   let _add
   let _end
   let _error
@@ -38,4 +38,4 @@ function Subject(initial = null) {
   return stream
 }
 
-export default Subject;
+// export default Subject;

@@ -5,6 +5,20 @@ import actionStream from "../api/actionSubject";
 import Immutable from "immutable";
 // import {midiClipStore} from ".";
 
+export function generateMidiMergeEventHack(finalState) {
+    actionStream.plug(
+    finalState.flatMap(s => most.from(
+    s.get("tracks").toArray()
+    .filter(t => t.get("midiData") && t.get("fileData") && !t.getIn(["fileData","midiMetadata"]))
+    .map(t => Immutable.Map({
+        type:"mergeMetadata",   
+        data:Immutable.Map({midiMetadata: t.get("midiData")}), 
+        path: t.getIn(["fileData","path"])}))
+)))
+}
+;
+
+
 export var midiClipStoreLinker= (midiClipStore) => actionStream
     .filter(a => a.get("type") === "endDraggingTrack" && a.get("sourceId") && a.get("targetId"))
     .startWith(Immutable.Map())

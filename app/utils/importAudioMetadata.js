@@ -209,7 +209,7 @@ const normalizeMetadata = (metadata$) => metadata$
   res.updateIn(["audio","duration"],1000, (duration) => duration / 1000)
 )
 .map(normalizeKeyFormat)
-
+.tap(log("normalized key format"))
 ;
 
 

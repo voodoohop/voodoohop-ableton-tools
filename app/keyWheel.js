@@ -22,7 +22,7 @@ export default component(props =>
         openKeySequence.map(note => ({x:""+note+"/"+transposedNote(note,9)+"m",y:1}))
     }
 
-    style={{labels:{fontWeight:"bold", padding:0,fontSize:"6px",opacity:1, ":hover":{opacity:1}},data:{stroke:"black", strokeWidth:"0.4px",":hover":{stroke:"white", zIndex:999,strokeWidth:"1.5px"}}}}
+    style={{labels:{fontWeight:"bold", padding:0,fontSize:"8px",opacity:1, ":hover":{opacity:1}},data:{stroke:"black", strokeWidth:"0.4px",":hover":{stroke:"white", zIndex:999,strokeWidth:"1.5px"}}}}
 
     colorScale={openKeySequence.map(note => tinyColor(keysToColors(transposedNote(note,0))).lighten(10).toHexString())}
 

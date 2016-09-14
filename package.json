@@ -219,6 +219,7 @@
     "tinycolor2": "^1.4.1",
     "transit-immutable-js": "^0.6.0",
     "transit-js": "^0.8.846",
+    "trine": "^0.1.1",
     "typed-immutable": "0.0.8",
     "url-loader": "^0.5.7",
     "usage": "^0.7.1",

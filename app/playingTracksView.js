@@ -1,7 +1,8 @@
 import React,{Component} from 'react';
+
 import component from 'omniscient';
 // import { dom } from 'react-reactive-class';
-import * as most from 'most';
+import {fromEvent} from 'most';
 import Immutable from "immutable";
 
 // var ReactiveWaveform = reactive(Waveform);
@@ -10,7 +11,6 @@ import keysToColors from "./api/keysToColors";
 // import ReactCountdownClock from "react-countdown-clock";
 
 import AudioContainer from "./audioContainer";
-
 
 
 
@@ -30,7 +30,7 @@ var TrackStatistic=component(({fileData,liveData}) =>
   }
   <div className="statistic  tom">
     <div className="value">
-      {fileData.getIn(["warpMarkers","baseBpm"]).toFixed(2) || fileData.getIn([ "id3Metadata","bpm"]) || "-"}
+      {Math.round(fileData.getIn(["warpMarkers","baseBpm"])) || fileData.getIn([ "id3Metadata","bpm"]) || "-"}
     </div>
     <div className="label">
       Bpm
@@ -54,9 +54,9 @@ import actionStream from "./api/actionSubject";
 import {DraggableParent, DraggableChild, dragEvent} from "./utils/makeDraggableTrack";
 
 
-actionStream.plug(most.fromEvent("beginDrag", dragEvent));
-actionStream.plug(most.fromEvent("endDrag", dragEvent));
-actionStream.plug(most.fromEvent("hoverDrag", dragEvent).throttle(20)
+actionStream.plug(fromEvent("beginDrag", dragEvent));
+actionStream.plug(fromEvent("endDrag", dragEvent));
+actionStream.plug(fromEvent("hoverDrag", dragEvent).throttle(20)
 .skipRepeatsWith((a,b)=> a.get("targetId") === b.get("targetId"))
 );
 
@@ -100,7 +100,9 @@ var Track = component(function({track,trackId, uiState}) {
 			    <div className="ui header tom" style={{fontSize:"3vw"}}><span className="blackTransparentBg"> 
 {track.getIn(["fileData","id3Metadata","artist"]) || track.getIn(["liveData","name"])}
           </span></div>
-      <span className="blackTransparentBg" style={{fontSize:"2vw", margin:"0px",color: keysToColors(track.getIn([ "liveData","transposedKey"]))}}>{track.getIn(["fileData","id3Metadata","title"])}</span>
+      <span className="blackTransparentBg" style={{fontSize:"2vw", margin:"0px"
+      // ,color: keysToColors(track.getIn([ "liveData","transposedKey"]))
+    }}>{track.getIn(["fileData","id3Metadata","title"])}</span>
 
     </div><div style={{paddingTop:"10px",height:"100%"}}>
     <AudioContainer uiState={uiState} trackId={trackId} track={track} />   

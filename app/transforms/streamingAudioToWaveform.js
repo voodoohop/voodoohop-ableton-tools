@@ -16,7 +16,7 @@ import {registerTransform} from "../api/audioMetadataGenerator";
 
 // import WarpAdaptorCreator from "./warpWaveformDataAdaptor.js";
 // console.log("wfdata",WaveformData.builders);
-var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+// var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 var audioElements = {};
 
 import {AIFFDecoder} from "../lib/audiofile";
@@ -41,15 +41,15 @@ export function getWebAudioBuffer(path) {
 
 
 
-	var readStream = new Promise((resolve,reject) => fs.readFile(path, (err,data) => err ? reject(err):resolve(data)));
+	const readStream = new Promise((resolve,reject) => fs.readFile(path, (err,data) => err ? reject(err):resolve(data)));
 	
-	var audioBuffer_src = most.fromPromise(readStream);
+	const audioBuffer_src = most.fromPromise(readStream);
 	var audioBuffer;
 
 
 
 	console.log("getStreamWaveform", path);
-	var offlineAudioCtx = new OfflineAudioContext(1, 1, 11025);
+	const offlineAudioCtx = new OfflineAudioContext(1, 1, 11025);
 
 
 	if (path.trim().toLowerCase().indexOf(".flac")>0 ) {
@@ -63,8 +63,8 @@ export function getWebAudioBuffer(path) {
 			audioBuffer = audioBuffer_src
 			.map(Asset.fromBuffer)
 			.tap(log("loaded flac asset"))
-			.flatMap(asset => most.fromPromise(new Promise((resolve,reject) => {
-
+			.map(asset => new Promise((resolve,reject) => {
+				asset.on("error",reject);
 			asset.decodeToBuffer((buffer)=>{
     var channels = asset.format.channelsPerFrame;
     var samples = buffer.length/channels;
@@ -78,7 +78,7 @@ export function getWebAudioBuffer(path) {
     }
     // Do something with your fancy new audioBuffer
 		resolve(audioBuf);
-	});
+	})
       // 	asset.get("duration", duration => {
       //   asset.get("metadata", metadata => {
       //     asset.get("format", audio => {
@@ -87,7 +87,7 @@ export function getWebAudioBuffer(path) {
       //     })
       //   });
       // })
-    	})))
+    	})).await()
 
 			.tap(log("loaded flac data"))
 		
