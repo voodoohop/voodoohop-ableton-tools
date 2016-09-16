@@ -76,12 +76,12 @@ export default component(({uiState,trackId,track}) => {
 	var waveformLPF=track.getIn(["fileData","waveformLPF"]);
     var midiData = track.getIn(["midiData","notes"]);
     if (!waveform && !midiData)
-        return <div>Waveform / midi not yet loaded</div>;
+        return <div>Waveform / midi not yet	 loaded</div>;
     var detailViews=[];
     // var detailViewMidi=null;
     //<div>no visualisation for this data type</div>;
     // return detailView;
-    if (waveform) {
+    if (waveform && !(waveform.get("error"))) {
       detailViews.push(<Waveform 
 				trackId={trackId}
                 key={"blababla_"+detailViews.length} 

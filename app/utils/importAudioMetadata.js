@@ -206,7 +206,7 @@ const normalizeKeyFormat = (data) =>
 
 const normalizeMetadata = (metadata$) => metadata$
 .map(res => 
-  res.updateIn(["audio","duration"],1000, (duration) => duration / 1000)
+  res.updateIn(["audio","duration"],res.getIn(["audio","length"],1)*1000, (duration) => duration / 1000)
 )
 .map(normalizeKeyFormat)
 .tap(log("normalized key format"))
@@ -259,7 +259,9 @@ registerTransform({name: "audioAndId3Metadata", depends:["path","audioStream"], 
         if (audio===null)
             audio = Imm.Map();
         // console.log("updating in",audio,as);
-        return audio.set("duration",as.duration).set("samplerate",as.sampleRate);
+        return audio
+        .update("duration",(duration) => duration > 0 ? duration: as.duration)
+        .update("samplerate",(samplerate) => samplerate > 0 ? samplerate: as.sampleRate);
      })
     
     })

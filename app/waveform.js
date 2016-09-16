@@ -27,7 +27,14 @@ var WaveformPoly = component(({durationBeats, gain, waveformData, trackId,chords
 		// 			.skipWhile((val,i) => i < startIndex)
 		// 			.takeWhile((val,i) => i < endIndex);
 		// log("doing waveform2 render", waveformData.get("size"),chords.toString());
-		console.log("wform", trackId, waveformData.get("pixelsPerBeat"));
+		// console.log("wform", trackId, waveformData);
+		if (waveformData.get("error"))
+			return  <text x="0" y="0" 
+        			fontFamily="Verdana" 
+        			fontSize="55">
+				{waveformData.get("error")}
+  			</text>;
+//   <div>error: {waveformData.get("error")}</div>;
         if (chords.last().get("endBeat")<durationBeats)
 			chords = chords.push(Immutable.Map({chord:null,  startBeat: chords.last().get("endBeat"), endBeat:durationBeats}));
 		var segmentedByChord = chords.map(chord => {
@@ -77,7 +84,7 @@ var WaveformPoly = component(({durationBeats, gain, waveformData, trackId,chords
 import _ from "lodash";
 
 export default component(({waveform, chords, musicalKey,trackId, gain, style}) => {
-		 log("waveformprops",waveform, chords, musicalKey, trackId, gain);
+		//  log("waveformprops",waveform, chords, musicalKey, trackId, gain);
 		// var waveform = props.waveform;
 		// log("reactThis",waveform&&waveform.toJS());
 		// var liveData=props.liveData;
