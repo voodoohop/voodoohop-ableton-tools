@@ -53,6 +53,8 @@ import CpuUsage from "./cpuUsage";
 
 var installDevTools = require("immutable-devtools");
 
+import createReactiveClass from "./utils/createReactiveClass";
+
 installDevTools(Immutable);
 // RemoteDev Extension: Apply default options & start remotedev-server
 //  require('remotedev-extension')({
@@ -101,13 +103,10 @@ window.most = most;
 import finalState from "./store/combinedState";
 
 
-
-
-
-finalState.observe(state => {
-
-    render(
-        <div>
+class AppRenderer extends React.Component {
+    render() {
+      var state = this.props.state;  
+      return <div>
             <div style={{ position: "fixed", bottom: "0px", right: "0px", backgroundColor: "rgba(0,0,0,0.1)" }}>
                 <CpuUsage usage={state.getIn(["uiState", "cpuUsage"]) } />
             </div>
@@ -116,7 +115,14 @@ finalState.observe(state => {
             { process.env["NODE_ENV"] !== "development" ?
                 <div /> : <div> <ObjectInspector style={{ color: "white" }} data={state} initialExpandedPaths={["*", "*", "*"]} /> </div>
             }
-        </div>,
+        </div>;
+    }
+}
+finalState.observe(state => {
+
+    render(
+        <AppRenderer state={state} />
+     ,
         document.getElementById('root')
     )
 

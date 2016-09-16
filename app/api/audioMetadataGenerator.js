@@ -237,4 +237,4 @@ export var getTransformed = (requiredTransforms, inputStream) => {
      .tap(log("transformResult")).multicast();
 }
 
-registerTransform({ name: "path", transform: input => input, depends: [] })
+registerTransform({ name: "path", transform: input => input, depends: [] });

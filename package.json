@@ -143,6 +143,7 @@
     "flac-metadata": "^0.1.1",
     "flac-parser": "^0.3.2",
     "flac.js": "^0.2.1",
+    "flyd": "^0.2.2",
     "font-awesome": "^4.6.3",
     "homedir": "^0.6.0",
     "iconv-lite": "^0.4.13",

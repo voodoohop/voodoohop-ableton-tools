@@ -12,7 +12,7 @@ import transposedNote from "./utils/transposedNote";
 import keysToColors from "./api/keysToColors";
 import openKeySequence from "./api/openKeySequence.js";
 
-import tinyColor from "tinyColor2";
+import tinyColor from "tinycolor2";
 
 
 export default component(props => 

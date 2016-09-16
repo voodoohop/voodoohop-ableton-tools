@@ -52,7 +52,7 @@ export default function extractWarpMarkers(path, audioMetaData) {
         // var str = buffer.toString();
         // position += chunksize;
         var offset=0;
-      var index=0;
+        var index=0;
         while ((index = buffer.indexOf("WarpMarker",index)) >= 0) {
         if (index >= 0) {
           offset += index;
@@ -92,19 +92,21 @@ export default function extractWarpMarkers(path, audioMetaData) {
         {beats:middle(markersArr[0].beats,markersArr[1].beats), ms: middle(markersArr[0].ms,markersArr[1].ms)},
     //     // {beats:middle(markersArr[0].beats,markersArr[1].beats)+0.0001, ms: middle(markersArr[0].ms,markersArr[1].ms)+0.0001},
         markersArr[1]];
-      // console.log("markers",markersArr);
+      console.log("markersBefore",JSON.stringify(markersArr));
       var newMarkers = [];
+
       markersArr.shift(); // throw annoying marker away
-      if (markersArr[0].beats>0)
-        markersArr.unshift({beats:0, ms:0});
+      // if (markersArr[0].beats>0 && markersArr.length<=2)
+      //   markersArr.unshift({beats:0, ms:0});
+      console.log("markersAfter",JSON.stringify(markersArr));
       var fm = markersArr[0];
       //var tm = markersArr[2];
       var lm = markersArr[markersArr.length - 1];
       var lastToFirstSpeed = (lm.beats - fm.beats) / (lm.ms - fm.ms);
-      var extrapolateLastBeats = (duration - fm.ms) * lastToFirstSpeed + fm.beats;
-      var refBpm = ((extrapolateLastBeats ) / (duration )) * 60000;
+      // var extrapolateLastBeats = (duration - fm.ms) * lastToFirstSpeed + fm.beats;
+      var refBpm = lastToFirstSpeed*60000; //((extrapolateLastBeats ) / (duration )) * 60000;
       //refBpm=100.0;
-      post("REFBPM", {refBpm, lm, fm, extrapolateLastBeats, duration, filename});
+      post("REFBPM", {refBpm, lm, fm, duration, filename});
       for (var i = 0; i < markersArr.length - 1; i++) {
         var bpmNow = (markersArr[i + 1].beats - markersArr[i].beats) / (markersArr[i + 1].ms - markersArr[i].ms) * 1000 * 60;
         var info = {
@@ -117,7 +119,7 @@ export default function extractWarpMarkers(path, audioMetaData) {
       }
       var firstm = newMarkers[0];
       if (firstm.sourcetime > 0) {
-        // console.log("FirstMarker",JSON.stringify(firstm),"\n");
+        console.log("FirstMarker",JSON.stringify(firstm),"\n");
       
         var firstSpeed = firstm.bpm / 60000;
         var info2 = {
@@ -185,7 +187,7 @@ export default function extractWarpMarkers(path, audioMetaData) {
       // Postln("sending dictionary content:",JSON.stringify(dict_to_jsobj(markers)));
       console.log("final warp markers");
       console.table(warpMarkers.toJS());
-      var res = Imm.Map({ path: filename, pathStat: Imm.fromJS(JSON.parse(JSON.stringify(fs.statSync(filename)))), warpMarkers: warpMarkers, baseBpm: refBpm, durationBeats: beatss-fm.beats });
+      var res = Imm.Map({ path: filename, pathStat: Imm.fromJS(JSON.parse(JSON.stringify(fs.statSync(filename)))), warpMarkers: warpMarkers, baseBpm: refBpm, durationBeats: warpMarkers.last().get("beats")-warpMarkers.first().get("beats") });
       //clipDict.replace("metaData",audioMetaData);
       //outlet(0, "dictionary", audioMetaData.name);
       // f.close();

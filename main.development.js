@@ -176,7 +176,7 @@ app.on('ready', async () => {
         label: 'Reload',
         accelerator: 'Command+R',
         click() {
-          mainWindow.restart();
+          mainWindow.reload();
         }
       }, {
         label: 'Toggle Full Screen',

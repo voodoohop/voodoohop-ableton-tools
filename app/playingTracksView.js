@@ -97,10 +97,10 @@ var Track = component(function({track,trackId, uiState}) {
     {
       track.get("fileData") ? <TrackStatistic liveData={track.get("liveData")} fileData={track.get("fileData")} /> : ""
     } 
-			    <div className="ui header tom" style={{fontSize:"3vw"}}><span className="blackTransparentBg"> 
+			    <div className="ui header tom" style={{fontSize:"3vw", fontWeight:"bold"}}><span className="blackTransparentBg"> 
 {track.getIn(["fileData","id3Metadata","artist"]) || track.getIn(["liveData","name"])}
           </span></div>
-      <span className="blackTransparentBg" style={{fontSize:"2vw", margin:"0px"
+      <span className="blackTransparentBg" style={{fontSize:"3vw", margin:"0px"
       // ,color: keysToColors(track.getIn([ "liveData","transposedKey"]))
     }}>{track.getIn(["fileData","id3Metadata","title"])}</span>
 

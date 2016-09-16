@@ -1,6 +1,6 @@
 
 import React from 'react';
-import component from 'omniscient';
+
 import logger from "./utils/streamLog";
 
 import Immutable from "immutable";
@@ -30,7 +30,7 @@ const getStrokeWidth = (i,modulo) => {
 	return current/modulo < 0 ? 0 : current/modulo;
 }
 import MtSvgLines from 'react-mt-svg-lines';    
-var BeatClickGrid = component(({startMarker, endMarker,trackId})=> {
+var BeatClickGrid = ({startMarker, endMarker,trackId})=> {
 		var beatClickGrid=Immutable.Range(startMarker,endMarker, 4);
 		beatClickGrid = beatClickGrid.zip(beatClickGrid.skip(1));
 		log("beatclickgrid",beatClickGrid);
@@ -51,9 +51,9 @@ var BeatClickGrid = component(({startMarker, endMarker,trackId})=> {
                 y={-10} height={height} />;
              }	
         )}</g>;
-        });
+        };
 
-export default component(({uiState,trackId,track}) => {
+export default ({uiState,trackId,track}) => {
 	var liveData = track.get("liveData");
 	if (!(liveData.has("loop_start")&&liveData.has("loop_end")&&liveData.has("looping")))
 		return <div>not enough data</div>
@@ -70,7 +70,9 @@ export default component(({uiState,trackId,track}) => {
 			var loopEnd = liveData.get("loop_end");
 			loopHighlight = <rect stroke="white" fill="rgba(255,255,255,0.1)" opacity="0.9" y="0" x={loopStart} width={loopEnd-loopStart} height={127} />
 		}
-	var endMarker=parseFloat(liveData.get("end_marker"));	
+	var endMarker=parseFloat(liveData.get("end_marker"));
+	var startMarker=parseFloat(liveData.get("start_marker"));	
+	var startRenderPos = Math.min(startMarker,0);
 	log(playingPosX,uiState,liveData,trackId,track);
     var waveform=track.getIn(["fileData","waveform"]);
 	var waveformLPF=track.getIn(["fileData","waveformLPF"]);
@@ -109,7 +111,7 @@ export default component(({uiState,trackId,track}) => {
     if (detailViews.length==0)
         return <div> no midi or waveform data yet </div>
     // console.log("detailView",detailViews);
-    let tweened = {playingPosX};
+    
 	return <div key={"trackid_detail_"+trackId}>
 
     <svg style={{overflow:"hidden",backfaceVisibility:"hidden"}} 
@@ -125,21 +127,21 @@ export default component(({uiState,trackId,track}) => {
                         
   
 					    	<mask id={"Mask"+trackId}>
-								<rect stroke="none" fill="white" opacity={0.3} x={0} width={Math.max(tweened.playingPosX,1)} y={0} height={200} />
-								<rect stroke="none" fill="white" opacity={1} x={tweened.playingPosX} width={Math.max(endMarker-tweened.playingPosX,0.1)} y={0} height={viewboxHeight} />
+								<rect stroke="none" fill="white" opacity={0.3} x={startRenderPos} width={Math.max(playingPosX-startRenderPos,1)} y={0} height={200} />
+								<rect stroke="none" fill="white" opacity={1} x={playingPosX} width={Math.max(endMarker-playingPosX,0.1)} y={0} height={viewboxHeight} />
 								<rect stroke="none" fill="white" opacity={0.3} x={endMarker} width={viewboxWidth-endMarker} y={0} height={viewboxHeight} />
     						</mask>
                               
                         </defs>
                           <g>	   
                           <g transform={"scale("+(scale)+","+(viewboxHeight/127)+")"}>	
-						  <g transform={"translate("+(-tweened.playingPosX+(visibleBeats/4))+",0)"}>
+						  <g transform={"translate("+(-playingPosX+(visibleBeats/4))+",0)"}>
 						  <g style={{mask:"url(#"+"Mask"+trackId+")"}}>
 							{detailViews}
 						  </g>
 						  {loopHighlight}
 
-					      <BeatClickGrid startMarker={liveData.get("start_marker")} endMarker={liveData.get("end_marker")} trackId={trackId}/> 
+					      <BeatClickGrid startMarker={startMarker} endMarker={liveData.get("end_marker")} trackId={trackId}/> 
 						  </g>
 						</g>
                         </g>
@@ -149,7 +151,7 @@ export default component(({uiState,trackId,track}) => {
                     </div>;
 
     }
-) 
+
 
 
 

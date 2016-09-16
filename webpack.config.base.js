@@ -33,7 +33,8 @@ export default {
     "thomash-node-audio-metadata",
     "iconv-lite",
     "usage",
-    "flac-metadata"
+    "flac-metadata",
+    "bindings"
   ]
 };
 

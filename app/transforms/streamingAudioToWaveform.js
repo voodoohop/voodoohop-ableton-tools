@@ -177,11 +177,11 @@ function split(a, n) {
 }
 
 function resample(a, noSamples, mult = 1) {
-	console.log("resampling", a.length / noSamples, noSamples);
+	// console.log("resampling", a.length / noSamples, noSamples);
 	var res = split(a, noSamples).map(b => mult * Math.sqrt(b.reduce(function (a, m, i, p) {
     return a + (m * m);
 	}, 0) / b.length));
-	console.log("resampling res", res);
+	// console.log("resampling res", res);
 	return res;
 }
 
@@ -234,7 +234,7 @@ import Subject from "../utils/subject";
 
 registerTransform({
 	name: "waveform", depends: ["path", "audioStream", "warpMarkers"], transform: (path, audioStream, warpMarkers) => {
-		console.log("AUDIOSTREAM", audioStream, warpMarkers.toJS());
+		// console.log("AUDIOSTREAM", audioStream, warpMarkers.toJS());
 		if (audioStream.error || audioStream.duration < 0)
 			return most.throwError("no buffer to convert to waveform");
 		return most.fromPromise(warpMap({ buffer: split(audioStream.buffer, 2048), duration: audioStream.duration }, warpMarkers))
@@ -242,7 +242,7 @@ registerTransform({
 			//   .map(n => warpMap(n,warpMarkers))
 
 			.map(w => {
-				console.log("w", w);
+				// console.log("w", w);
 				return w.waveform.reduce((minmax, n, pos) => {
 					//  if (n.length===0)
 					//  	return minmax;
@@ -292,9 +292,9 @@ registerTransform({
 			//   .map((v,i) => )
 			//   .map(n => warpMap(n,warpMarkers))
 
-			.map(w => {
-				console.log("w", w);
-				return w.waveform.reduce((minmax, n, pos) => {
+			.map(w => 
+				// console.log("w", w);
+				w.waveform.reduce((minmax, n, pos) => {
 					//  if (n.length===0)
 					//  	return minmax;
 					//   var mappedPos = warpMap()
@@ -304,7 +304,7 @@ registerTransform({
 					return minmax;
 
 				}, { min: [], max: [], pixelsPerBeat: w.pixelsPerBeat, firstBeat: w.firstBeat, path })
-			})
+			)
 			//   .map(n => ({min: warpMap(n.min)}))
 			// .tap(n => console.log("precalculated",n))
 			.map(n => _.extend(n, { min: smoothArray(n.min, 2), max: smoothArray(n.max, 2) }))

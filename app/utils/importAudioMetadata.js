@@ -100,8 +100,8 @@ var flacData = fs.readFileSync(path);
   //  availableMetadataExtractor.push(extractMetadata);
    res = Imm.fromJS(res);
    if (!res.get("metadata"))
-    res = res.set("metadata", Imm.fromJS({title:path.split("/").pop()}));
-   console.log("got metadata",res.toJS());
+    res = res.set("metadata", Imm.fromJS({}));
+  //  console.log("got metadata",res.toJS());
    resolve(res);
  })));
 };
