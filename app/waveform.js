@@ -1,5 +1,5 @@
 import React from 'react';
-// import component from "omniscient";
+import component from "omniscient";
 // import { dom } from 'react-reactive-class';
 import * as most from 'most';
 import Immutable from "immutable";
@@ -16,7 +16,7 @@ import keysToColors from "./api/keysToColors";
 
 
 
-function WaveformPoly({durationBeats, gain, waveformData, trackId,chords, musicalKey,start})  {
+const WaveformPoly = component(({durationBeats, gain, waveformData, trackId,chords, musicalKey,start})  =>{
 		// if (!chords)
 			chords = Immutable.fromJS([{chord: musicalKey, startBeat: 0, endBeat: durationBeats}]);
 		// log("waveform args", duration, viewboxWidth, viewboxHeight, waveformData.toJS(), trackId,chords.toString());
@@ -31,7 +31,7 @@ function WaveformPoly({durationBeats, gain, waveformData, trackId,chords, musica
 		if (waveformData.get("error"))
 			return  <text x="0" y="0" 
         			fontFamily="Verdana" 
-        			fontSize="40">
+        			fontSize="43">
 				{waveformData.get("error")}
   			</text>;
 //   <div>error: {waveformData.get("error")}</div>;
@@ -81,11 +81,11 @@ function WaveformPoly({durationBeats, gain, waveformData, trackId,chords, musica
 		})}
 		 
 		</g>;
-	};
+	});
 
 import _ from "lodash";
 
-export default function({waveform, chords, musicalKey,trackId, gain, style}) {
+export default component(({waveform, chords, musicalKey,trackId, gain, style}) => {
 		//  log("waveformprops",waveform, chords, musicalKey, trackId, gain);
 		// var waveform = props.waveform;
 		// log("reactThis",waveform&&waveform.toJS());
@@ -119,4 +119,4 @@ export default function({waveform, chords, musicalKey,trackId, gain, style}) {
 					//   	<line key={x} stroke={tinycolor(color).complement().toHexString()} opacity="0.3" strokeWidth="2" x1={x} x2={x} y1={0} y2={127} />				
 					//   )}	
 					  
-	}
+	});

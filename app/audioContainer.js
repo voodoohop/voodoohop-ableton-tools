@@ -7,6 +7,7 @@ import Immutable from "immutable";
 
 import actionSubject from "./api/actionSubject";
 
+import component from "omniscient";
 import Waveform from "./waveform";
 import PianoRoll from "./pianoroll";
 
@@ -30,7 +31,7 @@ const getStrokeWidth = (i,modulo) => {
 	return current/modulo < 0 ? 0 : current/modulo;
 }
 import MtSvgLines from 'react-mt-svg-lines';    
-var BeatClickGrid = ({startMarker, endMarker,trackId})=> {
+var BeatClickGrid = component(({startMarker, endMarker,trackId})=> {
 		var beatClickGrid=Immutable.Range(startMarker,endMarker, 4);
 		beatClickGrid = beatClickGrid.zip(beatClickGrid.skip(1));
 		log("beatclickgrid",beatClickGrid);
@@ -51,9 +52,9 @@ var BeatClickGrid = ({startMarker, endMarker,trackId})=> {
                 y={-10} height={height} />;
              }	
         )}</g>;
-        };
+        });
 
-export default ({uiState,trackId,track}) => {
+export default component(({uiState,trackId,track}) => {
 	var liveData = track.get("liveData");
 	if (!(liveData.has("loop_start")&&liveData.has("loop_end")&&liveData.has("looping")))
 		return <div>not enough data</div>
@@ -150,7 +151,7 @@ export default ({uiState,trackId,track}) => {
                     
                     </div>;
 
-    }
+    });
 
 
 

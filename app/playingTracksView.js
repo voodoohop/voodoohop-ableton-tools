@@ -19,8 +19,9 @@ var TrackStatistic=component(({fileData,liveData}) =>
   {
   (liveData.get("transposedKey")) ? 
   <div className="statistic tom">
-    <div className="value" style={{ color: keysToColors(liveData.get("transposedKey"))}}>
-      {liveData.get("transposedKey")}
+    <div className="value" >
+      <span style={{ color: keysToColors(liveData.get("transposedKey"))}}>{liveData.get("transposedKey")}</span> 
+      <span style={{fontSize:"80%"}}>{(liveData.get("pitch") != 0 ? ((liveData.get("pitch") > 0 ? " +":" ")+`${liveData.get("pitch")}`): "")}</span>
     </div>
     <div className="label">
       Key
