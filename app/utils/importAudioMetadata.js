@@ -17,6 +17,8 @@ import log from "../utils/streamLog";
 import taglib from "thomash-node-audio-metadata";
 
 import AV  from 'av';
+
+
       import 'flac.js';
 // var filewalker = require('filewalker');
 // require("node-find-files");
@@ -125,6 +127,13 @@ const camelotRegEx =  /^\s*((?:1[0-2]|[1-9])(?:a|b))\b.*/i;
 
 const openKeyRegEx =  /^\s*((?:1[0-2]|[1-9])(?:d|m))\b.*/i;
 
+const keyRegEx_filename = /\b\s*([A-G])(#|B)?\s?((?:maj|min)(?:or)?|(?:m))?\b.*/i;
+
+const camelotRegEx_filename =  /\b\s*((?:1[0-2]|[1-9])(?:a|b))\b.*/i;
+
+const openKeyRegEx_filename =  /\b\s*((?:1[0-2]|[1-9])(?:d|m))\b.*/i;
+
+
 const camelotToKey = { 
  "11b":"A",
  "8a":"Am",
@@ -179,7 +188,9 @@ const openKeyToKey = {
  "6m":"G#m"
 }
 
-const doNormalization = (keyString) => 
+
+
+const normalize = (keyString, keyRegEx, camelotRegEx, openKeyRegEx) => 
                  keyRegEx.test(keyString) ? 
                  keyString.toLowerCase().replace(
                   keyRegEx, 
@@ -188,27 +199,38 @@ const doNormalization = (keyString) =>
                  
                  :
                  
-                 (camelotRegEx.test(keyString) ? keyString.toLowerCase().replace(camelotRegEx, 
-                 (_, camelotNotation) => `${camelotToKey[camelotNotation]}`)
+                 camelotRegEx.test(keyString) ? keyString.toLowerCase().replace(camelotRegEx, 
+                 (_, camelotNotation) =>{
+                   console.log("getting camelot2",camelotNotation,camelotToKey[camelotNotation]);
+                   return camelotToKey[camelotNotation];
+                  })
                  
-                 : 
-                 
+                 : (
                  (openKeyRegEx.test(keyString) ? keyString.toLowerCase().replace(openKeyRegEx, 
-                 (_, openKeyNotation) => `${openKeyToKey[openKeyNotation]}`)
-                 :null))
+                 (_, openKeyNotation) => openKeyToKey[openKeyNotation])
+                 :undefined));
 
+const doNormalization = (possibleKeyString) => normalize(possibleKeyString, keyRegEx, camelotRegEx, openKeyRegEx);
 
-const normalizeKeyFormat = (data) => 
-  data.updateIn(["metadata","initialkey"], 
+const doNormalization_filename = (possibleKeyString) => normalize(possibleKeyString, keyRegEx_filename, camelotRegEx_filename, openKeyRegEx_filename);
+
+const normalizeKeyFormat = (data,path) => {
+  const id3Tried =  
+    data.updateIn(["metadata","initialkey"], 
                 data.getIn(["metadata","comment"]) || "", 
                   doNormalization
-                 );
+                )
+        .update("metadata",md => md.filter((v,k) => v !== undefined));
+  return id3Tried.updateIn(["metadata","initialkey"], (before) => before || doNormalization_filename(path.split("/").reverse()[0].toLowerCase()));
+}
 
-const normalizeMetadata = (metadata$) => metadata$
+
+
+const normalizeMetadata = (metadata$, path) => metadata$
 .map(res => 
   res.updateIn(["audio","duration"],res.getIn(["audio","length"],1)*1000, (duration) => duration / 1000)
 )
-.map(normalizeKeyFormat)
+.map(data=> normalizeKeyFormat(data,path))
 .tap(log("normalized key format"))
 ;
 
@@ -250,7 +272,7 @@ registerTransform({name:"pathStat", depends:["path"], transform: (path) => Imm.f
 registerTransform({name: "audioAndId3Metadata", depends:["path","audioStream"], transform: 
     (path,as)=> 
     
-    normalizeMetadata(extractMetadata(path))
+    normalizeMetadata(extractMetadata(path),path)
     .map(a=>
     {
     console.log("ais",a.toJS());
