@@ -1,5 +1,11 @@
 #!/bin/bash
 npm run package -- --asar --icon logo_voodoohop_transparent.icns
-cp logo_voodoohop_transparent.icns release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/electron.icns
-rm "/Users/thomash/Google Drive/VoodoohopLiveTools.zip"
-zip -r "/Users/thomash/Google Drive/VoodoohopLiveTools.zip" "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" "./Voodoohop Clip Status Sender.amxd"
+cp logo_voodoohop_transparent.icns ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/electron.icns
+# rm "/Users/thomash/Google Drive/VoodoohopLiveTools.zip"
+# rm -r /tmp/VoodoohopLiveTools
+mkdir /tmp/VoodoohopLiveTools
+cp "./Voodoohop Clip Status Sender.amxd" /tmp/VoodoohopLiveTools
+mv "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /tmp/VoodoohopLiveTools
+ditto -c -k --sequesterRsrc --keepParent /tmp/VoodoohopLiveTools VoodoohopLiveTools.zip
+rm -r /tmp/VoodoohopLiveTools
+mv VoodoohopLiveTools.zip "/Users/thomash/Google Drive"

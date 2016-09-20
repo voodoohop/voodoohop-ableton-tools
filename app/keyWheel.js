@@ -1,5 +1,5 @@
 import React from 'react';
-import component from "omniscient";
+import component from "./utils/immComponent";
 // import { dom } from 'react-reactive-class';
 import * as most from 'most';
 import Immutable from "immutable";
@@ -78,6 +78,7 @@ class KeyLabel extends React.Component {
   }
 }
 
+const liveDataInterested = ["transposedKey", "playing", "name"]
 
 function trackPlaying(tracks,note) {
     return tracks.find((track) => keysToColors(track.getIn(["liveData","transposedKey"])) == keysToColors(note) && track.getIn(["liveData","playing"]));
@@ -85,10 +86,10 @@ function trackPlaying(tracks,note) {
 
 const getNoteColor = note => tinyColor(keysToColors(transposedNote(note,0)))./*lighten(10).*/toHexString();
 
-export default component(({tracks}) => 
-    // <ZingChart id="myChart" height="300" width="600" data={myConfig} />,
 
-<VictoryPie innerRadius={innerRadius} width={350} 
+const DynamicKeyWheel = component(({tracks}) => {
+console.log("DynamicKeyWheel tracks",tracks);    
+return <VictoryPie innerRadius={innerRadius} width={350} 
     labelRadius={labelRadius}
     animate={{duration:500}}
     data={
@@ -101,7 +102,7 @@ export default component(({tracks}) =>
                 x: note,
                 y: playing ? 2:1,
                 note,
-                playing,
+                playing: playing ? true : false,
                 color: getNoteColor(note),
                 keyLabel:""+note+"/"+transposedNote(note,9)+"m",
                 title: playing && name.slice(0,Math.min(name.length,20)) || null,
@@ -132,20 +133,13 @@ export default component(({tracks}) =>
     }        
     colorScale={openKeySequence.map(getNoteColor)}
 
-/>);
+/>});
 
 
-export var transposeWheel = component(({baseKey,transposed}) => 
-    <VictoryPie innerRadius={110} width={550} animate={{duration:500}} data={
-        openKeySequence.map(note => ({x:""+note+"/"+transposedNote(note,9)+"m",y:1,fill:tinyColor(keysToColors(transposedNote(note,0))).lighten(20).toHexString()}))
-}
-style={{labels:{fontWeight:"bold", padding:0},data:{stroke:"transparent"}}}
-
-// style={{
-//     data: {
-//         fill:  (data) => keysToColors(transposedNote("C",data.x)),
-//         stroke: (data) => keysToColors(transposedNote("C",data.x))
-//     }  
-// }}
-/>);
-;
+export default component(({tracks}) => <DynamicKeyWheel tracks={
+    tracks.map(track => 
+        track.update("liveData",(liveData) => 
+            liveData.filter((v,k) => liveDataInterested.includes(k))
+        )
+    )
+} />);

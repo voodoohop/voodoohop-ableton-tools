@@ -26,6 +26,8 @@ import shell from 'shelljs';
 
 import {Asset}  from 'av';
 import 'flac.js';
+import 'aac';
+import 'alac';
 
 export function getWebAudioBuffer(path) {
 	// return 	pathStream.map(path => {
@@ -52,7 +54,7 @@ export function getWebAudioBuffer(path) {
 	const offlineAudioCtx = new OfflineAudioContext(1, 1, 11025);
 
 
-	if (path.trim().toLowerCase().indexOf(".flac") > 0) {
+	if (path.trim().toLowerCase().indexOf(".flac") > 0 || path.trim().toLowerCase().indexOf(".m4a") > 0 ) {
 		// return most.fromPromise(new Promise(resolve => {
 		//           console.log("executing ","ffmpeg -i \""+path+"\" /tmp/decoded.wav");
 		// 	shell.exec("rm /tmp/decoded.wav", () =>

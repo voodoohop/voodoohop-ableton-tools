@@ -121,17 +121,17 @@ const majorMinorFormat = (m) => {
 
 
 
-const keyRegEx = /^\s*([A-G])(#|B)?\s?((?:maj|min)(?:or)?|(?:m))?\b.*/i;
+const keyRegEx = /\b\s*([A-G])(#|B)?\s?((?:maj|min)(?:or)?|(?:m))?\b.*/i;
 
-const camelotRegEx =  /^\s*((?:1[0-2]|[1-9])(?:a|b))\b.*/i;
+const camelotRegEx =  /\b\s*((?:1[0-2]|[1-9])(?:a|b))\b.*/i;
 
-const openKeyRegEx =  /^\s*((?:1[0-2]|[1-9])(?:d|m))\b.*/i;
+const openKeyRegEx =  /\b\s*((?:1[0-2]|[1-9])(?:d|m))\b.*/i;
 
-const keyRegEx_filename = /\b\s*([A-G])(#|B)?\s?((?:maj|min)(?:or)?|(?:m))?\b.*/i;
+// const keyRegEx_filename = /\b\s*([A-G])(#|B)?\s?((?:maj|min)(?:or)?|(?:m))?\b.*/i;
 
-const camelotRegEx_filename =  /\b\s*((?:1[0-2]|[1-9])(?:a|b))\b.*/i;
+// const camelotRegEx_filename =  /\b\s*((?:1[0-2]|[1-9])(?:a|b))\b.*/i;
 
-const openKeyRegEx_filename =  /\b\s*((?:1[0-2]|[1-9])(?:d|m))\b.*/i;
+// const openKeyRegEx_filename =  /\b\s*((?:1[0-2]|[1-9])(?:d|m))\b.*/i;
 
 
 const camelotToKey = { 
@@ -189,39 +189,34 @@ const openKeyToKey = {
 }
 
 
+const doKeyNormalize = ([_,keyName, flatOrSharp, majorMinor]) => `${(keyName||"").toUpperCase()}${(flatOrSharp||"")}${majorMinorFormat(majorMinor)}`
 
 const normalize = (keyString, keyRegEx, camelotRegEx, openKeyRegEx) => 
                  keyRegEx.test(keyString) ? 
-                 keyString.toLowerCase().replace(
-                  keyRegEx, 
-                   (_,keyName, flatOrSharp, majorMinor) => `${(keyName||"").toUpperCase()}${(flatOrSharp||"")}${majorMinorFormat(majorMinor)}`
-                 ) 
-                 
-                 :
-                 
-                 camelotRegEx.test(keyString) ? keyString.toLowerCase().replace(camelotRegEx, 
-                 (_, camelotNotation) =>{
-                   console.log("getting camelot2",camelotNotation,camelotToKey[camelotNotation]);
-                   return camelotToKey[camelotNotation];
-                  })
-                 
+                 doKeyNormalize(keyString.toLowerCase().match(keyRegEx)) 
+                 :                 
+                 camelotRegEx.test(keyString) ? 
+                 camelotToKey[keyString.toLowerCase().match(camelotRegEx)[1]]
                  : (
-                 (openKeyRegEx.test(keyString) ? keyString.toLowerCase().replace(openKeyRegEx, 
-                 (_, openKeyNotation) => openKeyToKey[openKeyNotation])
+                 (openKeyRegEx.test(keyString) ? openKeyToKey[keyString.toLowerCase().match(openKeyRegEx)[1]]
                  :undefined));
 
 const doNormalization = (possibleKeyString) => normalize(possibleKeyString, keyRegEx, camelotRegEx, openKeyRegEx);
 
-const doNormalization_filename = (possibleKeyString) => normalize(possibleKeyString, keyRegEx_filename, camelotRegEx_filename, openKeyRegEx_filename);
+// const doNormalization_filename = (possibleKeyString) => normalize(possibleKeyString, keyRegEx_filename, camelotRegEx_filename, openKeyRegEx_filename);
 
 const normalizeKeyFormat = (data,path) => {
+  // console.log("trying to update ",data, data.getIn(["metadata","initialkey"]));
   const id3Tried =  
     data.updateIn(["metadata","initialkey"], 
-                data.getIn(["metadata","comment"]) || "", 
+                data.getIn(["metadata","key"],data.getIn(["metadata","comment"]) || ""), 
                   doNormalization
                 )
         .update("metadata",md => md.filter((v,k) => v !== undefined));
-  return id3Tried.updateIn(["metadata","initialkey"], (before) => before || doNormalization_filename(path.split("/").reverse()[0].toLowerCase()));
+  // console.log("after try ",id3Tried.getIn(["metadata","initialkey"]));  
+  const filename = path.split("/").reverse()[0].toLowerCase();
+  console.log("trying to extract metadata from filename",filename, doNormalization(filename));
+  return id3Tried.updateIn(["metadata","initialkey"], (before) => before || doNormalization(filename));
 }
 
 

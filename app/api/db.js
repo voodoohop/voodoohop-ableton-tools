@@ -13,7 +13,7 @@ import os from "os";
 // import homedir from "homedir";
 // setTimeout(()=>
 console.log("home", os.homedir());
-const db = new nedb({filename: os.homedir()+"/.VoodoohopLiveTools.db"/*+Math.random()*/, autoload: true});
+const db = new nedb({filename: os.homedir()+"/.VoodoohopLiveTools_1.db"/*+Math.random()*/, autoload: true});
 
 // window.PouchDB = pouch;
 // var remoteDB = new PouchDB('http://localhost:5984/myremotedbtomtom')
