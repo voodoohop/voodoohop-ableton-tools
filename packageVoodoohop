@@ -1,0 +1,5 @@
+#!/bin/bash
+npm run package -- --asar --icon logo_voodoohop_transparent.icns
+cp logo_voodoohop_transparent.icns release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/electron.icns
+rm "/Users/thomash/Google Drive/VoodoohopLiveTools.zip"
+zip -r "/Users/thomash/Google Drive/VoodoohopLiveTools.zip" "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" "./Voodoohop Clip Status Sender.amxd"

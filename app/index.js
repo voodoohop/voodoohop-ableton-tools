@@ -56,6 +56,9 @@ var installDevTools = require("immutable-devtools");
 import createReactiveClass from "./utils/createReactiveClass";
 
 installDevTools(Immutable);
+
+
+
 // RemoteDev Extension: Apply default options & start remotedev-server
 //  require('remotedev-extension')({
 //    port: 5678,
@@ -102,6 +105,7 @@ window.most = most;
 
 import finalState from "./store/combinedState";
 
+import  "./api/oscMetadataServer";
 
 class AppRenderer extends React.Component {
     render() {
@@ -111,7 +115,7 @@ class AppRenderer extends React.Component {
                 <CpuUsage usage={state.getIn(["uiState", "cpuUsage"]) } />
             </div>
             <PlayingTracks availableTracks={state.get("tracks") } uiState={state.get("uiState") } />
-            <KeyWheel />
+            <KeyWheel tracks={state.get("tracks") } />
             { process.env["NODE_ENV"] !== "development" ?
                 <div /> : <div> <ObjectInspector style={{ color: "white" }} data={state} initialExpandedPaths={["*", "*", "*"]} /> </div>
             }

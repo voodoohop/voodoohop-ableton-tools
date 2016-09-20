@@ -2,6 +2,8 @@ import Immutable from "immutable";
 
 import * as most from 'most';
 
+import hold from "@most/hold";
+
 import {getTransformed} from "../api/audioMetadataGenerator";
 
 import {dataStore} from "../api/db";
@@ -114,7 +116,7 @@ var createMetadataStore = (actionStream) => {
 }
 
 
-var store = createMetadataStore(actionStream).multicast();
+var store = hold(createMetadataStore(actionStream));
 export default store;
 
 // dataStore("blaData", most.from([{ path: "bla", someData: [1, 2, 3] }, { path: "2as", someData: [3, 2, 3] }].map(Immutable.Map)))
