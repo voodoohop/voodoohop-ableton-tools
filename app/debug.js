@@ -1,5 +1,5 @@
 import React from 'react';
-import component from "omniscient";
+import component from "./utils/immComponent";
 // import { dom } from 'react-reactive-class';
 import * as most from 'most';
 import create from '@most/create'

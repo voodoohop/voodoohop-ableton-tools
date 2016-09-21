@@ -4,8 +4,11 @@ cp logo_voodoohop_transparent.icns ./release/darwin-x64/VoodoohopLiveTools-darwi
 # rm "/Users/thomash/Google Drive/VoodoohopLiveTools.zip"
 # rm -r /tmp/VoodoohopLiveTools
 mkdir /tmp/VoodoohopLiveTools
-cp "./Voodoohop Clip Status Sender.amxd" /tmp/VoodoohopLiveTools
+cp -p "./Voodoohop Clip Status Sender.amxd" /tmp/VoodoohopLiveTools
+rm -r "/Applications/VoodoohopLiveTools.app"
+cp -rp "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /Applications 
 mv "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /tmp/VoodoohopLiveTools
 ditto -c -k --sequesterRsrc --keepParent /tmp/VoodoohopLiveTools VoodoohopLiveTools.zip
 rm -r /tmp/VoodoohopLiveTools
 mv VoodoohopLiveTools.zip "/Users/thomash/Google Drive"
+cp "/Users/thomash/Google Drive/VoodoohopLiveTools.zip" "/Users/thomash/Google Drive/VoodoohopLiveTools_2.zip"

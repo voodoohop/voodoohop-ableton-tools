@@ -1,5 +1,6 @@
 import React from 'react';
 import component from "omniscient";
+import component2 from "./utils/immComponent";
 // import { dom } from 'react-reactive-class';
 import * as most from 'most';
 import Immutable from "immutable";
@@ -16,7 +17,7 @@ import keysToColors from "./api/keysToColors";
 
 
 
-const WaveformPoly = component(({durationBeats, gain, waveformData, trackId,chords, musicalKey,start})  =>{
+const WaveformPoly = component2(({durationBeats, gain, waveformData, trackId,chords, musicalKey,start})  =>{
 		// if (!chords)
 			chords = Immutable.fromJS([{chord: musicalKey, startBeat: 0, endBeat: durationBeats}]);
 		// log("waveform args", duration, viewboxWidth, viewboxHeight, waveformData.toJS(), trackId,chords.toString());
@@ -72,7 +73,7 @@ const WaveformPoly = component(({durationBeats, gain, waveformData, trackId,chor
 		points = points.concat([points.first()]).toArray();
 		// log("points",i,points,segment.toJS());
 		points=points.map((p)=> [p[0]/pixelsPerBeat, (p[1]/2+0.5)*127].join(","));
-		return <polyline style={{transform: scaleTransform, transformOrigin:"left center", filter:"url(#blur1_"+trackId+")", }} key={""+segment.get("startOffset")+"_"+segment.get("endOffset")} 
+		return <polyline style={{transform: scaleTransform, transformOrigin:"left center" }} key={""+segment.get("startOffset")+"_"+segment.get("endOffset")} 
 			
 					  fill={tinycolor(keysToColors(segment.get("chord"))).lighten(10).toHexString()}
 					  points={points.join(" ")} 
@@ -85,7 +86,7 @@ const WaveformPoly = component(({durationBeats, gain, waveformData, trackId,chor
 
 import _ from "lodash";
 
-export default component(({waveform, chords, musicalKey,trackId, gain, style}) => {
+export default component2(({waveform, chords, musicalKey,trackId, gain, style}) => {
 		//  log("waveformprops",waveform, chords, musicalKey, trackId, gain);
 		// var waveform = props.waveform;
 		// log("reactThis",waveform&&waveform.toJS());

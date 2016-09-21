@@ -22,7 +22,7 @@ function shallowEqualImmutable(objA, objB) {
   // Test for A's keys different from B.
   const bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB);
   for (let i = 0; i < keysA.length; i++) {
-    if (!bHasOwnProperty(keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
+    if (!bHasOwnProperty(keysA[i]) || !shallowEqualImmutable(objA[keysA[i]], objB[keysA[i]])) {
       return false;
     }
   }
@@ -34,6 +34,6 @@ function shallowEqualImmutable(objA, objB) {
 
 export default {
   shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
-  return !shallowEqualImmutable(this.props, nextProps) || !shallowEqualImmutable(this.state, nextState);
+  return !shallowEqualImmutable(this.props, nextProps);
 }
 }

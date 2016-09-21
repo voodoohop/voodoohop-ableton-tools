@@ -48,7 +48,6 @@ import PlayingTracks from "./playingTracksView";
 
 import log from "./utils/streamLog";
 
-import ProcessingStatus from "./processingStatus";
 import CpuUsage from "./cpuUsage";
 
 var installDevTools = require("immutable-devtools");
@@ -110,13 +109,14 @@ import  "./api/oscMetadataServer";
 class AppRenderer extends React.Component {
     render() {
       var state = this.props.state;  
-      return <div>
-            <div style={{ position: "fixed", bottom: "0px", right: "0px", backgroundColor: "rgba(0,0,0,0.1)" }}>
-                <CpuUsage usage={state.getIn(["uiState", "cpuUsage"]) } />
-            </div>
+      return <div>{
+            // <div style={{ position: "fixed", bottom: "0px", right: "0px", backgroundColor: "rgba(0,0,0,0.1)" }}>
+            //     <CpuUsage usage={state.getIn(["uiState", "cpuUsage"]) } />
+            // </div>
+            }
             <PlayingTracks availableTracks={state.get("tracks") } uiState={state.get("uiState") } />
-            <KeyWheel tracks={state.get("tracks") } />
-            { process.env["NODE_ENV"] !== "development" ?
+            <div style={{width:"90%", left:"5%", position:"relative"}}><KeyWheel tracks={state.get("tracks") } /></div>
+            { process.env["NODE_ENV"] !== "development" || true ?
                 <div /> : <div> <ObjectInspector style={{ color: "white" }} data={state} initialExpandedPaths={["*", "*", "*"]} /> </div>
             }
         </div>;
@@ -137,5 +137,4 @@ finalState.observe(state => {
     console.trace();
 });
 
-    // <ProcessingStatus state={state} uiState={state.get("uiState")} />
     // <ObjectInspector style={{color:"white"}} data={ state.toJS() } initialExpandedPaths={["*","*","*"]} />

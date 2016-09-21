@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
 
-import component from 'omniscient';
+import component from './utils/immComponent';
+
 // import { dom } from 'react-reactive-class';
 import {fromEvent} from 'most';
 import Immutable from "immutable";
@@ -14,8 +15,9 @@ import AudioContainer from "./audioContainer";
 
 
 
-var TrackStatistic=component(({fileData,liveData}) =>
-<div className="ui mini statistics inverted right floated tom blackTransparentBg">
+var TrackStatistic=component(({fileData,liveData}) => {
+  const beatsRemaining = Math.round(liveData.get("end_marker") - liveData.get("playingPosition"));
+return <div className="ui mini statistics inverted right floated tom blackTransparentBg">
   {
   (liveData.get("transposedKey")) ? 
   <div className="statistic tom">
@@ -38,16 +40,16 @@ var TrackStatistic=component(({fileData,liveData}) =>
     </div>
   </div>
   <div className="statistic  tom">
-    <div className="value">
-      {Math.round(fileData.getIn([ "audioMetadata","duration"])) || "-"}
+    <div className="value" style={beatsRemaining < 64 ? {color:"orange", fontWeight:"bold"}:{}} >
+      {beatsRemaining}
 	</div>
     <div className="label">
-      Duration
+      Beats
     </div>
   </div>
   
 </div>
-);
+});
 
 
 import actionStream from "./api/actionSubject";
@@ -106,10 +108,9 @@ var Track = component(function({track,trackId, uiState}) {
     }}>{track.getIn(["fileData","id3Metadata","title"])}</span>
 
     </div><div style={{paddingTop:"10px",height:"100%"}}>
-    <AudioContainer uiState={uiState} trackId={trackId} track={track} />   
+      <AudioContainer uiState={uiState} trackId={trackId} track={track} />   
     </div>
-  <button style ={{right:"0px",bottom:"0px", position:"absolute",opacity:0.6, display:"none"}} className={"ui  button inverted mini floated right toggle "+(grouped ? "yellow" : "blue")}
-    onClick={() => actionStream.push(Immutable.Map({type:"groupButtonClicked", trackId}))}><i className={grouped ? "fa fa-unlink":"fa fa-link"} style={{fontWeight:"bold"}}></i></button>
+  
   </div>
   </div>));
 
