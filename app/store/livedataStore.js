@@ -53,7 +53,7 @@ var liveDataModified =
                 .updateIn([newData.get("trackId"), "trackId"], (t) => newData.get("trackId"))
                 .updateIn([newData.get("trackId"), "gain"], (t) => t || 0.4)
 
-        , Immutable.Map()).skip(1)//.throttledDebounce(30)
+        , Immutable.Map()).skip(1).throttledDebounce(10)
         .map(m => m.sortBy((v, k) => k, (k1, k2) => ("" + k1).localeCompare("" + k2)))
         .map(tracks => tracks.map((v, trackId) => v.set("isSelected", v.get("id") === tracks.getIn(["selectedClip", "id"]))))
         .map(m => m.update("selectedClip", s =>
@@ -66,8 +66,6 @@ var liveDataModified =
         .tap(log("liveDataModifiedStore"))
 
 actionStream.plug(oscInput);
-
-// actionStream.plug(liveDataPrepped.tap(log("liveDataPrepped")).filter(d => d.get("type")==="file_path").map(d=> Immutable.Map({type:"loadMetadata", path: d.get("value")})));
 
 
 

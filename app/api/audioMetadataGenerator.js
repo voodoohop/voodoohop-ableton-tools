@@ -28,8 +28,10 @@ Stream.prototype.throttledDebounce = function (interval) {
     // console.log("thisIs",this);
     var shared = this.scan((withId, data) => ({ data, id: withId.id + 1 }), { id: 0 }).skip(1).multicast();
     return shared.throttle(interval).merge(shared.debounce(interval))
-        .skipRepeatsWith((a, b) => a.id === b.id)
-        .map(d => d.data).multicast();
+        .loop((lastId, current) => ({seed: Math.max(lastId,current.id), value: current.id>lastId ? current:null}) ,-1)
+        .filter(n => n !== null)
+        .map(d => d.data)
+        .multicast();
 };
 
 // var storyboard=require("storyboard");

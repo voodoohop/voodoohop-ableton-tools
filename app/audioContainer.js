@@ -88,9 +88,11 @@ const DetailViews = component2(({waveform,trackId,waveformLPF, midiData,transpos
 							</g>
  )
 
+
+const neededLiveInfo = Immutable.Set(["start_marker","end_marker", "looping", "loop_end", "loop_start"]);
 export default component2(({uiState, trackId, track}) => {
 	var liveData = track.get("liveData");
-	if (!(liveData.has("loop_start") && liveData.has("loop_end") && liveData.has("looping")))
+	if (!(liveData.keySeq().isSuperset(neededLiveInfo)))
 		return <div style={{width:"100%", textAlign:"center", color: "#aaa"}}>no data yet</div>
 	var viewboxWidth = 1000;
 	var viewboxHeight = trackId == "selectedClip" ? 150: 200;
@@ -115,6 +117,7 @@ export default component2(({uiState, trackId, track}) => {
 	const transposedChords = liveData.get("transposedChords");
 	const transposedKey = liveData.get("transposedKey");
 	const isSelectedClip = track.getIn(["liveData","isSelected"]);
+	console.log("positions",playingPosX,startRenderPos,endMarker,startMarker);
     if (!(waveform && !(waveform.get("error"))) && !midiData)
         return <div>Waveform / midi not yet	 loaded</div>;
 	return <div key={"trackid_detail_" + trackId}>

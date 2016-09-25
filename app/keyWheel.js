@@ -43,10 +43,13 @@ const ConnectNodes = ({start, end, thickness, transpose}) =>{
 
     </g>};
 
+
+
+
 const KeyLabel=component2(props => {
 console.log("DynamicKeyWheel renderlabel");    
       labelProps[keysToColors(props.datum.note)] = props;
-     
+     keyLabelModified$.push(props);
     //   console.log("labelprops",props,labelProps);
       const data = props.datum;
       const scaleProp = 1.5;
@@ -97,10 +100,17 @@ const TomSlice = component2((props) => {
    return <VictoryAnimation data={props.slice} duration={500}>{(animatedProps)=><Slice {...props} slice={animatedProps} />}</VictoryAnimation>;
 });
 
+import Subject from "./utils/subject";
+import createReactiveClass from "./utils/createReactiveClass";
+
+const keyLabelModified$ = Subject();
+
+const ReactiveKeyLabel = createReactiveClass(KeyLabel);
+
 const TomKeyLabel = component2((props) => {
     // console.log("labelProps",props);
     return <VictoryAnimation duration={500} data={{x:props.x,y:props.y}} >
-        {animatedProps => <KeyLabel {...props} {...animatedProps} />}
+        {animatedProps => <KeyLabel {...props} {...animatedProps} keyLabelModified ={keyLabelModified$}/>}
     </VictoryAnimation>;
 })
 

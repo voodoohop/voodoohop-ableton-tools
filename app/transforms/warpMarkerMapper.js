@@ -22,7 +22,7 @@ export function warpMarkerMap(timeStream, warpMarkerStream) {
 		}, timeStream).map(n => n.time.map(t => {
 			let markers = n.markers;
 			return markers[0].desttime + (markers[1].desttime - markers[0].desttime)*((t - markers[0].sourcetime)/(markers[1].sourcetime-markers[0].sourcetime));
-		})))).tap(log("warpConcat")).flatMap(t=>t).tap(log("warpConcat2"));	
+		})))).flatMap(t=>t);	
 }
 
 export function warpMarkerReverseMap(warpMarkerStream) {

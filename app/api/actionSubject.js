@@ -4,5 +4,5 @@ var sub=Subject();
 var subMulticast=sub.multicast();
 subMulticast.plug=sub.plug.bind(sub);
 subMulticast.push=sub.push.bind(sub);
-subMulticast.map(t => JSON.stringify(t=t.toJS())).observe(log("actionStream"));
+// subMulticast.map(t => JSON.stringify(t=t.toJS())).observe(log("actionStream"));
 export default subMulticast;
