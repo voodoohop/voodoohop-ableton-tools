@@ -32,7 +32,7 @@ export default function Subject(initial = null) {
   }
 
   if (initial !== null) {
-    stream.push(initial)
+    setTimeout(() => stream.push(initial),10);
   }
 
   return stream

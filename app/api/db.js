@@ -1,6 +1,5 @@
 import nedb from 'nedb';
 
-import Subject from "../utils/subject";
 import * as most from 'most';
 import _ from "lodash";
 

@@ -48,7 +48,6 @@ import PlayingTracks from "./playingTracksView";
 
 import log from "./utils/streamLog";
 
-import CpuUsage from "./cpuUsage";
 
 var installDevTools = require("immutable-devtools");
 

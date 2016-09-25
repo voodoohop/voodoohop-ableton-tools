@@ -117,7 +117,7 @@ export default component2(({uiState, trackId, track}) => {
 	const isSelectedClip = track.getIn(["liveData","isSelected"]);
     if (!(waveform && !(waveform.get("error"))) && !midiData)
         return <div>Waveform / midi not yet	 loaded</div>;
-	return <div key={"trackid_detail_" + trackId} style={{backgroundColor: isSelectedClip ? "rgb(20,20,20)": "none"}}>
+	return <div key={"trackid_detail_" + trackId}>
 
 		<svg style={{ overflow: "hidden", backfaceVisibility: "hidden" }}
 			width={"100%"}  height={"100%"}

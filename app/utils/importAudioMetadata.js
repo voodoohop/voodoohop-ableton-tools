@@ -28,9 +28,6 @@ var extensions=".mp3,.m4a,.mp4,.aif,.aiff,.wav".split(",");
 
 // var finder = filewalker("/Users/thomash/Documents/organised/electronica",{maxPending:-1});
 
-// import metadataStore from "../store/metadataStore";
-  //  .drain();  
-
 var mm = require('musicmetadata');
 
 const extractMetadata = path => {
@@ -169,7 +166,6 @@ const openKeyToKey = {
  "6d":"B",
  "3m":"Bm",
  "1d":"C",
- "10d":"Cm",
  "8d":"C#",
  "5m":"C#m",
  "3d":"D",
