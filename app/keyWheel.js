@@ -15,15 +15,20 @@ import openKeySequence from "./api/openKeySequence.js";
 
 import tinyColor from "tinycolor2";
 
-const labelProps={};
+import log from "./utils/streamLog";
+
+import "./api/audioMetadataGenerator";
+// const labelProps={};
 
 const innerRadius = 87;
 const labelRadius=105;
 
 const radiusProp=innerRadius/labelRadius;
 
-const ConnectNodes = ({start, end, thickness, transpose}) =>{
+const ConnectNodes = component(({start, end, thickness, transpose}) =>{
+    log("connectNodes")({start,end,thickness,transpose});
     const gradientId = `gradient_${start.datum.note}_${end.datum.note}`;
+ 
     return <g> 
     <linearGradient id={gradientId} x1={start.x*1/radiusProp} y1={start.y*1/radiusProp} x2={end.x*radiusProp} y2={end.y*radiusProp} gradientUnits="userSpaceOnUse">
      <stop offset="0%" style={{stopColor:getNoteColor(start.datum.note), stopOpacity:1}}  />
@@ -41,29 +46,36 @@ const ConnectNodes = ({start, end, thickness, transpose}) =>{
     </textPath>
   </text>
 
-    </g>};
+    </g>});
 
 
 
 
-const KeyLabel=component2(props => {
-console.log("DynamicKeyWheel renderlabel");    
-      labelProps[keysToColors(props.datum.note)] = props;
-     keyLabelModified$.push(props);
+const KeyLabel=component2(({x,y,datum,connectedNotes}) => {
+    // if (otherKeyLabels.source)
+    //     otherKeyLabels = Immutable.Map();
+// console.log("DynamicKeyWheel renderlabel",{x,y,datum,connectedNotes});    
+    //   labelProps[keysToColors(props.datum.note)] = props;
+    const newData=Immutable.fromJS({datum,x,y});
+    // console.log("connectedNotes",connectedNotes);// && connectedNotes.get(keysToColors(datum.note)),newData);
+
+    //  if (!Immutable.is(connectedNotes && connectedNotes.get(keysToColors(datum.note)),newData))
+        
+        keyLabelModified$.push(newData);
     //   console.log("labelprops",props,labelProps);
-      const data = props.datum;
+      const data = datum;
       const scaleProp = 1.5;
-    var textX=props.x*scaleProp;
-    var textY=props.y*scaleProp;
+    var textX=x*scaleProp;
+    var textY=y*scaleProp;
     return <g key={`keylabel_${data.note}`}>{data.playing ? 
-        [-1,1]
-            .map(transpose => [transpose, keysToColors(transposedNote(data.note,transpose))])
-            .map(([transpose,color]) => [transpose,labelProps[color]])
-            .filter(([transpose,d]) => d)
-            .map(([transpose,destNote]) => <ConnectNodes key={`conn_${data.note}_${destNote.datum.note}`} start={props} end={destNote} thickness={1/Math.abs(transpose)} transpose={transpose} />)
+            connectedNotes    
+            // .map(({otherKeyLabel}) => otherKeyLabel.toJS())
+            .map(({transpose,otherKeyLabel}) => ({transpose,destNote:otherKeyLabel.toJS()}))
+            // .map(n => log("destNote")(n))     
+            .map(({transpose,destNote}) => <ConnectNodes key={`conn_${data.note}_${destNote.datum.note}`} start={{x,y,datum}} end={destNote} thickness={1/Math.abs(transpose)} transpose={transpose} />)
         : null
         }
-        <text textAnchor="middle" x={props.x} y={props.y} style={{strokeWidth: "0.4px", stroke: "none", fill: "black", fontWeight:"bold", fontFamily:"Arial", fontSize:"10px"}}>
+        <text textAnchor="middle" x={x} y={y} style={{strokeWidth: "0.4px", stroke: "none", fill: "black", fontWeight:"bold", fontFamily:"Arial", fontSize:"10px"}}>
             {data.keyLabel}
         </text>
         { Immutable.Seq(data.trackInfos).map(({title,artist}, index) => <g key={`detailsTrack_${index}`}>
@@ -96,21 +108,31 @@ const getNoteColor = note => tinyColor(keysToColors(transposedNote(note,0)))./*l
 const getMixedNoteColor = (note1,note2,mix=50) => tinyColor.mix(getNoteColor(note1),getNoteColor(note2),mix).toHexString();
 
 const TomSlice = component2((props) => {
-    // console.log("sliceprops",props);
-   return <VictoryAnimation data={props.slice} duration={500}>{(animatedProps)=><Slice {...props} slice={animatedProps} />}</VictoryAnimation>;
+   return <VictoryAnimation data={props.slice} duration={400}>{(animatedProps)=><Slice {...props} slice={animatedProps} />}</VictoryAnimation>;
 });
 
 import Subject from "./utils/subject";
-import createReactiveClass from "./utils/createReactiveClass";
+import {Connector} from "./utils/createReactiveClass";
 
 const keyLabelModified$ = Subject();
 
-const ReactiveKeyLabel = createReactiveClass(KeyLabel);
+const allKeyLabels$ = keyLabelModified$.scan((keyLabels, newKeyLabelProps) => keyLabels.update(keysToColors(newKeyLabelProps.getIn(["datum","note"])),props => newKeyLabelProps),Immutable.Map()).skipImmRepeats().debounce(10)
+// .tap(log("allKeyLabels$"))
+.startWith(Immutable.Map())
+.multicast();
+
+const ReactiveKeyLabel = Connector(KeyLabel);
+
+const mapTranspose = (otherKeyLabels, data) =>
+        Immutable.fromJS([-1,1])
+            .map(transpose => ({transpose, color:keysToColors(transposedNote(data.note,transpose))}))
+            .map(({transpose,color}) => ({transpose,otherKeyLabel:otherKeyLabels.get(color)}))
+            .filter(({transpose,otherKeyLabel}) => otherKeyLabel);
 
 const TomKeyLabel = component2((props) => {
     // console.log("labelProps",props);
     return <VictoryAnimation duration={500} data={{x:props.x,y:props.y}} >
-        {animatedProps => <KeyLabel {...props} {...animatedProps} keyLabelModified ={keyLabelModified$}/>}
+        {animatedProps => <ReactiveKeyLabel {...props} {...animatedProps} connectedNotes={allKeyLabels$.map((otherKeyLabels) => mapTranspose(otherKeyLabels, props.datum))} />}
     </VictoryAnimation>;
 })
 
@@ -122,20 +144,16 @@ const DynamicKeyWheel = component(({tracks}) => {
 // console.log("DynamicKeyWheel tracks",tracks);    
 return <VictoryPie innerRadius={innerRadius} width={350} 
     labelRadius={labelRadius}
-    //  animate={{duration:500}}//, easing:"linearInOut", onEnd: (props,animInfo)=> console.log("animEnd",props,animInfo)}}
     data={
         openKeySequence.map(note => 
         {   const playingTracks = trackPlaying(tracks,note);
             const playing = playingTracks.length > 0;
-            // const name = playing ? ;
-            // const artist = playing ? playing.getIn(["fileData","id3Metadata","artist"]) :null;
             const trackInfos = _.uniqWith(playingTracks
             .map(track => ({
                 title: shortenInfo(track.getIn(["fileData","id3Metadata","title"]) ),
                 artist: shortenInfo(track.getIn(["fileData","id3Metadata","artist"])|| track.getIn(["liveData","name"]))
             })),(a,b)=> a.title=== b.title && a.artist===b.artist);
 
-            // console.log("trackInfos",trackInfos,playingTracks);
             return   {
                 x: note,
                 y: playing ? 2:1,
@@ -143,8 +161,6 @@ return <VictoryPie innerRadius={innerRadius} width={350}
                 playing,
                 keyLabel:""+note+"/"+transposedNote(note,9)+"m",
                 trackInfos
-                // title: playing && name.slice(0,Math.min(name.length,20)) || null,
-                // artist: playing && artist && artist.slice(0,Math.min(name.length,20)) || null
         }})
     }
     
@@ -152,11 +168,9 @@ return <VictoryPie innerRadius={innerRadius} width={350}
                 fontWeight: (data)=>data.y > 1 ? "bold":"normal", 
                 fontFamily:"arial",
                 fill: data => getNoteColor(data.note),//'rgb(100,100,100)',
-                // padding:"10px",
                 fontSize:"9px",
                 opacity:1, 
                 strokeWidth:(data) => data.y > 1 ? "1px":"0.4px",
-                // stroke:"white"
             },
             
             data:{

@@ -108,7 +108,7 @@ export default component2(({uiState, trackId, track}) => {
 	var shortnessAdjust = 1/Math.min(1,Math.ceil(4*(endMarker-startMarker)/256)/4);
 	if (shortnessAdjust==3)
 		shortnessAdjust=2;
-	console.log("shortnessAdjust",shortnessAdjust);
+	// console.log("shortnessAdjust",shortnessAdjust);
 	log(playingPosX, uiState, liveData, trackId, track);
     var midiData = track.getIn(["midiData", "notes"]);
     var waveform = track.getIn(["fileData", "waveform"]);
@@ -117,7 +117,7 @@ export default component2(({uiState, trackId, track}) => {
 	const transposedChords = liveData.get("transposedChords");
 	const transposedKey = liveData.get("transposedKey");
 	const isSelectedClip = track.getIn(["liveData","isSelected"]);
-	console.log("positions",playingPosX,startRenderPos,endMarker,startMarker);
+	// console.log("positions",playingPosX,startRenderPos,endMarker,startMarker);
     if (!(waveform && !(waveform.get("error"))) && !midiData)
         return <div>Waveform / midi not yet	 loaded</div>;
 	return <div key={"trackid_detail_" + trackId}>

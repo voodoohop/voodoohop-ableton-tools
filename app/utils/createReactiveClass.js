@@ -1,99 +1,139 @@
-import React from 'react';
-import { subscribe } from 'most';
+import { Component, createElement } from 'react';
+// import { Observable } from 'kefir';
 
-// import { hasStream, arrayStream } from './utils';
+export function Connector(component) {
+  return class extends Component {
 
-function isStream(o) {
-  return o && o["subscribe"];
-}
-
-export default function createReactiveClass(tag) {
-  class ReactiveClass extends React.Component {
-    constructor(props) {
-      super(props);
-      this.displayName = `MostReactiveElement-${tag}`;
-      this.state = { mount: true };
+    constructor(...args) {
+      super(...args)
+      this.observables = {}
+      this.updaters = {}
+      this.state = {}
+      this.unsubscribers = {}
     }
 
     componentWillMount() {
-      this.subscribe(this.props);
-    }
+      let state = {}
 
-    componentWillReceiveProps(nextProps) {
-      this.subscribe(nextProps);
+      each(this.props, (prop, k) => {
+        if (!isObservable(prop)) { state[k] = prop }
+        else { this.observables[k] = prop }
+      })
+
+      this.setState(state)
+
+      each(this.observables, (_, k) =>
+        addUpdater(this, k)
+      )
     }
 
     componentWillUnmount() {
-      this.unsubscribe();
+      each(this.updaters, (_, k) =>
+        removeObservable(this, k)
+      )
     }
 
-    addPropListener(name, prop$) {
-      return subscribe((value) => {
-        // don't re-render if value is the same.
-        if (value === this.state[name]) {
-          return;
-        }
+    componentWillReceiveProps(nextProps) {
+      let state = {}
 
-        const prop = {};
-        prop[name] = value;
-        this.setState(prop);
-      }, prop$);
-    }
+      let newProps = select(nextProps, (_, k) =>
+        !this.props.hasOwnProperty(k)
+      )
 
-    // childrenSubscription(children) {
-    //   const key = 'children';
+      let keys = [].concat(
+        Object.keys(this.props),
+        Object.keys(newProps)
+      )
 
-    //   if (isStream(children)) {
-    //     return this.addPropListener(key, children);
-    //   } else if (Array.isArray(children) && hasStream(children)) {
-    //     return this.addPropListener(key, arrayStream(children));
-    //   }
-    //   // Do not need to subscribe to children with no streams
-    //   return undefined;
-    // }
+      keys.forEach(k => handlePropChange(this, k, state, nextProps))
+      this.setState(state)
 
-    // subscribeChildren(children) {
-    //   const subscription = this.childrenSubscription(children);
-    //   if (subscription) {
-    //     this.subscriptions.push(subscription);
-    //   }
-    // }
+      let pendingObservables = select(this.observables, (_, k) =>
+        !this.updaters.hasOwnProperty(k)
+      )
 
-    subscribe({ children, ...props }) {
-      if (this.subscriptions) {
-        this.unsubscribe();
-      }
-
-      this.subscriptions = [];
-
-      // this.subscribeChildren(children);
-
-      Object.keys(props).forEach(key => {
-        const value = props[key];
-        if (isStream(value)) {
-          const subscription = this.addPropListener(key, value);
-          this.subscriptions.push(subscription);
-        }
-      });
-    }
-
-    unsubscribe() {
-      this.subscriptions.forEach(subscription => subscription.unsubscribe());
-      this.subscriptions = null;
-      this.state = { mount: true };
+      each(pendingObservables, (_, k) =>
+        addUpdater(this, k)
+      )
     }
 
     render() {
-      const { mount, ...state } = this.state;
-      if (!mount) {
-        return null;
-      }
+      return createElement(
+        component,
+        this.state
+      )
+    }
 
-      // eslint-disable-next-line react/prop-types, no-unused-vars
-      const { mount: _, ...props } = this.props;
-      return React.createElement(tag, { ...props, ...state });
+  }
+}
+
+export function createConnector(component) {
+  console.warn("`createConnector(A)` is deprecated; use `Connector(A)`")
+  return Connector(component)
+}
+
+function isObservable(object) {
+  return object && object["subscribe"] ? true:false;
+}
+
+function each(object, cb) {
+  Object.keys(object).forEach(k =>
+    cb(object[k], k, object)
+  )
+}
+
+function select(object, predicate) {
+  let clone = {}
+  each(object, (v, k, o) => {
+    if (predicate(v, k, o)) clone[k] = v
+  })
+  return clone
+}
+
+
+function addUpdater(self, key) {
+  self.unsubscribers[key] = self.observables[key].subscribe({next:self.updaters[key] = value => {
+    self.setState({[key]: value})
+  }});
+}
+
+function removeUpdater(self, key) {
+  self.unsubscribers[key].unsubscribe(self.updaters[key]);
+  // unsubscribers[key]
+  delete self.updaters[key]
+}
+
+function removeObservable(self, key) {
+  removeUpdater(self, key)
+  delete self.observables[key]
+}
+
+function handlePropChange(self, key, state, nextProps) {
+  let prop = self.props[key]
+  let nextProp = nextProps[key]
+  let isObs = isObservable(prop)
+  let isObsNext = isObservable(nextProp)
+  let isNew = prop === undefined
+  let isRemoved = nextProp === undefined
+  let isChanged = !isNew && !isRemoved && nextProp !== prop
+
+  if (!isObs && !isObsNext) {
+    state[key] = nextProp
+  }
+
+  if (isObs && isObsNext) {
+    if (isChanged) {
+      removeUpdater(self, key)
+      self.observables[key] = nextProp
     }
   }
 
-  return ReactiveClass;
+  if (isObs && !isObsNext) {
+    removeObservable(self, key)
+    state[key] = nextProp
+  }
+
+  if (!isObs && isObsNext) {
+    self.observables[key] = nextProp
+  }
 }

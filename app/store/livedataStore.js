@@ -37,12 +37,6 @@ import groupedTracksApplier from "./groupedTracksApplier";
 
 
 
-// export var liveDataInAbleton =  liveDataPrepped.scan((store,newData)=> 
-
-//                 store.setIn([newData.get("trackId"),newData.get("type")],newData.get("value"))
-//                     .updateIn([newData.get("trackId"),"trackId"],(t) => newData.get("trackId"))
-// , Immutable.Map()).skip(1);
-
 var liveDataModified =
     // groupedTracksApplier(
 
@@ -55,7 +49,7 @@ var liveDataModified =
 
         , Immutable.Map()).skip(1).throttledDebounce(10)
         .map(m => m.sortBy((v, k) => k, (k1, k2) => ("" + k1).localeCompare("" + k2)))
-        .map(tracks => tracks.map((v, trackId) => v.set("isSelected", v.get("id") === tracks.getIn(["selectedClip", "id"]))))
+        .map(tracks => tracks.map((v, trackId) => v.set("isSelected", v.get("id") && v.get("id") === tracks.getIn(["selectedClip", "id"]))))
         .map(m => m.update("selectedClip", s =>
             s ?
                 (m.find((v, trackId) => trackId !== "selectedClip" && v.get("id") === s.get("id")) ?

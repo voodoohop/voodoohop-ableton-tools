@@ -24,8 +24,8 @@ var prepLiveInput= (liveDataInput) =>
 			var prevVal = val;
 			if (typeof val === "string" && val.match(/"(.*)"/))
 				val = val.match(/"(.*)"/)[1];
-			if (prevVal != val)
-				console.log('val before', prevVal,"val after",val);
+			// if (prevVal != val)
+			// 	console.log('val before', prevVal,"val after",val);
              return Immutable.Map({trackId: info.get("trackId"), type:key, value:val})
             })
             
