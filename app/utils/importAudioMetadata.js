@@ -129,60 +129,7 @@ const openKeyRegEx =  /\b\s*((?:1[0-2]|[1-9])(?:d|m))\b.*/i;
 // const camelotRegEx_filename =  /\b\s*((?:1[0-2]|[1-9])(?:a|b))\b.*/i;
 
 // const openKeyRegEx_filename =  /\b\s*((?:1[0-2]|[1-9])(?:d|m))\b.*/i;
-
-
-const camelotToKey = { 
- "11b":"A",
- "8a":"Am",
- "6b":"A#",
- "3a":"A#m",
- "1b":"B",
- "10a":"Bm",
- "8b":"C",
- "5a":"Cm",
- "3b":"C#",
- "12a":"C#m",
- "10b":"D",
- "7a":"Dm",
- "5b":"D#",
- "2a":"D#m",
- "12b":"E",
- "9a":"Em",
- "7b":"F",
- "4a":"Fm",
- "2b":"F#",
- "11a":"F#m",
- "9b":"G",
- "6a":"Gm",
- "4b":"G#",
- "1a":"G#m"
-}
-
-const openKeyToKey = { 
- "4d":"A",
- "1m":"Am",
- "11d":"A#",
- "8m":"A#m",
- "6d":"B",
- "3m":"Bm",
- "1d":"C",
- "8d":"C#",
- "5m":"C#m",
- "3d":"D",
- "12m":"Dm",
- "10d":"D#",
- "7m":"D#m",
- "5d":"E",
- "2m":"Em",
- "12d":"F",
- "9m":"Fm",
- "7d":"F#",
- "4m":"F#m",
- "2d":"G",
- "11m":"Gm",
- "9d":"G#",
- "6m":"G#m"
-}
+import {camelotToKey, openKeyToKey} from "../api/openKeySequence";
 
 
 const doKeyNormalize = ([_,keyName, flatOrSharp, majorMinor]) => `${(keyName||"").toUpperCase()}${(flatOrSharp||"")}${majorMinorFormat(majorMinor)}`
@@ -254,8 +201,6 @@ import {registerTransform, transforms} from "../api/audioMetadataGenerator";
 
 import {overviewWaveform} from "./thomashWarpWaveform";
 
-import audiobufferPeaks from "./audioBuffer2Peaks";
-
 import "../transforms/streamingAudioToWaveform";
 
 registerTransform({name:"pathStat", depends:["path"], transform: (path) => Imm.fromJS(JSON.parse(JSON.stringify(fs.statSync(path))))});
@@ -266,7 +211,7 @@ registerTransform({name: "audioAndId3Metadata", depends:["path","audioStream"], 
     normalizeMetadata(extractMetadata(path),path)
     .map(a=>
     {
-    console.log("ais",a.toJS());
+   log("ais")(a);
 
     return a.updateIn(["audio"],audio=> {
         if (audio===null)

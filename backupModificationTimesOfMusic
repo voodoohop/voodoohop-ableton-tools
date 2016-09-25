@@ -1,0 +1,61 @@
+#!/bin/bash
+find . -iname "*.mp3*" -o -iname "*.flac*" -o -iname "*.aif*" -o -iname "*.wav*" -o -iname "*.mp4*" -o -iname "*.ogg*" | while read filename; 
+do 
+IFS=$'\n' printf "\ntouch -t $(stat -f "%Sm" -t "%Y%m%d%H%M" "$filename") \"$filename\"";
+#printf "\ntouch -t  \"$filename\"";
+done; 
+printf "\n";
+
+
+Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
+    value: function() {
+        function pad2(n) {  // always returns a string
+            return (n < 10 ? '0' : '') + n;
+        }
+
+        return this.getFullYear() +
+               pad2(this.getMonth() + 1) + 
+               pad2(this.getDate()) +
+               pad2(this.getHours()) +
+               pad2(this.getMinutes()) +
+               pad2(this.getSeconds());
+    }
+});
+
+
+var path="/Users/thomash/";
+var filePath=path+"modifiedDateBackup"
+fs.writeFile(filePath,"");
+
+var fs=require("fs");
+
+var s="";
+filewalker(path).on("file",(filename,info) => {
+ if (
+     filename.toLowerCase().endsWith(".mp3") || 
+     filename.toLowerCase().endsWith(".wav") || 
+     filename.toLowerCase().endsWith(".aif") || 
+     filename.toLowerCase().endsWith(".flac")||
+     filename.toLowerCase().endsWith(".aiff") || 
+     filename.toLowerCase().endsWith(".mp4")) { 
+  var date = new Date(info.mtime).YYYYMMDDHHMMSS();
+  s += date+" "+filename+"\n";
+ }
+}).on("error", e=>console.error("error",e)).on("done",()=> fs.writeFileSync(filePath,s)).walk();
+
+
+var s = fs.readFileSync(filePath).toString();
+
+s.split("\n").forEach(line => {
+    var spit=line.split(" ");
+    var date = spit.shift(); 
+    var file = spit.join(" ");
+
+    var formattedDate = new Date(date[0]+date[1]+date[2]+date[3]+" "+date[4]+date[5]+" "+date[6]+date[7]+" "+date[8]+date[9]+":"+date[10]+date[11]);
+    console.log("datefile",{date,file,formattedDate});
+    try {
+    fs.utimesSync(path+file, formattedDate, formattedDate);
+    } catch (e) {
+        console.error("err",e);
+    }
+})

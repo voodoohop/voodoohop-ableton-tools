@@ -11,7 +11,7 @@ import logger from "./utils/streamLog";
 import {VictoryPie,VictoryLabel,Slice,VictoryAnimation} from "victory";
 import transposedNote from "./utils/transposedNote";
 import keysToColors from "./api/keysToColors";
-import openKeySequence from "./api/openKeySequence.js";
+import {openkeySequence} from "./api/openKeySequence";
 
 import tinyColor from "tinycolor2";
 
@@ -145,7 +145,7 @@ const DynamicKeyWheel = component(({tracks}) => {
 return <VictoryPie innerRadius={innerRadius} width={350} 
     labelRadius={labelRadius}
     data={
-        openKeySequence.map(note => 
+        openkeySequence.map(note => 
         {   const playingTracks = trackPlaying(tracks,note);
             const playing = playingTracks.length > 0;
             const trackInfos = _.uniqWith(playingTracks
@@ -179,7 +179,7 @@ return <VictoryPie innerRadius={innerRadius} width={350}
             }}}
     labelComponent={<TomKeyLabel  />}
     dataComponent={<TomSlice />}        
-    colorScale={openKeySequence.map(getNoteColor)}
+    colorScale={openkeySequence.map(getNoteColor)}
 
 />});
 

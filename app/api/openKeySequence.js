@@ -1,1 +1,54 @@
-export default ["C","G","D","A","E","B","Gb","Db","Ab","Eb","Bb","F"];
+export const openkeySequence= ["C","G","D","A","E","B","Gb","Db","Ab","Eb","Bb","F"];
+
+export const camelotToKey = { 
+ "11b":"A",
+ "8a":"Am",
+ "6b":"A#",
+ "3a":"A#m",
+ "1b":"B",
+ "10a":"Bm",
+ "8b":"C",
+ "5a":"Cm",
+ "3b":"C#",
+ "12a":"C#m",
+ "10b":"D",
+ "7a":"Dm",
+ "5b":"D#",
+ "2a":"D#m",
+ "12b":"E",
+ "9a":"Em",
+ "7b":"F",
+ "4a":"Fm",
+ "2b":"F#",
+ "11a":"F#m",
+ "9b":"G",
+ "6a":"Gm",
+ "4b":"G#",
+ "1a":"G#m"
+}
+
+export const openKeyToKey = { 
+ "4d":"A",
+ "1m":"Am",
+ "11d":"A#",
+ "8m":"A#m",
+ "6d":"B",
+ "3m":"Bm",
+ "1d":"C",
+ "8d":"C#",
+ "5m":"C#m",
+ "3d":"D",
+ "12m":"Dm",
+ "10d":"D#",
+ "7m":"D#m",
+ "5d":"E",
+ "2m":"Em",
+ "12d":"F",
+ "9m":"Fm",
+ "7d":"F#",
+ "4m":"F#m",
+ "2d":"G",
+ "11m":"Gm",
+ "9d":"G#",
+ "6m":"G#m"
+}

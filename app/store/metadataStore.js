@@ -61,7 +61,9 @@ const metadataStore = dataStore("audioMetaData", (saved) => {
         ).tap(log("got path to load")))
         // .skipRepeats()
         .tap(log("metadata loaded"))
+        .map(e => e.set("error",false))
         .flatMapError(e => { console.error("metadata load error", e); return (Immutable.fromJS({ error: e })); })
+     
         // .tap(() => getNextTransformed.push(true))
         // .filter(m => )
         .multicast();
