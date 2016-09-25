@@ -63,7 +63,7 @@ console.log("DynamicKeyWheel renderlabel");
         <text textAnchor="middle" x={props.x} y={props.y} style={{strokeWidth: "0.4px", stroke: "none", fill: "black", fontWeight:"bold", fontFamily:"Arial", fontSize:"10px"}}>
             {data.keyLabel}
         </text>
-        { data.trackInfos.map(({title,artist}, index) => <g key={`detailsTrack_${index}`}>
+        { Immutable.Seq(data.trackInfos).map(({title,artist}, index) => <g key={`detailsTrack_${index}`}>
         {artist ?  
             <text key={"artistlabel_"+index} textAnchor="middle"  x={textX} y={textY+0+index*30} style={{strokeWidth: "0.4px", stroke: "none", fill: "rgb(250,250,250)",  fontFamily:"Arial", fontSize:"10px"}}> 
             {artist}
@@ -84,7 +84,8 @@ function trackPlaying(tracks,note) {
     return tracks
         .filter((track) => 
             keysToColors(track.getIn(["liveData","transposedKey"])) == keysToColors(note) && track.getIn(["liveData","playing"])
-        ).toArray();
+        )
+        .filter((track)=> !(track.getIn(["liveData","selectedCLipAlreadyDisplayed"]))).toArray();
 }
 
 const getNoteColor = note => tinyColor(keysToColors(transposedNote(note,0)))./*lighten(10).*/toHexString();
@@ -105,6 +106,8 @@ const TomKeyLabel = component2((props) => {
 
 const shortenInfo = (info) => (info && (info.slice(0,Math.min(info.length,15)).trim()+(info.length>15?"...":""))) ||  null;
 
+
+import _ from "lodash";
 const DynamicKeyWheel = component(({tracks}) => {
 // console.log("DynamicKeyWheel tracks",tracks);    
 return <VictoryPie innerRadius={innerRadius} width={350} 
@@ -116,10 +119,13 @@ return <VictoryPie innerRadius={innerRadius} width={350}
             const playing = playingTracks.length > 0;
             // const name = playing ? ;
             // const artist = playing ? playing.getIn(["fileData","id3Metadata","artist"]) :null;
-            const trackInfos = playingTracks.map(track => ({
+            const trackInfos = _.uniqWith(playingTracks
+            .map(track => ({
                 title: shortenInfo(track.getIn(["fileData","id3Metadata","title"]) ),
                 artist: shortenInfo(track.getIn(["fileData","id3Metadata","artist"])|| track.getIn(["liveData","name"]))
-            }))
+            })),(a,b)=> a.title=== b.title && a.artist===b.artist);
+
+            // console.log("trackInfos",trackInfos,playingTracks);
             return   {
                 x: note,
                 y: playing ? 2:1,

@@ -44,8 +44,8 @@ export function getWebAudioBuffer(path) {
 
 
 	const readStream = new Promise((resolve, reject) => fs.readFile(path, (err, data) => err ? reject(err) : resolve(data)));
-
 	const audioBuffer_src = most.fromPromise(readStream);
+
 	var audioBuffer;
 
 
@@ -53,8 +53,7 @@ export function getWebAudioBuffer(path) {
 	console.log("getStreamWaveform", path);
 	const offlineAudioCtx = new OfflineAudioContext(1, 1, 11025);
 
-
-	if (path.trim().toLowerCase().indexOf(".flac") > 0 || path.trim().toLowerCase().indexOf(".m4a") > 0 ) {
+	if (path.trim().toLowerCase().indexOf(".flac") > 0 || path.trim().toLowerCase().indexOf(".m4a") > 0 || path.trim().toLowerCase().indexOf(".aif") > 0 ) {
 		// return most.fromPromise(new Promise(resolve => {
 		//           console.log("executing ","ffmpeg -i \""+path+"\" /tmp/decoded.wav");
 		// 	shell.exec("rm /tmp/decoded.wav", () =>
@@ -64,22 +63,30 @@ export function getWebAudioBuffer(path) {
 		// audioBuffer = s,chunk) => Buffer.concat([chunks,chunk]), new Buffer([])).skip(5)
 		audioBuffer = audioBuffer_src
 			.map(Asset.fromBuffer)
-			.tap(log("loaded flac asset"))
+			// .tap(log("loaded flac asset"))
 			.map(asset => new Promise((resolve, reject) => {
 				asset.on("error", reject);
 				asset.decodeToBuffer((buffer) => {
 					var channels = asset.format.channelsPerFrame;
 					var samples = buffer.length / channels;
-					var audioBuf = offlineAudioCtx.createBuffer(channels, samples, asset.format.sampleRate);
-					var audioChans = [];
-					for (var i = 0; i < channels; i++) {
-						audioChans.push(audioBuf.getChannelData(i));
-					}
-					for (var i = 0; i < buffer.length; i++) {
-						audioChans[i % channels][Math.round(i / channels)] = buffer[i];
+					const downsample = 11025/asset.format.sampleRate;
+					var audioBuf = offlineAudioCtx.createBuffer(1, samples*downsample, 11025);
+					var audioChans = audioBuf.getChannelData(0);
+					// for (var i = 0; i < channels; i++) {
+					// 	audioChans.push(audioBuf.getChannelData(i));
+					// }
+					for (var i = 0; i < buffer.length; i+=1/downsample) {
+						audioChans[Math.round(i*downsample/channels)] = buffer[Math.floor(i)];
 					}
 					// Do something with your fancy new audioBuffer
 					resolve(audioBuf);
+					// const offlineAudioCtxBig = new OfflineAudioContext(1, samples*11025/asset.format.sampleRate, 11025);
+					// const source = offlineAudioCtxBig.createBufferSource();
+					// source.buffer=audioBuf;
+					// source.connect(offlineAudioCtxBig.destination);
+					// source.start();
+					// offlineAudioCtxBig.startRendering().then(resolve).catch(reject);
+					// resolve(audioBuf);
 				})
 				// 	asset.get("duration", duration => {
 				//   asset.get("metadata", metadata => {
@@ -91,7 +98,7 @@ export function getWebAudioBuffer(path) {
 				// })
 			})).await()
 
-			.tap(log("loaded flac data"))
+			// .tap(log("loaded flac data"))
 
 	} else {
 
@@ -130,7 +137,7 @@ const downsampleFactor = 16;
 
 registerTransform({
 	name: "audioStream", depends: ["audioBuffer"], transform: buffer => {
-		// console.log("sending buffer",buffer);//,buffer.channels[0].length);
+		console.log("sending buffer",buffer);//,buffer.channels[0].length);
 		if (buffer.channels) {
 			buffer.getChannelData = (i) =>
 				buffer.channels[i];
@@ -239,7 +246,7 @@ registerTransform({
 		// console.log("AUDIOSTREAM", audioStream, warpMarkers.toJS());
 		if (audioStream.error || audioStream.duration < 0)
 			return most.throwError("no buffer to convert to waveform");
-		return most.fromPromise(warpMap({ buffer: split(audioStream.buffer, 2048), duration: audioStream.duration }, warpMarkers))
+		return most.fromPromise(warpMap({ buffer: split(audioStream.buffer, audioStream.buffer.length/1024), duration: audioStream.duration }, warpMarkers))
 			//   .map((v,i) => )
 			//   .map(n => warpMap(n,warpMarkers))
 
@@ -290,7 +297,7 @@ registerTransform({
 		if (audioStream.error || audioStream.duration < 0)
 			return most.throwError("no buffer to convert to waveform");
 
-		return most.fromPromise(warpMap({ buffer: split(smoothArray(audioStream.buffer, 100), 512), duration: audioStream.duration }, warpMarkers))
+		return most.fromPromise(warpMap({ buffer: split(smoothArray(audioStream.buffer, 100), audioStream.buffer.length/4096), duration: audioStream.duration }, warpMarkers))
 			//   .map((v,i) => )
 			//   .map(n => warpMap(n,warpMarkers))
 

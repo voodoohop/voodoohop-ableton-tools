@@ -116,7 +116,7 @@ class AppRenderer extends React.Component {
             }
             <PlayingTracks availableTracks={state.get("tracks") } uiState={state.get("uiState") } />
             <div style={{width:"90%", left:"5%", position:"relative"}}><KeyWheel tracks={state.get("tracks") } /></div>
-            { process.env["NODE_ENV"] !== "development" || true ?
+            { process.env["NODE_ENV"] !== "development" ?
                 <div /> : <div> <ObjectInspector style={{ color: "white" }} data={state} initialExpandedPaths={["*", "*", "*"]} /> </div>
             }
         </div>;

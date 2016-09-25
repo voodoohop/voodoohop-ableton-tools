@@ -6,11 +6,16 @@ import Immutable from "immutable";
 // 	console.log(args);
 // 	return original(...args);
 // });
-var disable = process.env["NODE_ENV"] !== "development" ||true;
+
+
+
+var disable = process.env["NODE_ENV"] !== "development";
 export default function streamLog(identifier, transformer=(a=>a)) {
 	if (disable)
 		return (args) => args;
 	return (...args) => {
+		if (window.loggingDisabled)
+			return args[0];
 		console.log("---"+identifier, 
         ...args.map(transformer).map(a => a === undefined ? undefined : ((a===null) ? null: a)  ));
 		return args[0];

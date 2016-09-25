@@ -29,7 +29,7 @@ var appState = combine((liveData, metaData, midiData, uiState, remoteClipUpdater
 
 import transposeStateKey from "../utils/transposeStateKey";
 
-const debouncedState = appState.throttledDebounce(50);
+const debouncedState = appState.throttledDebounce(10);
 const finalState = transposeStateKey(debouncedState)
     .tap(log("state")).multicast();
 

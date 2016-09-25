@@ -91,18 +91,22 @@ const DetailViews = component2(({waveform,trackId,waveformLPF, midiData,transpos
 export default component2(({uiState, trackId, track}) => {
 	var liveData = track.get("liveData");
 	if (!(liveData.has("loop_start") && liveData.has("loop_end") && liveData.has("looping")))
-		return <div>not enough data</div>
+		return <div style={{width:"100%", textAlign:"center", color: "#aaa"}}>no data yet</div>
 	var viewboxWidth = 1000;
-	var viewboxHeight = 200;
+	var viewboxHeight = trackId == "selectedClip" ? 150: 200;
 	var visibleBeats = uiState.get("visibleBeats");
 	//  console.log("children");
 
-	var scale = viewboxWidth / visibleBeats;
 	var playingPosX = liveData.get("playingPosition") || 0;
 
-	var endMarker = parseFloat(liveData.get("end_marker"));
+	var endMarker = parseFloat(liveData.get("looping") ? liveData.get("end_marker"):liveData.get("loop_end"));
 	var startMarker = parseFloat(liveData.get("start_marker"));
 	var startRenderPos = Math.min(startMarker, 0);
+	var scale = viewboxWidth / visibleBeats;// * 
+	var shortnessAdjust = 1/Math.min(1,Math.ceil(4*(endMarker-startMarker)/256)/4);
+	if (shortnessAdjust==3)
+		shortnessAdjust=2;
+	console.log("shortnessAdjust",shortnessAdjust);
 	log(playingPosX, uiState, liveData, trackId, track);
     var midiData = track.getIn(["midiData", "notes"]);
     var waveform = track.getIn(["fileData", "waveform"]);
@@ -110,9 +114,10 @@ export default component2(({uiState, trackId, track}) => {
 	const gain = liveData.get("gain");
 	const transposedChords = liveData.get("transposedChords");
 	const transposedKey = liveData.get("transposedKey");
+	const isSelectedClip = track.getIn(["liveData","isSelected"]);
     if (!(waveform && !(waveform.get("error"))) && !midiData)
         return <div>Waveform / midi not yet	 loaded</div>;
-	return <div key={"trackid_detail_" + trackId}>
+	return <div key={"trackid_detail_" + trackId} style={{backgroundColor: isSelectedClip ? "rgb(20,20,20)": "none"}}>
 
 		<svg style={{ overflow: "hidden", backfaceVisibility: "hidden" }}
 			width={"100%"}  height={"100%"}
@@ -122,7 +127,7 @@ export default component2(({uiState, trackId, track}) => {
 
 
 				<mask id={"Mask" + trackId}>
-					<rect stroke="none" fill="white" opacity={0.3} x={startRenderPos} width={Math.max(playingPosX - startRenderPos, 1) } y={0} height={200} />
+					<rect stroke="none" fill="white" opacity={0.5} x={startRenderPos} width={Math.max(playingPosX - startRenderPos, 1) } y={0} height={200} />
 					<rect stroke="none" fill="white" opacity={1} x={playingPosX} width={Math.max(endMarker - playingPosX, 0.1) } y={0} height={viewboxHeight} />
 					<rect stroke="none" fill="white" opacity={0.3} x={endMarker} width={viewboxWidth - endMarker} y={0} height={viewboxHeight} />
 				</mask>
@@ -131,7 +136,10 @@ export default component2(({uiState, trackId, track}) => {
 			
 				<g>
 					<g transform={"scale(" + (scale) + "," + (viewboxHeight / 127) + ")"}>
-						<g transform={"translate(" + (-playingPosX + (visibleBeats / 4)) + ",0)"}>
+						<g transform={`translate(${visibleBeats/4},0)`}>
+						
+						<g transform={"translate(" + (-playingPosX) + ",0)"}>
+			
 							<DetailViews {...{waveform,trackId, waveformLPF, midiData, gain, transposedChords, transposedKey}} />
 							{(liveData.get("looping") === 1) ?
 							<rect stroke="white" fill="rgba(255,255,255,0.1)" opacity="0.9"
@@ -139,6 +147,8 @@ export default component2(({uiState, trackId, track}) => {
 								width={liveData.get("loop_end") - liveData.get("loop_start") } height={127} />
 							: null}
 							<BeatClickGrid startMarker={startMarker} endMarker={liveData.get("end_marker") } trackId={trackId}/>
+						</g>
+					
 						</g>
 					</g>
 				</g>
