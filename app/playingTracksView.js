@@ -153,8 +153,8 @@ const PlayingTracks = component(({availableTracks, uiState}) => {
 
           {
             marginTop: isSelectedClip ? "5px" : 0,
-            borderTop: isSelected && !(isSelectedClip && selectedClipAlreadyDisplayed) ? "1px dashed rgb(150,150,150)" : "none",
-            borderBottom: isSelected && !(isSelectedClip && selectedClipAlreadyDisplayed) ? "1px dashed rgb(150,150,150)" : "none"
+            borderTop: isSelected && !(isSelectedClip && selectedClipAlreadyDisplayed) ? "0.2px dashed rgba(150,150,150,0.6)" : "none",
+            borderBottom: isSelected && !(isSelectedClip && selectedClipAlreadyDisplayed) ? "0.2px dashed rgba(150,150,150,0.6)" : "none"
           }}>
           {
             noClipSelected && isSelectedClip ?

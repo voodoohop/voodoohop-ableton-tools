@@ -42,8 +42,9 @@ var liveDataModified =
 
     liveDataPrepped
         .scan((store, newData) =>
-
-            store.setIn([newData.get("trackId"), newData.get("type")], newData.get("value"))
+            (newData.get("type") === "id" && newData.get("trackId") === "selectedClip" ?
+                store.update(newData.get("trackId"), () => Immutable.Map({ id: newData.get("value") })) :
+                store.setIn([newData.get("trackId"), newData.get("type")], newData.get("value")))
                 .updateIn([newData.get("trackId"), "trackId"], (t) => newData.get("trackId"))
                 .updateIn([newData.get("trackId"), "gain"], (t) => t || 0.4)
 
@@ -53,11 +54,12 @@ var liveDataModified =
         .map(m => m.update("selectedClip", s =>
             s ?
                 (m.find((v, trackId) => trackId !== "selectedClip" && v.get("id") === s.get("id")) ?
-                    s.set("selectedClipAlreadyDisplayed", true).set("playingPosition",0) :
+                    s.set("selectedClipAlreadyDisplayed", true).set("playingPosition", 0) :
                     s.set("playingPosition", 0))
                 : s))
 
         .tap(log("liveDataModifiedStore"))
+        .map(m => m.filter(t => t.get("id") >= 0))
 
 actionStream.plug(oscInput);
 

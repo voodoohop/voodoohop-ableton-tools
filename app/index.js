@@ -105,6 +105,8 @@ import finalState from "./store/combinedState";
 
 import  "./api/oscMetadataServer";
 
+import "./utils/clipColorer";
+
 class AppRenderer extends React.Component {
     render() {
       var state = this.props.state;  

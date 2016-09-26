@@ -15,7 +15,7 @@ function getTransposed(noteString, semitones=0) {
     log("making teoria note for",noteString);
     var teoriaNote=note(noteString.toUpperCase().replace("M",""));
     var transposed=note.fromMIDI((teoriaNote.midi()+semitones)%12);
-    return (""+transposed.name()+transposed.accidental().toLowerCase()+(isMinor ? "M":"")).toUpperCase();
+    return (""+transposed.name().toUpperCase()+transposed.accidental().toLowerCase())+(isMinor ? "m":"");//.toUpperCase();
 }
 
 export default getTransposed;
