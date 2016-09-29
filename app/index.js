@@ -103,39 +103,48 @@ window.most = most;
 
 import finalState from "./store/combinedState";
 
-import  "./api/oscMetadataServer";
+import "./api/oscMetadataServer";
 
 import "./utils/clipColorer";
 
+import SplashScreen from "./splashScreen";
+
 class AppRenderer extends React.Component {
     render() {
-      var state = this.props.state;  
-      return <div>{
-            // <div style={{ position: "fixed", bottom: "0px", right: "0px", backgroundColor: "rgba(0,0,0,0.1)" }}>
-            //     <CpuUsage usage={state.getIn(["uiState", "cpuUsage"]) } />
-            // </div>
-            }
+        const state = this.props.state;
+        // console.log("size",state.get("tracks").size);
+
+
+        const foundMasterPlugin = state.getIn(["tracks","selectedClip"]) ? true : false;
+        const foundTrackPlugin = state.get("tracks") && state.get("tracks").find((_,trackId) => trackId !== "selectedClip") ? true:false;
+        // console.log("preUiState",state.get("uiState"));
+        return foundMasterPlugin && foundTrackPlugin ? 
+            <div>
             <PlayingTracks availableTracks={state.get("tracks") } uiState={state.get("uiState") } />
-            <div style={{width:"90%", left:"5%", position:"relative"}}><KeyWheel tracks={state.get("tracks") } /></div>
+            <div style={{ width: "90%", left: "5%", position: "relative" }}>
+                <KeyWheel uiState={state.get("uiState")} tracks={state.get("tracks")}  />
+            </div>
             { process.env["NODE_ENV"] !== "development" ?
                 <div /> : <div> <ObjectInspector style={{ color: "white" }} data={state} initialExpandedPaths={["*", "*", "*"]} /> </div>
             }
-        </div>;
+        </div> :
+        <SplashScreen foundMasterPlugin={foundMasterPlugin} foundTrackPlugin={foundTrackPlugin} />;
+        
     }
 }
 finalState.observe(state => {
 
     render(
         <AppRenderer state={state} />
-     ,
+        ,
         document.getElementById('root')
     )
 
 })
-.catch(e => {
-    console.error(e);
-    // console
-    console.trace();
-});
+    .catch(e => {
+        console.error(e);
+        // console
+        console.trace();
+    });
 
     // <ObjectInspector style={{color:"white"}} data={ state.toJS() } initialExpandedPaths={["*","*","*"]} />

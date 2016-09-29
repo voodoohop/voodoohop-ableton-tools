@@ -21,7 +21,7 @@ const getAbletonCol = (keyInfo) =>
 
 const formatPitch = (pitch) => pitch > 0 ? `+${pitch}` : (pitch<0 ? ""+pitch : "")
 
-const prefix = keyInfo => `[${keyInfo.get("transposedKey")}${formatPitch(keyInfo.get("transpose"))}]`;
+const prefix = keyInfo => `[${keyInfo.get("formattedKey")}${formatPitch(keyInfo.get("transpose"))}]`;
 
 const replaceNonAlphaNumeric = n => n.replace(/[^\w\]\[\-_\+\s#]/,"");
 
@@ -62,18 +62,25 @@ const alterName = (keyInfo) =>
 // );
 
 
+import {getKeyFormatter} from "../api/openKeySequence";
+
 
 oscOutput.plug(
     state$
-    .map(state => state.getIn(["tracks","selectedClip"], Map()))
+    .map(state => state.getIn(["tracks","selectedClip"], Map())
+    .set("keyFormatter", getKeyFormatter(state.get("uiState")))
+    .set("clipUpdate",state.getIn(["uiState","clipUpdate"]))
+    )
     // .map(selectedTrackState => )
     .debounce(100)
     .skipImmRepeats()
     .map(s=>Map({ 
-                    transposedKey: s.getIn(["liveData", "transposedKey"]), 
+                    transposedKey: s.getIn(["liveData", "transposedKey"]),
+                    formattedKey: s.get("keyFormatter")(s.getIn(["liveData", "transposedKey"])), 
                     clipId: s.getIn(["liveData", "id"]),
                     name: s.getIn(["liveData","name"]),
-                    transpose: parseInt(s.getIn(["liveData","pitch"])) 
+                    transpose: parseInt(s.getIn(["liveData","pitch"])),
+                    update:s.get("clipUpdate") 
     }))
     .filter(s => s.get("transposedKey") && s.get("clipId") && s.get("name"))
     .skipImmRepeats()
@@ -81,13 +88,16 @@ oscOutput.plug(
     
     .flatMap(keyInfo => 
         
-        most.from([Map({
+        most.from([
+        keyInfo.getIn(["update","color"]) ? Map({
             trackId:"selectedClip",
             args: List([keyInfo.get("clipId"),"color", getAbletonCol(keyInfo)])
-        }), 
-        Map({
+        }) : null, 
+        keyInfo.getIn(["update","name"]) ? Map({
             trackId:"selectedClip",
             args: List([keyInfo.get("clipId"),"name", alterName(keyInfo)])
-        })]))   
+        }):null]
+        .filter(f => f!= null)
+        ))   
     );
 

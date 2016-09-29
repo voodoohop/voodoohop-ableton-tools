@@ -7,7 +7,7 @@ import log from "./streamLog";
 import actionStream from "../api/actionSubject";
 
 
-var oscServer = new osc.Server(5555, '0.0.0.0');
+var oscServer = new osc.Server(8888, '0.0.0.0');
 oscServer.setMaxListeners(100);
 console.log("oscSerrver in renderer", oscServer);
 
@@ -26,7 +26,7 @@ var oscOutput = Subject();
 
 var currentOscSender = new Promise(resolve => resolve(Immutable.Map({})));
 
-var client = new osc.Client('127.0.0.1', 4444);
+var client = new osc.Client('127.0.0.1', 7777);
 
 oscOutput
 .tap(log("oscOutputBefore",(msg)=>[msg.get("trackId")].concat(msg.get("args").toArray())))

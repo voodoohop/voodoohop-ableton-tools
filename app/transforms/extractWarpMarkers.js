@@ -36,7 +36,7 @@ export default function extractWarpMarkers(path, audioMetaData) {
   post("length:", duration, "\n");
   // var f = new File(filename);
   if (!fs.existsSync(filename))
-      reject("file "+filename+" does not exist");
+      reject(Imm.Map({error:"file "+filename+" does not exist",path:filename}));
     else
      fs.readFile(filename, (err, buffer) => {
       
@@ -187,7 +187,7 @@ export default function extractWarpMarkers(path, audioMetaData) {
       // Postln("sending dictionary content:",JSON.stringify(dict_to_jsobj(markers)));
       console.log("final warp markers");
       console.table(warpMarkers.toJS());
-      var res = Imm.Map({ path: filename, pathStat: Imm.fromJS(JSON.parse(JSON.stringify(fs.statSync(filename)))), warpMarkers: warpMarkers, baseBpm: refBpm, durationBeats: warpMarkers.last().get("beats")-warpMarkers.first().get("beats") });
+      var res = Imm.Map({ error: null, path: filename, pathStat: Imm.fromJS(JSON.parse(JSON.stringify(fs.statSync(filename)))), warpMarkers: warpMarkers, baseBpm: refBpm, durationBeats: warpMarkers.last().get("beats")-warpMarkers.first().get("beats") });
       //clipDict.replace("metaData",audioMetaData);
       //outlet(0, "dictionary", audioMetaData.name);
       // f.close();

@@ -8,7 +8,7 @@ import Immutable from "immutable";
 
 import log from "../utils/streamLog";
 
-import {oscInputStream} from "../utils/oscInOut";
+import {oscInputStream,oscOutput} from "../utils/oscInOut";
 
 
 // import {midiClipStore} from ".";
@@ -35,7 +35,7 @@ import liveDataPrepped from "./livedataPrepper";
 import groupedTracksApplier from "./groupedTracksApplier";
 
 
-
+oscOutput.push(Immutable.Map({trackId:"sendAll",args: Immutable.List()}));
 
 var liveDataModified =
     // groupedTracksApplier(
@@ -62,8 +62,5 @@ var liveDataModified =
         .map(m => m.filter(t => t.get("id") >= 0))
 
 actionStream.plug(oscInput);
-
-
-
 
 export default liveDataModified.multicast();

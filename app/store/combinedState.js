@@ -1,5 +1,5 @@
 
-import {livedataStore, metadataStore, uiStateStore, midiClipStore, remoteClipUpdater, globalHarmonyStore} from ".";
+import {livedataStore, metadataStore, uiStateStore, midiClipStore} from ".";
 
 import Immutable from "immutable";
 
@@ -9,23 +9,24 @@ import {combine} from "most";
 
 import log from "../utils/streamLog";
 
-var appState = combine((liveData, metaData, midiData, uiState, remoteClipUpdater) =>
-    Immutable.Map({
-        uiState, tracks: liveData
-            .map((data, trackId) => {
+const tracksState = combine((liveData, metaData, midiData) =>
+  liveData.map((data, trackId) => {
                 // console.log("track combining",data.toJS(),metaData.toJS());
 
                 return Immutable.Map({
                     liveData: data, fileData: (data.get("file_path") ?
                         metaData.get(data.get("file_path")) : null),
-                    remoteClipUpdater: remoteClipUpdater.get(trackId),
+                    // remoteClipUpdater: remoteClipUpdater.get(trackId),
                     midiData: midiData.get(trackId) || null, trackId: trackId
                 })
                     .filter(v => v !== null && v !== undefined)
             })
-    })
-    , livedataStore, metadataStore, midiClipStore, uiStateStore, remoteClipUpdater)
+    
+    , livedataStore, metadataStore, midiClipStore)
+    .startWith(Immutable.Map());
+    ; 
 
+const appState = combine((tracks,uiState) => Immutable.Map({tracks,uiState}), tracksState, uiStateStore)
 
 import transposeStateKey from "../utils/transposeStateKey";
 
@@ -35,5 +36,7 @@ const finalState = transposeStateKey(debouncedState)
 
 
 generateMidiMergeEventHack(finalState);
+
+// finalState.observe(log("finalState"));
 
 export default finalState;

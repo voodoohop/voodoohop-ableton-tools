@@ -1,12 +1,8 @@
 import transposedNote from "./transposedNote";
-
+import {Map} from "immutable";
 export default (state) => state.scan((prevState, state) => state.set("tracks", state.get("tracks").map((v, trackId) => {
-    if (prevState === null)
-        return v;
-    const pv = prevState.getIn(["tracks", trackId]);
-    if (!pv)
-        return v;
-    // console.log("pv",pv);
+    const pv = prevState.getIn(["tracks", trackId]) || Map();
+
     if (!v.getIn(["fileData", "id3Metadata", "initialkey"]))
         return v;
     const pitch = v.getIn(["liveData", "pitch"]) || 0;
@@ -30,4 +26,4 @@ export default (state) => state.scan((prevState, state) => state.set("tracks", s
         resTransposedKey = resTransposedKey
             .setIn(["liveData", "transposedChords"], chords.map(chord => chord.set("chord", transposedNote(chord.get("chord"), pitch))));
     return resTransposedKey;
-})), null).skip(1);
+})), Map()).skip(1);

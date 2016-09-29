@@ -24,6 +24,16 @@ h2 {
     stroke:black;
 }
 
+.hoverOpaque {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.hoverOpaque:hover {
+    cursor: pointer;
+  opacity: 1
+}
+
 p {
   font-size: 24px;
 }

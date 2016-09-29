@@ -79,6 +79,8 @@ Stream.prototype.throttledDebounce = function (interval) {
 //  return res;
 // }
 
+
+
 Stream.prototype.bufferedThrottle = function (interval, streamName = null) {
     // return this;
     if (!streamName)
@@ -141,6 +143,11 @@ Stream.prototype.immutableDiff = function () {
     return tomStreamDiff(this);
 }
 
+const saveError=(e) => {
+    if (e instanceof Promise)
+        return most.fromPromise(e).flatMap(saveError);
+    return most.of(e.get ? e : Immutable.Map({ error: e }));
+}
 var tst = most.from([1, 2, 3, 4, 5, 10, 11, 12, 14, 515, 800]).delay(3000).bufferedThrottle(300)
     .throttledDebounce(1100);
 
@@ -163,11 +170,11 @@ function mostify(f, transform = null) {
     var res = f === undefined || f === null ? most.of(Immutable.Map({ error: "got falsy value from transfrom " + transform.name })) : ((f instanceof Promise) ? most.fromPromise(f) : (f.hasOwnProperty("source") ? f.take(1) : (f.hasOwnProperty(Symbol.iterator) && !(f instanceof String) ? most.from(f) : most.of(f))));
 
     return res.flatMapError(e => {
-        console.error("error1_", transform);
+        console.error("error1_", transform,f);
 
 
         console.error(e);
-        return most.of(Immutable.Map({ error: e }));
+        return saveError(e);
     })
 }
 
@@ -183,6 +190,8 @@ function getCachedWithInputStream(transformName, inputStream, creator) {
     return newTransform.transform;
 }
 
+const errorInAny = (dependsValues) => dependsValues.find(v => v && v.get && v.get("error"))
+
 var createInputstreamTransform = (transform, transforms) => {
     return (inputStream) => {
 
@@ -197,11 +206,12 @@ var createInputstreamTransform = (transform, transforms) => {
                         //   else
                         console.error("error1_", transform, e);
                         console.error(e);
-                        return most.of(Immutable.Map({ error: e }));
+                        return saveError(e);
                     }).multicast()
                 :
                 most.zip(
-                    (...dependsValues) => (transform.transform(...dependsValues)),
+                    (...dependsValues) => (
+                        errorInAny(dependsValues) || transform.transform(...dependsValues)),
                     ...(transform.depends.map(dep => transforms[dep](inputStream))
                     ))//.delay(1)
                     // .map(f => (f instanceof Promise) ? f : new Promise(resolve => resolve(f))).flatMap(f => most.fromPromise(f)
@@ -215,8 +225,8 @@ var createInputstreamTransform = (transform, transforms) => {
                         console.error("error1_", e);
 
                         console.error(e);
-                        return most.of(Immutable.Map({ error: e }));
-                    })
+                        return saveError(e);
+                     })
                     .multicast()
         )
     }
@@ -230,11 +240,11 @@ export var registerTransform = (transform) =>
 export var getTransformed = (requiredTransforms, inputStream) => {
     // console.log("getTransformed", requiredTransforms, transforms);
     return most.zip((...transformed) => transformed.reduce((o, n, i) =>
-        o.set(requiredTransforms[i], n), Immutable.Map()), 
+        o.set(requiredTransforms[i], n), Immutable.Map()),         
         ...requiredTransforms.map(t => transforms[t](inputStream)
         .flatMapError(e => {
             console.error("error1_", e);
-            return most.of(Immutable.Map({ error: e }));
+            return saveError(e);
         })))
         .multicast();
 }

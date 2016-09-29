@@ -272,3 +272,10 @@ electronDebug({
 });
 
 });
+
+ipcMain.on("dragStart", (event, {maxForLiveDevice, path, icon}) =>{
+  console.log("dragStart",maxForLiveDevice,path,icon);
+  event.sender.startDrag({
+    file: path, icon: icon
+  })
+});

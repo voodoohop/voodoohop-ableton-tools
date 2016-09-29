@@ -54,7 +54,7 @@ const ConnectNodes = component(({start, end, thickness, transpose}) =>{
 const KeyLabel=component2(({x,y,datum,connectedNotes}) => {
     // if (otherKeyLabels.source)
     //     otherKeyLabels = Immutable.Map();
-// console.log("DynamicKeyWheel renderlabel",{x,y,datum,connectedNotes});    
+console.log("DynamicKeyWheel renderlabel",{x,y,datum,connectedNotes});    
     //   labelProps[keysToColors(props.datum.note)] = props;
     const newData=Immutable.fromJS({datum,x,y});
     // console.log("connectedNotes",connectedNotes);// && connectedNotes.get(keysToColors(datum.note)),newData);
@@ -67,7 +67,7 @@ const KeyLabel=component2(({x,y,datum,connectedNotes}) => {
       const scaleProp = 1.5;
     var textX=x*scaleProp;
     var textY=y*scaleProp;
-    return <g key={`keylabel_${data.note}`}>{data.playing ? 
+    return <g key={`keylabel_${data.note}`}>{data.playing && connectedNotes? 
             connectedNotes    
             // .map(({otherKeyLabel}) => otherKeyLabel.toJS())
             .map(({transpose,otherKeyLabel}) => ({transpose,destNote:otherKeyLabel.toJS()}))
@@ -75,7 +75,7 @@ const KeyLabel=component2(({x,y,datum,connectedNotes}) => {
             .map(({transpose,destNote}) => <ConnectNodes key={`conn_${data.note}_${destNote.datum.note}`} start={{x,y,datum}} end={destNote} thickness={1/Math.abs(transpose)} transpose={transpose} />)
         : null
         }
-        <text textAnchor="middle" x={x} y={y} style={{strokeWidth: "0.4px", stroke: "none", fill: "black", fontWeight:"bold", fontFamily:"Arial", fontSize:"10px"}}>
+        <text textAnchor="middle" x={x} y={y} style={{strokeWidth: "0.4px", stroke: "none", fill: "black", fontWeight:"bold", fontFamily:"Arial", fontSize:data.shortLabel? "15px":"9px"}}>
             {data.keyLabel}
         </text>
         { Immutable.Seq(data.trackInfos).map(({title,artist}, index) => <g key={`detailsTrack_${index}`}>
@@ -138,10 +138,12 @@ const TomKeyLabel = component2((props) => {
 
 const shortenInfo = (info) => (info && (info.slice(0,Math.min(info.length,15)).trim()+(info.length>15?"...":""))) ||  null;
 
+import {getKeyFormatter} from "./api/openKeySequence";
 
 import _ from "lodash";
-const DynamicKeyWheel = component(({tracks}) => {
-// console.log("DynamicKeyWheel tracks",tracks);    
+const DynamicKeyWheel = component(({tracks,keyFormatter,canShortenLabel}) => {
+// console.log("DynamicKeyWheel tracks",tracks,uiState);    
+// const keyFormatter =;
 return <VictoryPie innerRadius={innerRadius} width={350} 
     labelRadius={labelRadius}
     data={
@@ -159,7 +161,8 @@ return <VictoryPie innerRadius={innerRadius} width={350}
                 y: playing ? 2:1,
                 note,
                 playing,
-                keyLabel:""+note+"/"+transposedNote(note,9)+"m",
+                shortLabel:canShortenLabel,
+                keyLabel:canShortenLabel ? keyFormatter(""+note).replace(/[a-z]/,"") : keyFormatter(""+note)+"/"+keyFormatter(transposedNote(note,9)+"m"),
                 trackInfos
         }})
     }
@@ -168,9 +171,8 @@ return <VictoryPie innerRadius={innerRadius} width={350}
                 fontWeight: (data)=>data.y > 1 ? "bold":"normal", 
                 fontFamily:"arial",
                 fill: data => getNoteColor(data.note),//'rgb(100,100,100)',
-                fontSize:"9px",
                 opacity:1, 
-                strokeWidth:(data) => data.y > 1 ? "1px":"0.4px",
+                strokeWidth:(data) => data.y > 1 ? "1px":"0.4px"
             },
             
             data:{
@@ -184,10 +186,10 @@ return <VictoryPie innerRadius={innerRadius} width={350}
 />});
 
 
-export default component(({tracks}) => <DynamicKeyWheel tracks={
+export default component(({tracks,uiState}) => <DynamicKeyWheel tracks={
     tracks.map(track => 
         track.update("liveData",(liveData) => 
             liveData.filter((v,k) => liveDataInterested.includes(k))
         )
     )
-} />);
+} keyFormatter={getKeyFormatter(uiState)} canShortenLabel={uiState.get("keyNotation") !== "trad"}/>);

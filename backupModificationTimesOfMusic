@@ -25,7 +25,7 @@ Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
 
 var path="/Users/thomash/";
 var filePath=path+"modifiedDateBackup"
-fs.writeFile(filePath,"");
+# fs.writeFile(filePath,"");
 
 var fs=require("fs");
 
@@ -51,10 +51,14 @@ s.split("\n").forEach(line => {
     var date = spit.shift(); 
     var file = spit.join(" ");
 
+    if (line.trim().length === 0)
+        return;
     var formattedDate = new Date(date[0]+date[1]+date[2]+date[3]+" "+date[4]+date[5]+" "+date[6]+date[7]+" "+date[8]+date[9]+":"+date[10]+date[11]);
     console.log("datefile",{date,file,formattedDate});
     try {
-    fs.utimesSync(path+file, formattedDate, formattedDate);
+        console.log("line",line);
+        console.log("modifying ",path+file, formattedDate);
+       fs.utimesSync(path+file, formattedDate, formattedDate);
     } catch (e) {
         console.error("err",e);
     }

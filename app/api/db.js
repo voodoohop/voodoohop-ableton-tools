@@ -12,7 +12,7 @@ import os from "os";
 // import homedir from "homedir";
 // setTimeout(()=>
 console.log("home", os.homedir());
-const db = new nedb({filename: os.homedir()+"/.VoodoohopLiveTools.db"/*+Math.random()*/, autoload: true});
+const db = new nedb({filename: os.homedir()+"/.VoodoohopLiveTools_v07.db"/*+Math.random()*/, autoload: true});
 
 // window.PouchDB = pouch;
 // var remoteDB = new PouchDB('http://localhost:5984/myremotedbtomtom')
@@ -59,15 +59,20 @@ export var fetchOrProcess = (sourceDataStream, extractor) => sourceDataStream.fl
 
 import {defaultsDeep} from "lodash";
 
+const checkNoError = item => !item.find(val => val && val.get && val.get("error"));
+
 function addToImmStore(storeName,store, item, key) {
     // if (!item.has(key) && item.has("type"))
     //     return store.setIn()
+    // log("addToImmStore"))(store,item,key);
+
     const storePrefix = storeName+"_";
     // if (item.has(key)) {
         const mergedStore = store.mergeDeep(Imm.Map({[key]:item}));
         const dbKey = storePrefix+key;
         // console.log("upserting",item.toJS());
-        db.update({_id: dbKey}, mergedStore.get(key).set("_id",dbKey).toJS(), {upsert:true});
+        if (checkNoError(item))
+            db.update({_id: dbKey}, mergedStore.get(key).set("_id",dbKey).toJS(), {upsert:true});
         return mergedStore;
     // };
 }

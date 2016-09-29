@@ -18,7 +18,10 @@ actionStream.plug(oscControlInput);
 
 var visibleBeatsZoomedOut = 1024;
 
-var initialState = Immutable.Map({visibleBeats:visibleBeatsZoomedOut/2, groupedTracks: Immutable.Set()});
+var initialState = Immutable.Map({
+    visibleBeats:visibleBeatsZoomedOut/2, 
+    groupedTracks: Immutable.Set(),
+    keyNotation:"trad"});
 
 var toggle = (set,member) => set.contains(member) ? set.remove(member):set.add(member);
 
@@ -28,6 +31,12 @@ export default actionStream//.filter(a=> a.get("type") === "globalZoom" || a.get
 // input.get("trackId") ? store.mergeIn([input.get("trackId")], input) : 
 // store.set(input.get("type"), input.get("value"))
     switch (input.get("type")) {
+        case "keyNotation":
+            return store.set("keyNotation", input.get("value"));
+        case "updateClipNames":
+            return store.setIn(["clipUpdate","name"], input.get("value") != 0);
+        case "updateClipColors":
+            return store.setIn(["clipUpdate","color"], input.get("value") != 0);
         case "globalZoom":
             return store.set("visibleBeats", input.get("value")*(visibleBeatsZoomedOut-4)+4);
         case "groupButtonClicked":
@@ -49,5 +58,5 @@ export default actionStream//.filter(a=> a.get("type") === "globalZoom" || a.get
     }
  }
 , initialState).startWith(initialState)
-.skipRepeatsWith(Immutable.is)
+.skipImmRepeats()
 .tap(logger("uiState"));

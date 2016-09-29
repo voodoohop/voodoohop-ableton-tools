@@ -1,14 +1,23 @@
 #!/bin/bash
-npm run package -- --asar --icon logo_voodoohop_transparent.icns
+npm run package -- --asar --icon ./logo_voodoohop_transparent
 cp logo_voodoohop_transparent.icns ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/electron.icns
-# rm "/Users/thomash/Google Drive/VoodoohopLiveTools.zip"
-# rm -r /tmp/VoodoohopLiveTools
-mkdir /tmp/VoodoohopLiveTools
-cp -p "./Voodoohop Clip Status Sender.amxd" /tmp/VoodoohopLiveTools
+cp voodoohop_transparent_black_icon.png ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
+cp -p "./Voodoohop Track Sender.amxd" ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
+cp -p "./Voodoohop Live Tools Master.amxd" ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
+rm /tmp/VoodoohopLiveTools.zip
+ditto -c -k --sequesterRsrc --keepParent ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/ /tmp/VoodoohopLiveTools.zip
+
 rm -r "/Applications/VoodoohopLiveTools.app"
 cp -rp "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /Applications 
-mv "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /tmp/VoodoohopLiveTools
-ditto -c -k --sequesterRsrc --keepParent /tmp/VoodoohopLiveTools VoodoohopLiveTools.zip
-rm -r /tmp/VoodoohopLiveTools
-mv VoodoohopLiveTools.zip "/Users/thomash/Google Drive"
+
+
+# rm "/Users/thomash/Google Drive/VoodoohopLiveTools.zip"
+# rm -r /tmp/VoodoohopLiveTools
+# mkdir /tmp/VoodoohopLiveTools
+# cp -p "./Voodoohop Clip Status Sender.amxd" /tmp/VoodoohopLiveTools
+
+# mv "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /tmp/VoodoohopLiveTools
+# ditto -c -k --sequesterRsrc --keepParent /tmp/VoodoohopLiveTools VoodoohopLiveTools.zip
+# rm -r /tmp/VoodoohopLiveTools
+mv /tmp/VoodoohopLiveTools.zip "/Users/thomash/Google Drive"
 cp "/Users/thomash/Google Drive/VoodoohopLiveTools.zip" "/Users/thomash/Google Drive/VoodoohopLiveTools_2.zip"

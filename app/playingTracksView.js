@@ -12,17 +12,18 @@ import keysToColors from "./api/keysToColors";
 // import ReactCountdownClock from "react-countdown-clock";
 
 import AudioContainer from "./audioContainer";
+// import log from "./utils/streamLog";
 
 
-
-var TrackStatistic = component(({fileData, liveData}) => {
+var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected}) => {
   const beatsRemaining = Math.round(liveData.get("end_marker") - liveData.get("playingPosition"));
+  // log("showingTrackStatistic")(keyFormatter,liveData);
   return <div className="ui mini statistics inverted right floated tom blackTransparentBg">
     {
       (liveData.get("transposedKey")) ?
         <div className="statistic tom">
           <div className="value" >
-            <span style={{ color: keysToColors(liveData.get("transposedKey")) }}>{liveData.get("transposedKey") }</span>
+            <span style={{ color: keysToColors(liveData.get("transposedKey")) }}>{keyFormatter(liveData.get("transposedKey")) }</span>
             <span style={{ fontSize: "80%" }}>{(liveData.get("pitch") != 0 ? ((liveData.get("pitch") > 0 ? " +" : " ") + `${liveData.get("pitch")}`) : "") }</span>
           </div>
           <div className="label">
@@ -64,6 +65,8 @@ actionStream.plug(fromEvent("hoverDrag", dragEvent).throttle(20)
 );
 
 
+import {getKeyFormatter} from "./api/openKeySequence";
+
 var Track = component(function ({track, trackId, uiState}) {
 		// var track = props.track;	
   // console.log("props",this.props);
@@ -99,11 +102,11 @@ var Track = component(function ({track, trackId, uiState}) {
 
 
           {
-            track.get("fileData") ? <TrackStatistic liveData={track.get("liveData") } fileData={track.get("fileData") } /> : ""
+            track.get("fileData") ? <TrackStatistic isSelected={isSelectedClip} liveData={track.get("liveData") } fileData={track.get("fileData") } keyFormatter={getKeyFormatter(uiState)}/> : ""
           }
           <div className="ui header tom" style={{ fontSize: "3vw", fontWeight: isSelectedClip ? "normal" : "bold" }}><span className="blackTransparentBg">
             {track.getIn(["fileData", "id3Metadata", "artist"]) || track.getIn(["liveData", "name"]) }
-          </span></div>
+          </span>{track.getIn(["liveData","isSelected"]) ? <span style={{color: "#aaa"}}> (selected)</span>:null}</div>
           <span className="blackTransparentBg" style={{
             fontSize: isSelectedClip ? "2vw" : "3vw",
             margin: "0px",
