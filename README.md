@@ -5,7 +5,7 @@ Want to beta test my Ableton Live DJing and harmonic mixing addons?
 
 - shows the waveforms of tracks playing in a convenient floating window
 - reads the warp markers of the audio files and shows the properly warped waveform with the aligned playing positions
-- if you have a software like mixed in key or the free keyfinder it will read the key tags and color the waveforms accordingly
+- if you have a software like Mixed in Key or the free Keyfinder it will read the key tags and color the waveforms accordingly
 - transposing the clips in live will change the color of the waveform allowing you to quickly match the audio harmonically
 - harmonic wheel showing relationship between playing songs and how pitching them will change their harmony
 - choose between different key notations (camelot, open key and traditional)
@@ -13,6 +13,7 @@ Want to beta test my Ableton Live DJing and harmonic mixing addons?
 - apart from the tracks that are currently playing it will also show the waveform and harmony of the clip currently selected in live's detail view
 - can update the color and name of the selected clip inside the live set, reflecting its harmony
 - the waveform display contains an inner waveform which visualizes the low end portion of the audio
+- shows live's loop points
 
 and more which i forgot...
 
@@ -24,12 +25,16 @@ Instructions:
 Unzip the archive and open the application.
 
 It will show two draggable devices.
-1) The Voodohoop Live Tools Master which you should put on your Master track
-2) The Voodoohop Track Sender which you should put on every track you want to monitor.
+1. The Voodohoop Live Tools Master which you should put on your Master track
+2. The Voodoohop Track Sender which you should put on every track you want to monitor.
 
 ![device drag Screenshot][devicedrag]
 
-The Max for Live device is meant to be put on each track in your Live set you want to monitor. It sends the information about the currently playing clip to the Voodoohop Live Tools application which then analyses the metadata etc.
+The Master device lets you control general parameters, such as zoom, type of key notation  
+
+![Master Device Screenshot][masterdevice]
+
+The Track Sender Device transmits information about the currently playing clip to the Voodoohop Live Tools application which then analyses and continuously displays it.
 
 Sorry about the file size. I will reduce it at some point. 
 
@@ -55,3 +60,4 @@ contact: thomas@voodoohop.com
 
 [devicedrag]: https://github.com/voodoohop/voodoohop-ableton-tools/blob/master/screenshot_device_drag_sm.png?raw=true "Voodoohop Live Tools opening screenshot"
 [working]: https://github.com/voodoohop/voodoohop-ableton-tools/blob/master/screenshot_working.png?raw=true "Voodoohop Live Tools working screenshot"
+[masterdevice]: https://github.com/voodoohop/voodoohop-ableton-tools/blob/master/screenshot_master_device.png?raw=true "Voodoohop Live Tools working screenshot"
