@@ -27,24 +27,26 @@ Instructions:
 Unzip the archive and open the application.
 
 It will show two draggable devices.
+
 1. The Voodohoop Live Tools Master which you should put on your Master track
 2. The Voodoohop Track Sender which you should put on every track you want to monitor.
 
 ![device drag Screenshot][devicedrag]
 
-The Master device lets you control general parameters, such as zoom, type of key notation  
+The Master device lets you control general parameters, such as zoom, desired type of key notation and transmits the currently selected clip to the App.
 
 ![Master Device Screenshot][masterdevice]
 
-The Track Sender Device transmits information about the currently playing clip to the Voodoohop Live Tools application which then analyses and continuously displays it.
 
-Sorry about the file size. I will reduce it at some point. 
+The Track Sender Device transmits information about the currently playing clip to the Voodoohop Live Tools application which then analyses and continuously displays it.
 
 To hide and show the window from anywhere you can press Ctrl-Shift-V.
 
 In order for the program to read the warp markers correctly you need to hit the little "save" button on the clip's detail view. Otherwise it will display 120.00bpm and not show the waveform correctly.
 
 ![working Screenshot][working]
+
+Sorry for the file size. I will reduce it at some point. 
 
 Download:
 --------------
