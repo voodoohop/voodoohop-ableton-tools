@@ -53,5 +53,5 @@ thanks to the feedback from a bunch of you and some spare time i managed to impr
 contact: thomas@voodoohop.com
 
 
-[devicedrag]: https://github.com/voodoohop/voodoohop-ableton-tools/blob/master/screenshot_device_drag.png?raw=true "Voodoohop Live Tools opening screenshot"
+[devicedrag]: https://github.com/voodoohop/voodoohop-ableton-tools/blob/master/screenshot_device_drag_sm.png?raw=true "Voodoohop Live Tools opening screenshot"
 [working]: https://github.com/voodoohop/voodoohop-ableton-tools/blob/master/screenshot_working.png?raw=true "Voodoohop Live Tools working screenshot"
