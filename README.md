@@ -1,9 +1,7 @@
 Ableton Live DJing and harmonic mixing addons
 ------------------
 
-important! you need to follow the link to download the application. the device i uploaded here won't do anything by itself.
-
-someone want to beta test my Ableton Live DJing and harmonic mixing addons?
+Want to beta test my Ableton Live DJing and harmonic mixing addons?
 
 - shows the waveforms of tracks playing in a convenient floating window
 - reads the warp markers of the audio files and shows the properly warped waveform with the aligned playing positions
