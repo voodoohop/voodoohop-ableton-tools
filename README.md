@@ -1,4 +1,4 @@
-Ableton Live DJing and harmonic mixing addons
+Ableton Live DJing and Harmonic Mixing addons
 ------------------
 
 [![Video demo](http://img.youtube.com/vi/DGWDu8ECST0/0.jpg)](http://www.youtube.com/watch?v=DGWDu8ECST0)
@@ -19,7 +19,7 @@ Want to beta test my Ableton Live DJing and harmonic mixing addons?
 
 and more which i forgot...
 
-sorry mac only for now
+sorry **mac only** for now
 
 -------------------------------
 Instructions:
@@ -33,12 +33,17 @@ It will show two draggable devices.
 
 ![device drag Screenshot][devicedrag]
 
+***
+
 The Master device lets you control general parameters, such as zoom, desired type of key notation and transmits the currently selected clip to the App.
 
 ![Master Device Screenshot][masterdevice]
 
+***
 
 The Track Sender Device transmits information about the currently playing clip to the Voodoohop Live Tools application which then analyses and continuously displays it.
+
+***
 
 To hide and show the window from anywhere you can press Ctrl-Shift-V.
 
@@ -46,12 +51,15 @@ In order for the program to read the warp markers correctly you need to hit the 
 
 ![working Screenshot][working]
 
-Sorry for the file size. I will reduce it at some point. 
+
 
 Download:
 --------------
 https://goo.gl/forms/EK0lCZdkX5KXA1Q03
---------------
+
+Sorry for the file size. I will reduce it at some point. 
+
+***
 
 Please give me feedback.
 
