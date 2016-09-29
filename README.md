@@ -1,6 +1,8 @@
 Ableton Live DJing and harmonic mixing addons
 ------------------
 
+[![Video demo](http://img.youtube.com/vi/DGWDu8ECST0/0.jpg)](http://www.youtube.com/watch?v=DGWDu8ECST0)
+
 Want to beta test my Ableton Live DJing and harmonic mixing addons?
 
 - shows the waveforms of tracks playing in a convenient floating window
