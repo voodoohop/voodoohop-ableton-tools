@@ -1,16 +1,25 @@
 #!/bin/bash
-npm run package -- --asar --icon ./logo_voodoohop_transparent
-cp logo_voodoohop_transparent.icns ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/electron.icns
+npm run package -- --all --asar --icon ./logo_voodoohop_transparent
+# cp logo_voodoohop_transparent.icns ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/electron.icns
+
+rm -r ./release/linux*
 cp voodoohop_transparent_black_icon.png ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
 cp -p "./Voodoohop Track Sender.amxd" ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
 cp -p "./Voodoohop Live Tools Master.amxd" ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
-rm /tmp/VoodoohopLiveTools.zip
-ditto -c -k --sequesterRsrc --keepParent ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/ /tmp/VoodoohopLiveTools.zip
+# rm /tmp/VoodoohopLiveTools.zip
+ditto -c -k --sequesterRsrc --keepParent ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/ /tmp/VoodoohopLiveTools-mac.zip
 
+
+
+cp voodoohop_transparent_black_icon.png ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources
+cp -p "./Voodoohop Track Sender.amxd" ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources
+cp -p "./Voodoohop Live Tools Master.amxd" ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources
+ditto -c -k --sequesterRsrc --keepParent ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/ /tmp/VoodoohopLiveTools-win.zip
 # rm -r "/Applications/VoodoohopLiveTools.app"
 # cp -rp "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /Applications 
 
-
+mv /tmp/VoodoohopLiveTools-win.zip /Users/thomash/Dropbox/VoodoohopLiveTools
+mv /tmp/VoodoohopLiveTools-mac.zip /Users/thomash/Dropbox/VoodoohopLiveTools
 # rm "/Users/thomash/Google Drive/VoodoohopLiveTools.zip"
 # rm -r /tmp/VoodoohopLiveTools
 # mkdir /tmp/VoodoohopLiveTools
@@ -19,6 +28,6 @@ ditto -c -k --sequesterRsrc --keepParent ./release/darwin-x64/VoodoohopLiveTools
 # mv "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /tmp/VoodoohopLiveTools
 # ditto -c -k --sequesterRsrc --keepParent /tmp/VoodoohopLiveTools VoodoohopLiveTools.zip
 # rm -r /tmp/VoodoohopLiveTools
-mv /tmp/VoodoohopLiveTools.zip "/Users/thomash/Google Drive"
+# cp -p "/Users/thomash/Dropbox/VoodoohopLiveTools/VoodoohopLiveTools-mac.zip" "/Users/thomash/Google Drive/VoodoohopLiveTools.zip"
 #cp "/Users/thomash/Google Drive/VoodoohopLiveTools.zip" "/Users/thomash/Google Drive/VoodoohopLiveTools_2.zip"
-cp -p "/Users/thomash/Google Drive/VoodoohopLiveTools.zip" "/Users/thomash/Dropbox/"
+# cp -p "/Users/thomash/Dropbox/VoodoohopLiveTools/VoodoohopLiveTools-mac.zip" "/Users/thomash/Dropbox/VoodoohopLiveTools.zip"

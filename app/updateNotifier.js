@@ -14,6 +14,10 @@ import Subject from "./utils/subject";
 // console.log("most",most);
 const pjson = require("../package.json");
 
+const platformURL = () => process.platform === "darwin" ? 
+"https://www.dropbox.com/s/rtpz5p8oorkmbqh/VoodoohopLiveTools-mac.zip?dl=1":
+"https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1";
+
 const UpdateNotifier=Connector(component2( ({updateResponse,downloadStatus}) => updateResponse ?
 (
     <div className="ui info message inverted ">

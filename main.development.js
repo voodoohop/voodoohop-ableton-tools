@@ -73,6 +73,7 @@ app.on('ready', async () => {
     // transparent:true, 
     alwaysOnTop:true,
     frame: false,
+    resizable:true,
     // titleBarStyle: 'hidden',
 	  // titleBarStyle:"hidden-inset",
 		'min-width': 151,

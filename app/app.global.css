@@ -5,7 +5,7 @@ body {
   background-color: rgba(0,0,0,1);
   font-family: Arial, Helvetica, Helvetica Neue;
   overflow-y: auto;
-  -webkit-app-region: drag; 
+  -webkit-app-region: no-drag; 
 }
 
 h2 {

@@ -144,7 +144,7 @@ import _ from "lodash";
 const DynamicKeyWheel = component(({tracks,keyFormatter,canShortenLabel}) => {
 // console.log("DynamicKeyWheel tracks",tracks,uiState);    
 // const keyFormatter =;
-return <VictoryPie innerRadius={innerRadius} width={350} 
+return <VictoryPie innerRadius={innerRadius} width={350} height={350}
     labelRadius={labelRadius}
     data={
         openkeySequence.map(note => 
