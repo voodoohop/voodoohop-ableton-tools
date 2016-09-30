@@ -7,7 +7,7 @@ Want to beta test my Ableton Live DJing and harmonic mixing addons?
 
 - shows the waveforms of tracks playing in a convenient floating window
 - reads warp markers of audio files and shows the properly warped waveform with the aligned playing positions
-- when the audio has key information (e.g. tagged by Mixed in Key or the free Keyfinder) it will read the key tags and color the waveforms accordingly
+- if the audio has key information (e.g. tagged by Mixed in Key or the free [Keyfinder](http://www.ibrahimshaath.co.uk/keyfinder/) ) it will read the key tags and color the waveforms accordingly
 - transposing the clips in Live will change the color of the waveform allowing you to quickly match the audio harmonically
 - harmonic wheel shows relationship between playing songs and how pitching them will change their harmony
 - choose between different key notations (camelot, open key and traditional)
