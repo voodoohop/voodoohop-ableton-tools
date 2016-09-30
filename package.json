@@ -1,6 +1,6 @@
 {
   "name": "VoodoohopLiveTools",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "VOODOOHOP Live Tools",
   "main": "main.js",
   "scripts": {
@@ -122,6 +122,7 @@
     "debug-menu": "^0.4.0",
     "del": "^2.2.0",
     "electron-debug": "^1.0.1",
+    "electron-dl": "^1.5.0",
     "electron-packager": "^7.0.1",
     "electron-positioner": "^3.0.0",
     "electron-prebuilt": "1.4.1",
@@ -153,6 +154,7 @@
     "musicmetadata": "^2.0.4",
     "nedb": "^1.8.0",
     "nexusui": "^1.0.8",
+    "node-fetch": "^1.6.3",
     "node-find-files": "0.0.4",
     "node-libs-browser": "^1.0.0",
     "node-osc": "^2.0.3",

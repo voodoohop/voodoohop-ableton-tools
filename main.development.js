@@ -1,13 +1,18 @@
 import { app, BrowserWindow, Menu, shell,ipcMain, globalShortcut } from 'electron';
 
+import {download} from "electron-dl";
+// require('electron-dl')();
 
-import electronDebug from 'electron-debug';
+
+import {electronDebug} from 'electron-debug';
 
 let menu;
 let template;
 let mainWindow = null;
 
 import most from "most";
+
+
 
 
 process.on('uncaughtException', function (err) {
@@ -278,4 +283,23 @@ ipcMain.on("dragStart", (event, {maxForLiveDevice, path, icon}) =>{
   event.sender.startDrag({
     file: path, icon: icon
   })
+});
+
+ipcMain.on('downloadUpdate', (e, args) => {
+  console.log("download update requested",args);
+  e.sender.send("downloadUpdateRes",{start: true});
+  download(mainWindow, args.url)
+        .then(dl => {
+          e.sender.send("downloadUpdateRes",{result:dl.getSavePath()})
+          shell.showItemInFolder(dl.getSavePath());
+          shell.beep();
+          setTimeout(() => {
+            mainWindow = null;
+            app.quit();
+          }
+          , 1000);
+        })
+        .catch(err => e.sender.send("downloadUpdateRes",{
+          error:err
+        }))
 });

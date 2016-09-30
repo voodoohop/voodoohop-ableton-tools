@@ -47,7 +47,7 @@ import keysToColors from "./api/keysToColors";
 import PlayingTracks from "./playingTracksView";
 
 import log from "./utils/streamLog";
-
+import UpdateNotifier from "./updateNotifier";
 
 var installDevTools = require("immutable-devtools");
 
@@ -135,7 +135,10 @@ class AppRenderer extends React.Component {
 finalState.observe(state => {
 
     render(
+        <div>
+        <UpdateNotifier />
         <AppRenderer state={state} />
+        </div>
         ,
         document.getElementById('root')
     )

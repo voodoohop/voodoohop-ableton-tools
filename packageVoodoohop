@@ -7,8 +7,8 @@ cp -p "./Voodoohop Live Tools Master.amxd" ./release/darwin-x64/VoodoohopLiveToo
 rm /tmp/VoodoohopLiveTools.zip
 ditto -c -k --sequesterRsrc --keepParent ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/ /tmp/VoodoohopLiveTools.zip
 
-rm -r "/Applications/VoodoohopLiveTools.app"
-cp -rp "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /Applications 
+# rm -r "/Applications/VoodoohopLiveTools.app"
+# cp -rp "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /Applications 
 
 
 # rm "/Users/thomash/Google Drive/VoodoohopLiveTools.zip"
@@ -20,4 +20,5 @@ cp -rp "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.ap
 # ditto -c -k --sequesterRsrc --keepParent /tmp/VoodoohopLiveTools VoodoohopLiveTools.zip
 # rm -r /tmp/VoodoohopLiveTools
 mv /tmp/VoodoohopLiveTools.zip "/Users/thomash/Google Drive"
-cp "/Users/thomash/Google Drive/VoodoohopLiveTools.zip" "/Users/thomash/Google Drive/VoodoohopLiveTools_2.zip"
+#cp "/Users/thomash/Google Drive/VoodoohopLiveTools.zip" "/Users/thomash/Google Drive/VoodoohopLiveTools_2.zip"
+cp -p "/Users/thomash/Google Drive/VoodoohopLiveTools.zip" "/Users/thomash/Dropbox/"
