@@ -19,8 +19,6 @@ Want to beta test my Ableton Live DJing and harmonic mixing addons?
 
 and more which i forgot...
 
-sorry **mac only** for now
-
 -------------------------------
 Instructions:
 

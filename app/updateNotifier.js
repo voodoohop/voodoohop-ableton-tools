@@ -28,7 +28,7 @@ const UpdateNotifier=Connector(component2( ({updateResponse,downloadStatus}) => 
   </div>
   <button className={`ui primary button tiny inverted ${downloadStatus && downloadStatus.start ? "disabled loading":""}`} 
     onClick={() => {
-        ipcRenderer.send("downloadUpdate", {url: "https://www.dropbox.com/s/rq44lz2retmxkuf/VoodoohopLiveTools.zip?dl=1"});
+        ipcRenderer.send("downloadUpdate", {url: platformURL() });
         // progressSubject.push({start:true});
     }}>
   
