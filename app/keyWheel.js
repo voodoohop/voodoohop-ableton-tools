@@ -54,7 +54,7 @@ const ConnectNodes = component(({start, end, thickness, transpose}) =>{
 const KeyLabel=component2(({x,y,datum,connectedNotes}) => {
     // if (otherKeyLabels.source)
     //     otherKeyLabels = Immutable.Map();
-console.log("DynamicKeyWheel renderlabel",{x,y,datum,connectedNotes});    
+// console.log("DynamicKeyWheel renderlabel",{x,y,datum,connectedNotes});    
     //   labelProps[keysToColors(props.datum.note)] = props;
     const newData=Immutable.fromJS({datum,x,y});
     // console.log("connectedNotes",connectedNotes);// && connectedNotes.get(keysToColors(datum.note)),newData);

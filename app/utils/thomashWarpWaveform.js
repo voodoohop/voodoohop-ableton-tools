@@ -1,9 +1,4 @@
-///<reference path='typings/jsGlobals.d.ts'/>
-///<reference path='typings/jsthis.d.ts'/>
-///<reference path='typings/utils.d.ts'/>
-///<reference path='typings/immutable.d.ts'/>
-///<reference path='typings/ThomashTypes.d.ts'/>
-
+import {iterate as mostIterate} from "most";
 
 var self2 = this;
 import asyncjs from "async";
@@ -21,7 +16,7 @@ exports.overviewWaveform = (metadataStream) => metadataStream
     var resolve = null;
     var warpResolve = (res) => resolve(Imm.fromJS(res));
     //  most.startWith(metadata.get("warpMarkers"))
-    return metadata.set("overviewWaveform", most.iterate(warpMarkerResult => {
+    return metadata.set("overviewWaveform", mostIterate(warpMarkerResult => {
         // post("\n\n\n\niterating...",JSON.stringify(warpMarkerResult), typeof warpMarkerResult,"\n");
         // first time we evaluate the promise that gives us the warp markers
         if (warpMarkerResult.stream)

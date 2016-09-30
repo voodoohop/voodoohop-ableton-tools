@@ -139,7 +139,7 @@ const PlayingTracks = component(({availableTracks, uiState}) => {
   // sortedTracks.map(log("trkId"));
 		if (!availableTracks)
     return <div>no tracks loaded</div>;
-		return <div className="ui inverted divided list" style={{ backgroundColor: "rgba(0,0,0,0)",  webkitAppRegion:"drag"}}>
+		return <div className="ui inverted divided list" style={{ backgroundColor: "rgba(0,0,0,0)",  WebkitAppRegion:"drag"}}>
 
     {availableTracks.map((track, trackId) => {
 

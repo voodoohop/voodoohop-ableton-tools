@@ -4,7 +4,7 @@ import {oscOutput} from "./oscInOut";
 
 import keysToColors from "../api/keysToColors";
 
-import {from} from "most";
+import {from as mostFrom} from "most";
 
 import log from "./streamLog";
 
@@ -88,7 +88,7 @@ oscOutput.plug(
     
     .flatMap(keyInfo => 
         
-        most.from([
+        mostFrom([
         keyInfo.getIn(["update","color"]) ? Map({
             trackId:"selectedClip",
             args: List([keyInfo.get("clipId"),"color", getAbletonCol(keyInfo)])

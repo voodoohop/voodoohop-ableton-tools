@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 export default merge(baseConfig, {
   debug: true,
 
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'cheap-inline-source-map',//'cheap-module-eval-source-map',
 
   entry: [
     `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,

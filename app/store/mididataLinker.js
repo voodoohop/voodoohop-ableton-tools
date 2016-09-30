@@ -3,11 +3,13 @@
 import actionStream from "../api/actionSubject";
 
 import Immutable from "immutable";
+
+import {from as mostFrom} from "most";
 // import {midiClipStore} from ".";
 
 export function generateMidiMergeEventHack(finalState) {
     actionStream.plug(
-    finalState.flatMap(s => most.from(
+    finalState.flatMap(s => mostFrom(
     s.get("tracks").toArray()
     .filter(t => t.get("midiData") && t.get("fileData") && !t.getIn(["fileData","midiMetadata"]))
     .map(t => Immutable.Map({

@@ -77,9 +77,9 @@ installDevTools(Immutable);
 // windows[1].openDevTools();
 
 
-window.actionStream = actionSubject;
-window.Imm = Immutable;
-window.most = most;
+// window.actionStream = actionSubject;
+// window.Imm = Immutable;
+// window.most = most;
 
 // function unhandledRejectionsWithSourceMaps(Promise) {
 // 	Promise.onPotentiallyUnhandledRejection = function(r) {
