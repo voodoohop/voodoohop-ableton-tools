@@ -15,9 +15,11 @@ import AudioContainer from "./audioContainer";
 // import log from "./utils/streamLog";
 
 
-var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected}) => {
+var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected, trackId}) => {
   const beatsRemaining = Math.round(liveData.get("end_marker") - liveData.get("playingPosition"));
   // log("showingTrackStatistic")(keyFormatter,liveData);
+  if (!( liveData.get("playing") || isSelected))
+    return null;
   return <div className="ui mini statistics inverted right floated tom blackTransparentBg">
     {
       (liveData.get("transposedKey")) ?
@@ -42,10 +44,10 @@ var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected}) =
     </div>
     <div className="statistic  tom">
       <div className="value" style={beatsRemaining < 64 ? { color: "orange", fontWeight: "bold" } : {}} >
-        {beatsRemaining}
+        {Math.floor(beatsRemaining/4)}
       </div>
       <div className="label">
-        Beats
+        Bars
       </div>
     </div>
 
@@ -95,6 +97,7 @@ var Track = component(function ({track, trackId, uiState}) {
   }
   // var audioContainer = ;
   const isSelectedClip = trackId === "selectedClip";
+  const isSelected = track.getIn(["liveData","isSelected"]);
   return this.props.connectDragSource(
     this.props.connectDropTarget(<div className="ui vertical segment inverted" style={style}>
       <div className="image" style={{ position: "relative" }}>
@@ -102,8 +105,11 @@ var Track = component(function ({track, trackId, uiState}) {
 
 
           {
-            track.get("fileData") ? <TrackStatistic isSelected={isSelectedClip} liveData={track.get("liveData") } fileData={track.get("fileData") } keyFormatter={getKeyFormatter(uiState)}/> : ""
+            track.get("fileData") ? <TrackStatistic isSelected ={isSelected} liveData={track.get("liveData") } trackid={trackId}  fileData={track.get("fileData") } keyFormatter={getKeyFormatter(uiState)}/> : ""
           }
+          {
+              (track.getIn(["liveData","playing"]) || isSelected) ? 
+          <div>
           <div className="ui header tom" style={{ fontSize: "3vw", fontWeight: isSelectedClip ? "normal" : "bold" }}><span className="blackTransparentBg">
             {track.getIn(["fileData", "id3Metadata", "artist"]) || track.getIn(["liveData", "name"]) }
           </span>{track.getIn(["liveData","isSelected"]) ? <span style={{color: "#aaa"}}> (selected)</span>:null}</div>
@@ -113,7 +119,12 @@ var Track = component(function ({track, trackId, uiState}) {
             color: "#aaa"
           }}>{track.getIn(["fileData", "id3Metadata", "title"]) }</span>
 
-        </div><div style={{ paddingTop: "10px", height: "100%" }}>
+        </div>
+        :null
+          }
+        </div>
+      
+        <div style={{ paddingTop: "10px", height: "100%" }}>
           <AudioContainer uiState={uiState} trackId={trackId} track={track} />
         </div>
 

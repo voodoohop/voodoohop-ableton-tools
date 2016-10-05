@@ -118,7 +118,7 @@ export default component2(({uiState, trackId, track}) => {
 	const transposedKey = liveData.get("transposedKey");
 	const isSelectedClip = track.getIn(["liveData","isSelected"]);
 	// console.log("positions",playingPosX,startRenderPos,endMarker,startMarker);
-    if (!(waveform && !(waveform.get("error"))) && !midiData)
+    if ((!(waveform && !(waveform.get("error"))) && !midiData))
         return <div>Waveform / midi not yet	 loaded</div>;
 	return <div key={"trackid_detail_" + trackId}>
 
@@ -136,14 +136,16 @@ export default component2(({uiState, trackId, track}) => {
 				</mask>
 
 			</defs>
-			
+			 { liveData.get("isSelected")|| liveData.get("playing") ?
 				<g>
 					<g transform={"scale(" + (scale) + "," + (viewboxHeight / 127) + ")"}>
+						
 						<g transform={`translate(${visibleBeats/4},0)`}>
 						
 						<g transform={"translate(" + (-playingPosX) + ",0)"}>
-			
+						  
 							<DetailViews {...{waveform,trackId, waveformLPF, midiData, gain, transposedChords, transposedKey}} />
+						   
 							{(liveData.get("looping") === 1) ?
 							<rect stroke="white" fill="rgba(255,255,255,0.1)" opacity="0.9"
 								y="0" x={liveData.get("loop_start") }
@@ -155,7 +157,7 @@ export default component2(({uiState, trackId, track}) => {
 						</g>
 					</g>
 				</g>
-		
+			: null }
 		</svg>
 
 	</div>;
