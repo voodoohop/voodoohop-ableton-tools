@@ -6,29 +6,24 @@
 // Promise.onPossiblyUnhandledRejection(function (error) {
 //     throw error;
 // });
+import "./utils/streamPrototypeExtensions";
 
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import './app.global.css';
 
-
-// import "./utils/fixWhenErrorLog";
-
-// import './app.css';
-// import './photontom.global.css';
-
-// import DevTools from "./containers/DevTools";
 import {mapStackTrace} from "sourcemapped-stacktrace";
 
 import KeyWheel from "./keyWheel";
-// import logger from "./utils/streamLog";
 
 
 import Immutable from "immutable";
 
 // import Dock from "react-dock";
 import ObjectInspector from 'react-json-tree';
+
+import transit from 'transit-immutable-js';
 
 
 import actionSubject from "./api/actionSubject";
@@ -109,6 +104,8 @@ import "./utils/clipColorer";
 
 import SplashScreen from "./splashScreen";
 
+import {ipcRenderer} from "electron";
+
 class AppRenderer extends React.Component {
     render() {
         const state = this.props.state;
@@ -133,7 +130,7 @@ class AppRenderer extends React.Component {
     }
 }
 finalState.observe(state => {
-
+    ipcRenderer.send("state", transit.toJSON(state));
     render(
         <div>
         <UpdateNotifier />

@@ -21,7 +21,9 @@ var visibleBeatsZoomedOut = 1024;
 var initialState = Immutable.Map({
     visibleBeats:visibleBeatsZoomedOut/2, 
     groupedTracks: Immutable.Set(),
-    keyNotation:"trad"});
+    keyNotation:"trad",
+    visible: true
+});
 
 var toggle = (set,member) => set.contains(member) ? set.remove(member):set.add(member);
 
@@ -31,6 +33,8 @@ export default actionStream//.filter(a=> a.get("type") === "globalZoom" || a.get
 // input.get("trackId") ? store.mergeIn([input.get("trackId")], input) : 
 // store.set(input.get("type"), input.get("value"))
     switch (input.get("type")) {
+        case "visibility":
+            return store.set("visible", input.get("value") == 1);
         case "keyNotation":
             return store.set("keyNotation", input.get("value"));
         case "updateClipNames":

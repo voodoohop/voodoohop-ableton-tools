@@ -1,10 +1,15 @@
+import "./app/utils/streamPrototypeExtensions";
+
 import { app, BrowserWindow, Menu, shell,ipcMain, globalShortcut } from 'electron';
 
 import {download} from "electron-dl";
 // require('electron-dl')();
 
+import Immutable from "immutable";
 
 import {electronDebug} from 'electron-debug';
+
+import log from "./app/utils/streamLog";
 
 let menu;
 let template;
@@ -13,6 +18,12 @@ let mainWindow = null;
 import most from "most";
 
 
+import Subject from "./app/utils/subject";
+
+import transit from 'transit-immutable-js';
+
+
+const state$ = Subject();
 
 
 process.on('uncaughtException', function (err) {
@@ -130,6 +141,18 @@ app.on('ready', async () => {
     mainWindow = null;
     app.quit();
   });
+
+
+  state$
+  .skipImmRepeats()
+  .tap(s => console.log("stateFromRenderer",s.toJS()))
+  .map(s=> s.get("visible"))
+   .skipImmRepeats()
+  // .tap(log("visibility"))
+  .tap(v => mainWindow.setAlwaysOnTop(v))
+  .observe(visibility => visibility ? mainWindow.show() : mainWindow.hide())
+  .catch(e=>console.error(e));
+
 // app on ready 
  
 // debugWindow.on() 
@@ -286,6 +309,8 @@ ipcMain.on("dragStart", (event, {maxForLiveDevice, path, icon}) =>{
   })
 });
 
+
+
 ipcMain.on('downloadUpdate', (e, args) => {
   console.log("download update requested",args);
   e.sender.send("downloadUpdateRes",{start: true});
@@ -304,3 +329,10 @@ ipcMain.on('downloadUpdate', (e, args) => {
           error:err
         }))
 });
+
+ipcMain.on("state",(event,s)=> {
+  const stateUnserialized = transit.fromJSON(s);
+  // console.log("got state from renderer",stateUnserialized.get("uiState"));
+   state$.push(stateUnserialized.get("uiState"));
+});
+
