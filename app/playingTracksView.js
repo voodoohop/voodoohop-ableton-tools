@@ -17,13 +17,13 @@ import AudioContainer from "./audioContainer";
 import bpmPitchChange from "./utils/bpmPitchChange";
 
 var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected, trackId, masterTempo}) => {
-  const beatsRemaining = Math.round(liveData.get("end_marker") - liveData.get("playingPosition"));
+  const beatsRemaining = Math.round(liveData.get("loop_end") - liveData.get("playingPosition"));
   // log("showingTrackStatistic")(keyFormatter,liveData);
   if (!( liveData.get("playing") || isSelected))
     return null;
   const origBpm =fileData.getIn(["warpMarkers", "baseBpm"]) || fileData.getIn(["id3Metadata", "bpm"]) ;
   const repitchedBpm = (origBpm && bpmPitchChange(origBpm, liveData.get("pitch")||0));
-  const bpmDifferenceToMaster= masterTempo&&(masterTempo - repitchedBpm)||0;
+  const bpmDifferenceToMaster= -(masterTempo&&(masterTempo - repitchedBpm)||0);
   return <div className="ui mini statistics inverted right floated tom blackTransparentBg">
     {
       (liveData.get("transposedKey")) ?
@@ -41,7 +41,7 @@ var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected, tr
     <div className="statistic  tom">
       <div className="value">
         {(repitchedBpm && Math.round(repitchedBpm)/1) || "-"}
-        {Math.round(bpmDifferenceToMaster) != 0 ? <span style={{color:"#aaa", fontWeight:"normal",fontSize:"80%"}}> 
+        {Math.round(bpmDifferenceToMaster) != 0 ? <span style={{color:Math.abs(Math.round(bpmDifferenceToMaster))>5?"orange": "#aaa", fontWeight:"normal",fontSize:"80%"}}> 
         {(Math.round(bpmDifferenceToMaster) > 0 ? "+":"") +Math.round(bpmDifferenceToMaster)/1}</span> : null}
       </div>
       <div className="label">
