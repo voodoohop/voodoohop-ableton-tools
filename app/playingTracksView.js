@@ -14,19 +14,23 @@ import keysToColors from "./api/keysToColors";
 import AudioContainer from "./audioContainer";
 // import log from "./utils/streamLog";
 
+import bpmPitchChange from "./utils/bpmPitchChange";
 
-var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected, trackId}) => {
+var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected, trackId, masterTempo}) => {
   const beatsRemaining = Math.round(liveData.get("end_marker") - liveData.get("playingPosition"));
   // log("showingTrackStatistic")(keyFormatter,liveData);
   if (!( liveData.get("playing") || isSelected))
     return null;
+  const origBpm =fileData.getIn(["warpMarkers", "baseBpm"]) || fileData.getIn(["id3Metadata", "bpm"]) ;
+  const repitchedBpm = (origBpm && bpmPitchChange(origBpm, liveData.get("pitch")||0));
+  const bpmDifferenceToMaster= masterTempo&&(masterTempo - repitchedBpm)||0;
   return <div className="ui mini statistics inverted right floated tom blackTransparentBg">
     {
       (liveData.get("transposedKey")) ?
         <div className="statistic tom">
           <div className="value" >
             <span style={{ color: keysToColors(liveData.get("transposedKey")) }}>{keyFormatter(liveData.get("transposedKey")) }</span>
-            <span style={{ fontSize: "80%" }}>{(liveData.get("pitch") != 0 ? ((liveData.get("pitch") > 0 ? " +" : " ") + `${liveData.get("pitch")}`) : "") }</span>
+            <span style={{ fontSize: "80%",color:"#aaa" }}>{(liveData.get("pitch") != 0 ? ((liveData.get("pitch") > 0 ? " +" : " ") + `${liveData.get("pitch")}`) : "") }</span>
           </div>
           <div className="label">
             Key
@@ -36,7 +40,9 @@ var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected, tr
     }
     <div className="statistic  tom">
       <div className="value">
-        {Math.round(fileData.getIn(["warpMarkers", "baseBpm"])) || fileData.getIn(["id3Metadata", "bpm"]) || "-"}
+        {(repitchedBpm && Math.round(repitchedBpm)/1) || "-"}
+        {Math.round(bpmDifferenceToMaster) != 0 ? <span style={{color:"#aaa", fontWeight:"normal",fontSize:"80%"}}> 
+        {(Math.round(bpmDifferenceToMaster) > 0 ? "+":"") +Math.round(bpmDifferenceToMaster)/1}</span> : null}
       </div>
       <div className="label">
         Bpm
@@ -105,7 +111,7 @@ var Track = component(function ({track, trackId, uiState}) {
 
 
           {
-            track.get("fileData") ? <TrackStatistic isSelected ={isSelected} liveData={track.get("liveData") } trackid={trackId}  fileData={track.get("fileData") } keyFormatter={getKeyFormatter(uiState)}/> : ""
+            track.get("fileData") ? <TrackStatistic masterTempo={uiState.get("masterTempo")} isSelected ={isSelected} liveData={track.get("liveData") } trackid={trackId}  fileData={track.get("fileData") } keyFormatter={getKeyFormatter(uiState)}/> : ""
           }
           {
               (track.getIn(["liveData","playing"]) || isSelected) ? 

@@ -35,6 +35,8 @@ export default actionStream//.filter(a=> a.get("type") === "globalZoom" || a.get
     switch (input.get("type")) {
         case "visibility":
             return store.set("visible", input.get("value") == 1);
+        case "masterTempo":
+            return store.set("masterTempo", input.get("value"));        
         case "keyNotation":
             return store.set("keyNotation", input.get("value"));
         case "updateClipNames":
