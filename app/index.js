@@ -98,6 +98,7 @@ installDevTools(Immutable);
 
 import finalState from "./store/combinedState";
 
+import {uiStateStore} from "./store";
 import "./api/oscMetadataServer";
 
 import "./utils/clipColorer";
@@ -130,7 +131,7 @@ class AppRenderer extends React.Component {
     }
 }
 finalState.observe(state => {
-    ipcRenderer.send("state", transit.toJSON(state));
+   
     render(
         <div>
         <UpdateNotifier />
@@ -146,5 +147,5 @@ finalState.observe(state => {
         // console
         console.trace();
     });
-
+uiStateStore.skipImmRepeats().map(transit.toJSON).observe(jsonState =>  ipcRenderer.send("state", jsonState));
     // <ObjectInspector style={{color:"white"}} data={ state.toJS() } initialExpandedPaths={["*","*","*"]} />

@@ -12,7 +12,7 @@ import * as most from 'most';
 
 import AudioReader from "../lib/audioreader.js";
 
-import {registerTransform} from "../api/audioMetadataGenerator";
+import {registerTransform} from "../transforms/audioMetadataGenerator";
 
 // import WarpAdaptorCreator from "./warpWaveformDataAdaptor.js";
 // console.log("wfdata",WaveformData.builders);

@@ -44,6 +44,8 @@ export default merge(baseConfig, {
     "iconv-lite",
     "usage",
     "flac-metadata",
-    "bindings"
+    "bindings",
+    "node-fetch",
+    "encoding"
   ]
 });

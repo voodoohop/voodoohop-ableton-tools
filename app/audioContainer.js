@@ -56,33 +56,35 @@ var BeatClickGrid = component2(({startMarker, endMarker, trackId}) => {
 	) }</g>;
 });
 
-const DetailViews = component2(({waveform,trackId,waveformLPF, midiData,transposedChords, transposedKey, gain})=> 
-							<g style={{ mask: "url(#" + "Mask" + trackId + ")" }}>
+const DetailViews = component2(({waveform,trackId,waveformLPF, midiData,transposedChords, transposedKey, gain, startOffset=0, endOffset = Infinity,maskId})=> 
+							<g style={{ mask: maskId ? `url(#${maskId})` : null}}>
 								{
 									(waveform && !(waveform.get("error"))) ? <Waveform
-										trackId={trackId}
+								
 										key="waveform_Container"
-										waveform={waveform}
+								
 										chords={transposedChords }
 										gain={(gain || 0.4) }
 										style={{ opacity: 0.9 }}
 										musicalKey={transposedKey}
+										{...{startOffset,endOffset, waveform, trackId}}
 										/>
 										: null
 								}
 								{
 									waveformLPF ? <Waveform
-										trackId={trackId}
 										key={"waveformLPF_Container"}
 										waveform={waveformLPF}
 										chords={transposedChords}
 										gain={(gain || 0.4) * 1.2}
 										style={{ opacity: 0.3, stroke: "rgba(0,0,0,0.8)", fill: "rgba(0,0,0,0.1)", strokeWidth: "1" }}
-										musicalKey={undefined}/>
+										musicalKey={undefined}
+										{...{startOffset,endOffset,trackId}}
+										/>
 										: null
 								}
 								{ midiData ?
-									<PianoRoll key={"midi_Container"} notes={midiData} trackId={trackId} />
+									<PianoRoll key={"midi_Container"} notes={midiData} {...{startOffset,endOffset,trackId}}/>
 									: null
 								}
 							</g>
@@ -144,13 +146,27 @@ export default component2(({uiState, trackId, track}) => {
 						
 						<g transform={"translate(" + (-playingPosX) + ",0)"}>
 						  
-							<DetailViews {...{waveform,trackId, waveformLPF, midiData, gain, transposedChords, transposedKey}} />
-						   
+							<DetailViews maskId={"Mask" + trackId} {...{waveform,trackId, waveformLPF, midiData, gain, transposedChords, transposedKey}} />
+							
 							{(liveData.get("looping") === 1) ?
 							<rect stroke="white" fill="rgba(255,255,255,0.1)" opacity="0.9"
 								y="0" x={liveData.get("loop_start") }
 								width={liveData.get("loop_end") - liveData.get("loop_start") } height={127} />
 							: null}
+							{
+								// repeat looped waveform if it finishes at the end of the loop marker
+								(liveData.get("looping") === 1 && endMarker === liveData.get("loop_end") ) ? 
+								<g opacity="0.6">
+								<g id={`loopedRegion_${trackId}`} transform={`translate(${liveData.get("loop_end")},0)`} >
+									<DetailViews startOffset={liveData.get("loop_start")} endOffset={liveData.get("loop_end")} {...{waveform,trackId, waveformLPF, midiData, gain, transposedChords, transposedKey}} />
+								</g>
+								{
+										Immutable.Range(liveData.get("loop_end"), Math.max(liveData.get("loop_end"),uiState.get("visibleBeats")*3/4), liveData.get("loop_start") - liveData.get("loop_end"))
+										.map(start => <use key={`loopedRegionCopy_${trackId}_${start}`} xlinkHref={`#loopedRegion_${trackId}`} x={start} />)
+								}
+								</g>
+								: null}
+								
 							<BeatClickGrid startMarker={startMarker} endMarker={liveData.get("end_marker") } trackId={trackId}/>
 						</g>
 					

@@ -6,7 +6,7 @@ import Immutable from "immutable";
 // import doThePeaks from "./doThePeaks.js";
 import * as most from 'most';
 
-import {registerTransform} from "../api/audioMetadataGenerator";
+import {registerTransform} from "../transforms/audioMetadataGenerator";
 
 import path from "path";
 console.log("path",path);

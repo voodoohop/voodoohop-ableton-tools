@@ -11,8 +11,9 @@ import log from "../utils/streamLog";
 import os from "os";
 // import homedir from "homedir";
 // setTimeout(()=>
+const pjson = require("../../package.json");
 console.log("home", os.homedir());
-const db = new nedb({filename: os.homedir()+"/.VoodoohopLiveTools_v07.db"/*+Math.random()*/, autoload: true});
+const db = new nedb({filename: `${os.homedir()}/.VoodoohopLiveTools_v${pjson.version}.db`/*+Math.random()*/, autoload: true});
 
 // window.PouchDB = pouch;
 // var remoteDB = new PouchDB('http://localhost:5984/myremotedbtomtom')

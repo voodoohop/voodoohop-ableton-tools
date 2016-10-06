@@ -34,7 +34,9 @@ export default {
     "iconv-lite",
     "usage",
     "flac-metadata",
-    "bindings"
+    "bindings",
+    "node-fetch",
+    "encoding"
   ]
 };
 

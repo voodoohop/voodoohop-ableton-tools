@@ -332,7 +332,8 @@ ipcMain.on('downloadUpdate', (e, args) => {
 
 ipcMain.on("state",(event,s)=> {
   const stateUnserialized = transit.fromJSON(s);
+  console.log("state length in serialized chars",s.length);
   // console.log("got state from renderer",stateUnserialized.get("uiState"));
-   state$.push(stateUnserialized.get("uiState"));
+   state$.push(stateUnserialized);
 });
 

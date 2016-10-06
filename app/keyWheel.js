@@ -17,7 +17,7 @@ import tinyColor from "tinycolor2";
 
 import log from "./utils/streamLog";
 
-import "./api/audioMetadataGenerator";
+import "./transforms/audioMetadataGenerator";
 // const labelProps={};
 
 const innerRadius = 87;

@@ -189,15 +189,7 @@ const normalizeMetadata = (metadata$, path) => metadata$
 
 import extractWarpMarkers from "../transforms/extractWarpMarkers";
 
-
-
-console.log("helllooo");
-// finder.startSearch();
-
-
-
-
-import {registerTransform, transforms} from "../api/audioMetadataGenerator";
+import {registerTransform, transforms} from "../transforms/audioMetadataGenerator";
 
 import {overviewWaveform} from "./thomashWarpWaveform";
 

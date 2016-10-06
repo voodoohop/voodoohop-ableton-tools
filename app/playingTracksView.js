@@ -21,7 +21,7 @@ var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected, tr
   // log("showingTrackStatistic")(keyFormatter,liveData);
   if (!( liveData.get("playing") || isSelected))
     return null;
-  const origBpm =fileData.getIn(["warpMarkers", "baseBpm"]) || fileData.getIn(["id3Metadata", "bpm"]) ;
+  const origBpm =fileData.getIn(["warpMarkers", "baseBpm"]) || fileData.getIn(["id3Metadata", "bpm"]) || 120;
   const repitchedBpm = (origBpm && bpmPitchChange(origBpm, liveData.get("pitch")||0));
   const bpmDifferenceToMaster= -(masterTempo&&(masterTempo - repitchedBpm)||0);
   return <div className="ui mini statistics inverted right floated tom blackTransparentBg">
@@ -172,6 +172,7 @@ const PlayingTracks = component(({availableTracks, uiState}) => {
         <div className="content" style={
 
           {
+            boxSizing:"border-box",
             marginTop: isSelectedClip ? "5px" : 0,
             borderTop: isSelected && !(isSelectedClip && selectedClipAlreadyDisplayed) ? "0.2px dashed rgba(150,150,150,0.6)" : "none",
             borderBottom: isSelected && !(isSelectedClip && selectedClipAlreadyDisplayed) ? "0.2px dashed rgba(150,150,150,0.6)" : "none"

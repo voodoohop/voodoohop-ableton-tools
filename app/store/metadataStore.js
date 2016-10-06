@@ -4,7 +4,7 @@ import * as most from 'most';
 
 import hold from "@most/hold";
 
-import {getTransformed} from "../api/audioMetadataGenerator";
+import {getTransformed} from "../transforms/audioMetadataGenerator";
 
 import {dataStore} from "../api/db";
 
