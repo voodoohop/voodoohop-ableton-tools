@@ -10,10 +10,8 @@ import "./utils/streamPrototypeExtensions";
 
 import React from 'react';
 import { render } from 'react-dom';
-import { Provider } from 'react-redux';
-import './app.global.css';
 
-import {mapStackTrace} from "sourcemapped-stacktrace";
+import './app.global.css';
 
 import KeyWheel from "./keyWheel";
 
@@ -26,18 +24,11 @@ import ObjectInspector from 'react-json-tree';
 import transit from 'transit-immutable-js';
 
 
-import actionSubject from "./api/actionSubject";
-
 // actionSubject.observe(a => console.log("actionSubject", (a.toJS && a.toJS()) || a)).catch(e => console.error(e));
 
-import * as most from 'most';
-
-import importMetadata from "./utils/importAudioMetadata.js";
+import "./utils/importAudioMetadata.js";
 
 // import "./utils/recursiveMetadataImporter";
-
-import keysToColors from "./api/keysToColors";
-
 
 import PlayingTracks from "./playingTracksView";
 
@@ -46,55 +37,7 @@ import UpdateNotifier from "./updateNotifier";
 
 var installDevTools = require("immutable-devtools");
 
-import createReactiveClass from "./utils/createReactiveClass";
-
 installDevTools(Immutable);
-
-
-
-// RemoteDev Extension: Apply default options & start remotedev-server
-//  require('remotedev-extension')({
-//    port: 5678,
-//    runserver: true
-//  });
-// import elasticsearch from 'elasticsearch';
-// var client = new elasticsearch.Client({
-//   host: 'http://localhost:9200'
-// });
-
-
-
-// var remote = require("remote");
-// var BrowserWindow = remote.require("browser-window");
-// var windows = BrowserWindow.getAllWindows();
-// console.log("windows",windows);
-// Look for the popup window and then...
-// windows[1].openDevTools();
-
-
-// window.actionStream = actionSubject;
-// window.Imm = Immutable;
-// window.most = most;
-
-// function unhandledRejectionsWithSourceMaps(Promise) {
-// 	Promise.onPotentiallyUnhandledRejection = function(r) {
-// 		// setTimeout(function() {
-// 			if(!r.handled) {
-// 				throw r.value;
-// 			}
-// 		// }, 0);
-// 	};
-
-// 	Promise.onPotentiallyUnhandledRejectionHandled = function(r) {
-// 		setTimeout(function() {
-// 			console.log('Handled previous rejection', String(r.value));
-// 		}, 0);
-// 	};
-// }
-// unhandledRejectionsWithSourceMaps(when.Promise);
-// var storyboard = require("storyboard");
-// var wsServer = require("storyboard/lib/listeners/wsServer");
-// storyboard.addListener(wsServer,{port:8090});
 
 import finalState from "./store/combinedState";
 
