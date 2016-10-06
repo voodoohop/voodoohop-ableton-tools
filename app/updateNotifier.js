@@ -53,7 +53,7 @@ console.log("got",res);
 
 const updateResponse = hold(most.fromPromise(fetch(updateURL)).tap(log("got fetch res"))
     .flatMap(res=>most.fromPromise(res.json())).tap(log("got fetch json"))
-    .filter(jsonRes => jsonRes.version !== pjson.version)
+    .filter(jsonRes => jsonRes.version > pjson.version)
     .flatMapError(error => {
         console.error("getting new version error",error);
         return most.empty();

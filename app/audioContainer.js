@@ -157,11 +157,11 @@ export default component2(({uiState, trackId, track}) => {
 								// repeat looped waveform if it finishes at the end of the loop marker
 								(liveData.get("looping") === 1 && endMarker === liveData.get("loop_end") ) ? 
 								<g opacity="0.6">
-								<g id={`loopedRegion_${trackId}`} transform={`translate(${liveData.get("loop_end")},0)`} >
+								<g id={`loopedRegion_${trackId}`} transform={`translate(${liveData.get("loop_end")-liveData.get("loop_start")},0)`} >
 									<DetailViews startOffset={liveData.get("loop_start")} endOffset={liveData.get("loop_end")} {...{waveform,trackId, waveformLPF, midiData, gain, transposedChords, transposedKey}} />
 								</g>
 								{
-										Immutable.Range(liveData.get("loop_end"), Math.max(liveData.get("loop_end"),uiState.get("visibleBeats")*3/4), liveData.get("loop_start") - liveData.get("loop_end"))
+										Immutable.Range(liveData.get("loop_end")-liveData.get("loop_start"), Math.max(liveData.get("loop_end"),uiState.get("visibleBeats")*3/4), liveData.get("loop_start") - liveData.get("loop_end"))
 										.map(start => <use key={`loopedRegionCopy_${trackId}_${start}`} xlinkHref={`#loopedRegion_${trackId}`} x={start} />)
 								}
 								</g>

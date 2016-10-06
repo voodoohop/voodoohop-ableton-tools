@@ -34,61 +34,16 @@ const extractMetadata = path => {
   console.log("extracting metadata",path);
 
  if (path.toLowerCase().indexOf(".flac")>0) {
- 
-// create a new parser from a node ReadStream
-//  var flac = require("flac-metadata");
 
-var flacData = fs.readFileSync(path);
-// var stream = require('stream');
-
-// Initiate the source
-// var bufferStream = new stream.PassThrough();
-
-// Write your buffer
-
-
-
-
-// var processor = new flac.Processor({ parseMetaDataBlocks: true });
-// processor.on("postprocess", function(mdb) {
-//   console.log(mdb.toString(),mdb);
-// });
-// processor.on("preprocess", function(mdb) {
-//   console.log("preproc",JSON.stringify(mdb));
-// });
-
-// bufferStream.pipe(processor);
-
-
-// var mm = require('musicmetadata');
-
-// var parser = mm(bufferStream, { duration: true },function (err, metadata) {
-//   if (err) throw err;
-//   console.log("mmmetadata",metadata);
-// });
-
-// var FLAC = require('flac-parser')
- 
-
-// var parser = bufferStream.pipe(new FLAC());
-
-// parser.on('data', function(tag){
-//     console.log(tag.type)  // => 'samplesInStream'
-//     console.log(tag.value) // => 443520
-// })
-
-// bufferStream.end(flacData);
-
-
+    var flacData = fs.readFileSync(path);
     return most.fromPromise(new Promise((resolve,reject) => {
-       
-
       var asset = AV.Asset.fromBuffer(flacData);
       asset.get("duration", duration => {
         asset.get("metadata", metadata => {
           asset.get("format", audio => {
             console.log("flac audio format",audio);
-            resolve(Imm.Map({metadata:Imm.fromJS(metadata),audio: Imm.fromJS(audio).mapKeys(k => k.toLowerCase().replace("channelsperframe","channels")).set("duration",duration).set("length",Math.round(duration/1000))}))
+            resolve(Imm.Map({metadata:Imm.fromJS(metadata),audio: Imm.fromJS(audio).mapKeys(k => k.toLowerCase().replace("channelsperframe","channels"))
+            .set("duration",duration).set("length",Math.round(duration/1000))}))
           })
         });
       })
@@ -100,7 +55,7 @@ var flacData = fs.readFileSync(path);
    res = Imm.fromJS(res);
    if (!res.get("metadata"))
     res = res.set("metadata", Imm.fromJS({}));
-  //  console.log("got metadata",res.toJS());
+   log("got metadata")(res);
    resolve(res);
  })));
 };
@@ -165,9 +120,11 @@ const normalizeKeyFormat = (data,path) => {
 
 
 const normalizeMetadata = (metadata$, path) => metadata$
+// .tap(log("before normalizing metadata"))
 .map(res => 
   res.updateIn(["audio","duration"],res.getIn(["audio","length"],1)*1000, (duration) => duration / 1000)
 )
+// .tap(log("after normalizing duration"))
 .map(data=> normalizeKeyFormat(data,path))
 .tap(log("normalized key format"))
 ;
@@ -203,14 +160,15 @@ registerTransform({name: "audioAndId3Metadata", depends:["path","audioStream"], 
     normalizeMetadata(extractMetadata(path),path)
     .map(a=>
     {
-   log("ais")(a);
+   log("ais")(a,as);
 
     return a.updateIn(["audio"],audio=> {
         if (audio===null)
             audio = Imm.Map();
         // console.log("updating in",audio,as);
         return audio
-        .update("duration",(duration) => duration > 0 ? duration: as.duration)
+        .update("duration",(duration) => as.duration || duration)
+        .update("length", (duration) => as.duration || duration)
         .update("samplerate",(samplerate) => samplerate > 0 ? samplerate: as.sampleRate);
      })
     
@@ -224,7 +182,7 @@ registerTransform({name: "audioAndId3Metadata", depends:["path","audioStream"], 
 registerTransform({name: "audioMetadata", depends:["audioAndId3Metadata"], transform: (m) => m.get("audio") });
 registerTransform({name: "id3Metadata", depends:["audioAndId3Metadata"], transform: m=> m.get("metadata") });
 
-registerTransform({name: "warpMarkers", depends:["path","audioMetadata"], transform: extractWarpMarkers });
+registerTransform({name: "warpMarkers", depends:["path","audioAndId3Metadata"], transform: extractWarpMarkers });
 
 // registerTransform({name: "overviewWaveform", depends:["path","audioMetadata","id3Metadata","warpMarkers"], transform: overviewWaveform });
 

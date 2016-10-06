@@ -24,6 +24,8 @@ var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected, tr
   const origBpm =fileData.getIn(["warpMarkers", "baseBpm"]) || fileData.getIn(["id3Metadata", "bpm"]) || 120;
   const repitchedBpm = (origBpm && bpmPitchChange(origBpm, liveData.get("pitch")||0));
   const bpmDifferenceToMaster= -(masterTempo&&(masterTempo - repitchedBpm)||0);
+  const warpMarkersSaved = fileData.getIn(["warpMarkers", "markersSaved"]); 
+  const bpmNotFound=origBpm == 120 && !warpMarkersSaved;
   return <div className="ui mini statistics inverted right floated tom blackTransparentBg">
     {
       (liveData.get("transposedKey")) ?
@@ -40,12 +42,16 @@ var TrackStatistic = component(({fileData, liveData,keyFormatter, isSelected, tr
     }
     <div className="statistic  tom">
       <div className="value">
-        {(repitchedBpm && Math.round(repitchedBpm)/1) || "-"}
+        {bpmNotFound ? "N/A" : <div>
+        <span style={{color:warpMarkersSaved ? null:"red", fontStyle:warpMarkersSaved?null:"italic"}}>{(repitchedBpm && Math.round(repitchedBpm)) || "-"}</span>
         {Math.round(bpmDifferenceToMaster) != 0 ? <span style={{color:Math.abs(Math.round(bpmDifferenceToMaster))>5?"orange": "#aaa", fontWeight:"normal",fontSize:"80%"}}> 
         {(Math.round(bpmDifferenceToMaster) > 0 ? "+":"") +Math.round(bpmDifferenceToMaster)/1}</span> : null}
+        </div>
+        }
       </div>
       <div className="label">
-        Bpm
+        Bpm {warpMarkersSaved ? null: <span  title="Warpmarkers not saved! Go to your clip's detail view and click 'save'.">
+        <i className="warning sign icon" /></span>}
       </div>
     </div>
     <div className="statistic  tom">
