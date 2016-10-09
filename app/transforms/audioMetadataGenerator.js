@@ -20,7 +20,7 @@ const saveError=(e) => {
 var tst = most.from([1, 2, 3, 4, 5, 10, 11, 12, 14, 515, 800]).delay(3000).bufferedThrottle(300)
     .throttledDebounce(1100);
 
-tst.observe(i => console.log("bufferedThrottle", i));
+// tst.observe(i => console.log("bufferedThrottle", i));
 tst.collect().then(values => {
     if (values[values.length - 1] !== 800) console.error("warning throttled debounce not working");
 });

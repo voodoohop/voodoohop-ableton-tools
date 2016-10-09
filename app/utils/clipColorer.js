@@ -23,7 +23,7 @@ const formatPitch = (pitch) => pitch > 0 ? `+${pitch}` : (pitch<0 ? ""+pitch : "
 
 const prefix = keyInfo => `[${keyInfo.get("formattedKey")}${formatPitch(keyInfo.get("transpose"))}]`;
 
-const replaceNonAlphaNumeric = n => n.replace(/[^\w\]\[\-_\+\s#]/,"");
+const replaceNonAlphaNumeric = n => n.replace(/[^\w\]\[\-_\+\s#\.]/,"");
 
 const alterName = (keyInfo) => 
     replaceNonAlphaNumeric(keyInfo.get("name").match(/^\[(.*)]/) ? keyInfo.get("name").replace(/^\[(.*)]/, prefix(keyInfo))

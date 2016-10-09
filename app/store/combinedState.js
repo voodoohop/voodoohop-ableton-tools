@@ -11,8 +11,8 @@ import log from "../utils/streamLog";
 
 const tracksState = combine((liveData, metaData, midiData) =>
   liveData.map((data, trackId) => {
-                // console.log("track combining",data.toJS(),metaData.toJS());
-
+            //  console.log("track combining",data.toJS(),metaData.toJS());
+                
                 return Immutable.Map({
                     liveData: data, fileData: (data.get("file_path") ?
                         metaData.get(data.get("file_path")) : null),

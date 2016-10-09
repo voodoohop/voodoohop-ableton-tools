@@ -94,7 +94,6 @@ var Track = component(function ({track, trackId, uiState}) {
     'textAnchor': 'middle'
   };
   if (!track.getIn(["fileData", "waveform"]) && track.getIn(["liveData", "file_path"])) {
-    // actionStream.push(Immutable.Map({ type: "loadMetadata", path: track.getIn(["liveData", "file_path"]) }));
     return <div>{"loading"}</div>;
   }
 

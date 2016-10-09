@@ -9,10 +9,10 @@ import Imm from "immutable";
 
 import log from "../utils/streamLog";
 import os from "os";
-// import homedir from "homedir";
-// setTimeout(()=>
+
 const pjson = require("../../package.json");
-console.log("home", os.homedir());
+
+
 const db = new nedb({filename: `${os.homedir()}/.VoodoohopLiveTools_v${pjson.version}.db`/*+Math.random()*/, autoload: true});
 
 // window.PouchDB = pouch;
@@ -39,16 +39,6 @@ const dbFind = (...args) =>
             })
         );
 
-export var fetchOrProcess = (sourceDataStream, extractor) => sourceDataStream.flatMap(key => {
-	// console.log("getting key from pouch",key);
-	return most.fromPromise(dbFind({_id: key})).flatMapError(e => { 
-		console.log("returning from error",e);
-		// processInputStream.push(key);
-		return most.fromPromise(extractor(key)).tap(data => db.update({_id:key}, {$set: data.set("path",key).toJS()},{ upsert: true }));
-	})
-	}).map(o => Imm.fromJS(o));
-	
-	
 // export db;
 
 // export var storeStream(name, stream);
@@ -107,3 +97,41 @@ export function dataStore(storeName, newMetadataStreamFunc, keyFunc = (item)=>it
     .tap(log("DataStore"));
         //throttledDebounce(500,memStore);    
 }
+
+export function invalidateCache(key) {
+    console.log("removing",key,"from cache");
+    return new Promise(resolve=>db.remove({_id:key}, (err,doc) => resolve(key)));
+}
+
+export function cache(key, cacheMissFunc) {
+    return new Promise((resolve,reject) => {
+        db.findOne({_id: key},(err,doc) => doc ? 
+            resolve(Imm.fromJS(doc)) : 
+            cacheMissFunc(key)
+                .then(res => db.insert(res.set("_id", key).toJS(), (err,doc) => {
+                    if (err) {
+                        console.error("cache insert error",err);
+                        reject(err);
+                    }
+                    else
+                        resolve(res);
+                    
+                }))
+                .catch(e => {
+                    console.error("cacheMiss calculation failure",e);
+                    reject(e);
+                })
+        )
+    });
+}
+
+// cache("blabla", function() {
+//     console.log("calculated cache");
+//     return new Promise(resolve => resolve(Imm.Map({val:"cachedValue"})));
+// }).then(cachedVal => console.log("cacheTest", cachedVal));
+
+
+// cache("blabla", function() {
+//     console.log("calculated cache");
+//     return new Promise(resolve => resolve(Imm.Map({val:"cachedValue"})));
+// }).then(cachedVal => console.log("cacheTest", cachedVal));
