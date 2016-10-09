@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import {Map} from 'immutable';
 
 import * as most from 'most';
 
@@ -31,7 +31,7 @@ import log from '../utils/streamLog';
 // const startEverything = _.once(() => getNextTransformed.push(true));
 
 
-// //    actionStream.plug(loadPaths.map(path=> Immutable.Map({type:"metadataLoading",path})));
+// //    actionStream.plug(loadPaths.map(path=> Map({type:"metadataLoading",path})));
 
 
 // const metadataStore = dataStore("audioMetaData", (saved) => {
@@ -70,7 +70,7 @@ import log from '../utils/streamLog';
 //         // .filter(m => )
 //         .multicast();
 
-//     actionStream.plug(metadata.map(m => Immutable.Map({ type: "metadataLoaded", path: m.get("path") })));
+//     actionStream.plug(metadata.map(m => Map({ type: "metadataLoaded", path: m.get("path") })));
 
 //     const eachReceivedPathOnce = receivedPaths => receivedPaths
 //         .loop((readPaths, newPath) => readPaths.has(newPath) ? { seed: readPaths, value: most.empty() } : { seed: readPaths.add(newPath), value: most.of(newPath) }, Immutable.Set()).flatMap(f => f);
@@ -84,7 +84,7 @@ import log from '../utils/streamLog';
 //         // .merge(preloadedMetadataToWatch.tap(log("metadata loading for problem")))
 //         .flatMap(m => most.from([m, m.get("warpMarkers")].filter(e => e.has && e.get("path")))
 //             .tap(log("goingToWatch"))
-//             .map(e => Immutable.Map({ target: m, watchPath: e.get("path"), watchStat: e.get("pathStat") }))).multicast();
+//             .map(e => Map({ target: m, watchPath: e.get("path"), watchStat: e.get("pathStat") }))).multicast();
 
 
 //     // pathsToBeWatched.map(p => p.toJS()).observe(log("pathsToBeWatched")).catch(e => console.error(e));
@@ -107,7 +107,7 @@ import log from '../utils/streamLog';
 //         .tap(log("watching pathChanged, sending reloadMetadata"));
 
 //     // pathsChangedFile.observe(log("pathsChangedFile")).catch(e => console.error(e));
-//   actionStream.plug(pathsChangedFile.tap(log("pathsChangedFile")).map(p => Immutable.Map({ type: "reloadMetadata", path: p.get("target").get("path") })));
+//   actionStream.plug(pathsChangedFile.tap(log("pathsChangedFile")).map(p => Map({ type: "reloadMetadata", path: p.get("target").get("path") })));
 
 
 //   return metadata
@@ -156,7 +156,7 @@ livePaths
         newPaths.toMap().mapEntries(([_, path]) =>
             [path.path, (!path.reload && promises.get(path.path)) || getPathPromise(path.path)]
         )
-    , Immutable.Map())
+    , Map())
     .skipImmRepeats()
     .multicast();
 
@@ -168,7 +168,7 @@ const loadedMetadata = metadataStore2.flatMap(promises =>
 const pathsToBeWatched = loadedMetadata
         // .merge(preloadedMetadataToWatch.tap(log("metadata loading for problem")))
         .flatMap(m => most.from([m, m.get('warpMarkers')].filter(e => e.has && e.get('path')))
-            .map(e => Immutable.Map({ target: m, watchPath: e.get('path'), watchStat: e.get('pathStat') })))
+            .map(e => Map({ target: m, watchPath: e.get('path'), watchStat: e.get('pathStat') })))
                .tap(log('goingToWatch'))
                .multicast();
 
@@ -184,7 +184,7 @@ actionStream.plug(pathsChangedSinceStart
     .map(p => invalidateCache(p.getIn(['target', 'path'])))
     .await()
         .tap(log('pathsChangedSinceStart2'))
-    .map(path => Immutable.Map({ type: 'reloadMetadata', path })));
+    .map(path => Map({ type: 'reloadMetadata', path })));
 
 
 const metadataStore2Store = metadataStore2
@@ -192,7 +192,7 @@ const metadataStore2Store = metadataStore2
     .scan((store, [waitingForMetadata, loaded]) =>
         store
         .filter((value, path) => waitingForMetadata.has(path))
-        .set(loaded.get('path'), loaded), Immutable.Map());
+        .set(loaded.get('path'), loaded), Map());
 // .observe(log("metadataStore2")).catch(log("metadataStore2Error"));
 
 

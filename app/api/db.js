@@ -108,7 +108,7 @@ export function cache(key, cacheMissFunc) {
         db.findOne({_id: key},(err,doc) => doc ? 
             resolve(Imm.fromJS(doc)) : 
             cacheMissFunc(key)
-                .then(res => db.insert(res.set("_id", key).toJS(), (err,doc) => {
+                .then(res => invalidateCache(key).then(() => db.insert(res.set("_id", key).toJS(), (err,doc) => {
                     if (err) {
                         console.error("cache insert error",err);
                         reject(err);
@@ -116,12 +116,12 @@ export function cache(key, cacheMissFunc) {
                     else
                         resolve(res);
                     
-                }))
+                })))
                 .catch(e => {
                     console.error("cacheMiss calculation failure",e);
                     reject(e);
                 })
-        )
+        );
     });
 }
 
