@@ -140,7 +140,8 @@ const ReloadablePath = Record({ path: null, reload: false });
 
 const reloadPaths = actionStream
     .filter(a => a.get('type') === 'reloadMetadata')
-    .map(a => a.get('path'));
+    .map(a => a.get('path'))
+    .tap(log("reloadPaths"));
 
 const livePaths = livedataStore
     .map(ds => ds.map(d => d.get('file_path')))
@@ -153,12 +154,15 @@ const loadedMetadata = livePaths.combinePrevious((prev, next) =>
     next.subtract(prev)
 )
 .flatMap(most.from)
+.skipImmRepeats()
 .merge(reloadPaths)
+// .skipImmRepeats()
 .map(getPathPromise)
 .await()
 // .flatMap(paths => most.from(paths.map(getPathPromise)).flatMap(most.fromPromise))
+.tap(log("file_path_new"))
 .multicast();
-// .observe(log("file_path_new"));
+
 
 
 const metadataStore2Store = livePaths
@@ -183,6 +187,7 @@ const removedPaths = livePaths.combinePrevious((prev, next) =>
     next.subtract(prev)
 );
 
+
 const pathsToBeWatched = loadedMetadata
         // .merge(preloadedMetadataToWatch.tap(log("metadata loading for problem")))
         .flatMap(m => most.from([m, m.get('warpMarkers')].filter(e => e.has && e.get('path')))
@@ -197,7 +202,17 @@ const pathsChangedSinceStart = pathsToBeWatched
           const watcher = fs.watch(p.get('watchPath'), () => { console.log('unwatching', p.get('watchPath')); watcher.close(); resolve(p); });
         })));
 
-actionStream.plug(pathsChangedSinceStart
+
+const pathsChangedFile = pathsToBeWatched
+        // .tap(log("pathsChangedFile22"))
+        // .merge()
+        .filter(p => p.get("watchStat") !== undefined)
+
+        .filter(p => new Date(fs.statSync(p.get("watchPath")).mtime).getTime() - new Date(p.get("watchStat").get("mtime")).getTime() > 0)
+        .tap(log("watching pathChanged, sending reloadMetadata"));
+        
+
+actionStream.plug(most.merge(pathsChangedSinceStart, pathsChangedFile)
     .tap(log('pathsChangedSinceStart1'))
     .map(p => invalidateCache(p.getIn(['target', 'path'])))
     .await()
