@@ -1,4 +1,4 @@
-import {Map} from 'immutable';
+import { Map, Set, Record } from 'immutable';
 
 import * as most from 'most';
 
@@ -134,36 +134,54 @@ const getPathPromise = (path) => {
     );
 };
 
+import diff from 'immutablediff';
+
+const ReloadablePath = Record({ path: null, reload: false });
+
 const reloadPaths = actionStream
     .filter(a => a.get('type') === 'reloadMetadata')
     .map(a => a.get('path'));
 
 const livePaths = livedataStore
     .map(ds => ds.map(d => d.get('file_path')))
-    .map(ds => ds.filter(d => d))
+    .map(ds => ds.filter(d => d).toSet())
     .skipImmRepeats()
-    .tap(log('file_paths'));
-
-
-const metadataStore2 = 
-livePaths
-    .map(paths => paths.toSetSeq())
-    .combine((paths,reloadPath) => 
-        paths.map(path=>({ path, reload: path==reloadPath }))
-    , reloadPaths.startWith(null))
-    .tap(log("metadataStoreBeforeScan"))
-    .scan((promises, newPaths) =>
-        newPaths.toMap().mapEntries(([_, path]) =>
-            [path.path, (!path.reload && promises.get(path.path)) || getPathPromise(path.path)]
-        )
-    , Map())
-    .skipImmRepeats()
+    .tap(log('file_paths'))
     .multicast();
 
+const loadedMetadata = livePaths.combinePrevious((prev, next) =>
+    next.subtract(prev)
+)
+.flatMap(most.from)
+.merge(reloadPaths)
+.map(getPathPromise)
+.await()
+// .flatMap(paths => most.from(paths.map(getPathPromise)).flatMap(most.fromPromise))
+.multicast();
+// .observe(log("file_path_new"));
 
-const loadedMetadata = metadataStore2.flatMap(promises =>
-    most.from(promises.toArray())
-).await();
+
+const metadataStore2Store = livePaths
+    .combine((waitingForMetadata, loaded) => [waitingForMetadata, loaded], loadedMetadata)
+    .scan((store, [waitingForMetadata, loaded]) =>
+        store
+        .filter((value, path) => waitingForMetadata.contains(path))
+        .set(loaded.get('path'), loaded), Map())
+        .multicast();
+// .observe(log("metadataStore2")).catch(log("metadataStore2Error"));
+
+
+const store = hold(metadataStore2Store);
+
+export default store;
+
+
+// watching for change
+// TODO incorporate removed paths and remove watch listener
+
+const removedPaths = livePaths.combinePrevious((prev, next) =>
+    next.subtract(prev)
+);
 
 const pathsToBeWatched = loadedMetadata
         // .merge(preloadedMetadataToWatch.tap(log("metadata loading for problem")))
@@ -173,7 +191,7 @@ const pathsToBeWatched = loadedMetadata
                .multicast();
 
 const pathsChangedSinceStart = pathsToBeWatched
-        .tap(p => console.log('watchtimes', p.get('watchPath'), new Date(fs.statSync(p.get('watchPath')).mtime).getTime(), new Date(p.get('watchStat').get('mtime')).getTime()))
+        // .tap(p => console.log('watchtimes', p.get('watchPath'), new Date(fs.statSync(p.get('watchPath')).mtime).getTime(), new Date(p.get('watchStat').get('mtime')).getTime()))
         .flatMap(p => most.fromPromise(new Promise((resolve) => {
           console.log('watching', p.get('watchPath'));
           const watcher = fs.watch(p.get('watchPath'), () => { console.log('unwatching', p.get('watchPath')); watcher.close(); resolve(p); });
@@ -185,18 +203,3 @@ actionStream.plug(pathsChangedSinceStart
     .await()
         .tap(log('pathsChangedSinceStart2'))
     .map(path => Map({ type: 'reloadMetadata', path })));
-
-
-const metadataStore2Store = metadataStore2
-    .combine((waitingForMetadata, loaded) => [waitingForMetadata, loaded], loadedMetadata)
-    .scan((store, [waitingForMetadata, loaded]) =>
-        store
-        .filter((value, path) => waitingForMetadata.has(path))
-        .set(loaded.get('path'), loaded), Map());
-// .observe(log("metadataStore2")).catch(log("metadataStore2Error"));
-
-
-const store = hold(metadataStore2Store);
-
-export default store;
-

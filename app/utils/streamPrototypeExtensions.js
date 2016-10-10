@@ -122,7 +122,7 @@ function tomDiff(prev, next, path = Immutable.List(), newDocument = null) {
         newDocument = next;
     // console.log("diffing1",prev,next);
     console.log("diffing", prev.toJS ? prev.toJS() : prev, next.toJS ? next.toJS() : next);
-    var res = prev.is(next) ?
+    var res = Immutable.is(prev, next) ?
         mostempty()
         :
         mostfrom(next.keySeq().filter(k => next.get(k) !== prev.get(k)).toArray())
