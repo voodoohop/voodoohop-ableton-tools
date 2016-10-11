@@ -1,4 +1,8 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "react.beautify.formatter": "prettydiff",
+    "editor.insertSpaces": true,
+    "editor.useTabStops": true
 }
