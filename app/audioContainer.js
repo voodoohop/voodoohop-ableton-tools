@@ -246,10 +246,12 @@ export default component2(({uiState, trackId, track}) => {
                       </g>
                       : null}
 
-                  <BeatClickGrid
-                    startMarker={startMarker}
-                    endMarker={liveData.get("end_marker")}
-                    trackId={trackId} />
+  { 
+    // <BeatClickGrid
+                    // startMarker={startMarker}
+                    // endMarker={liveData.get("end_marker")}
+                    // trackId={trackId} />
+                  }
                 </g>
 
               </g>

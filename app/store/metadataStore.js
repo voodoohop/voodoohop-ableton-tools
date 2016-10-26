@@ -18,7 +18,7 @@ import log from '../utils/streamLog';
 
 import { livedataStore } from './';
 
-const getPathPromise = (path) => {
+export const getPathPromise = (path) => {
     // console.log("getting dbpath cache",path);
     return dbCache(path, () => new Promise((resolve, reject) => getTransformed([
         'path',
