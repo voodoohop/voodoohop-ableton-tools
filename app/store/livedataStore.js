@@ -38,20 +38,22 @@ oscOutput.push(Immutable.Map({
 const liveDataModified =
   // groupedTracksApplier(
 
-  liveDataPrepped.scan((store, newData) => (newData.get("type") === "id" && newData.get("trackId") === "selectedClip"
-    ? store.update(newData.get("trackId"), () => Immutable.Map({
-      id: newData.get("value")
-    }))
-    : store.setIn([
-      newData.get("trackId"),
-      newData.get("type")
-    ], newData.get("value"))).updateIn([
-      newData.get("trackId"),
-      "trackId"
-    ], (t) => newData.get("trackId")).updateIn([
-      newData.get("trackId"),
-      "gain"
-    ], (t) => t || 0.4), Immutable.Map())
+  liveDataPrepped
+    .tap(log("newLiveData"))
+    .scan((store, newData) => (newData.get("type") === "id" && newData.get("trackId") === "selectedClip"
+      ? store.update(newData.get("trackId"), () => Immutable.Map({
+        id: newData.get("value")
+      }))
+      : store.setIn([
+        newData.get("trackId"),
+        newData.get("type")
+      ], newData.get("value"))).updateIn([
+        newData.get("trackId"),
+        "trackId"
+      ], (t) => newData.get("trackId")).updateIn([
+        newData.get("trackId"),
+        "gain"
+      ], (t) => t || 0.4), Immutable.Map())
     .skip(1)
     .throttledDebounce(10)
     .map(m => m.sortBy((v, k) => k, (k1, k2) => ("" + k1).localeCompare("" + k2)))
@@ -62,7 +64,7 @@ const liveDataModified =
         : s.set("playingPosition", 0))
       : s))
     .tap(log("liveDataModifiedStore"))
-    .map(m => m.filter(t => t.get("id") >= 0))
+// .map(m => m.filter(t => t.get("id") >= 0))
 
 actionStream.plug(oscInput);
 
