@@ -31,7 +31,7 @@ import log from './utils/streamLog';
 import UpdateNotifier from './updateNotifier';
 
 let installDevTools = require('immutable-devtools');
-
+console.log("installing immutable devtools extension");
 installDevTools(Immutable);
 
 import finalState from './store/combinedState';

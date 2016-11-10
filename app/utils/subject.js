@@ -1,5 +1,5 @@
 
-import create from '@most/create';
+import { create } from '@most/create';
 
 const now = fn => setTimeout(fn, 0)
 
@@ -32,7 +32,7 @@ export default function Subject(initial = null) {
   }
 
   if (initial !== null) {
-    setTimeout(() => stream.push(initial),10);
+    setTimeout(() => stream.push(initial), 10);
   }
 
   return stream
