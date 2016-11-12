@@ -1,13 +1,13 @@
 import "./app/utils/streamPrototypeExtensions";
 
-import { app, BrowserWindow, Menu, shell,ipcMain, globalShortcut } from 'electron';
+import { app, BrowserWindow, Menu, shell, ipcMain, globalShortcut } from 'electron';
 
-import {download} from "electron-dl";
+import { download } from "electron-dl";
 // require('electron-dl')();
 
 import Immutable from "immutable";
 
-import {electronDebug} from 'electron-debug';
+import { electronDebug } from 'electron-debug';
 
 import log from "./app/utils/streamLog";
 
@@ -48,14 +48,14 @@ const installExtensions = async () => {
 
     const extensions = [
       'REACT_DEVELOPER_TOOLS',
-      'REDUX_DEVTOOLS',
-      'IMMUTABLE_DEVTOOLS'
+      'REDUX_DEVTOOLS'
     ];
+    // console.log("installer", installer);
     const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
     for (const name of extensions) {
       try {
         await installer.default(installer[name], forceDownload);
-      } catch (e) {} // eslint-disable-line
+      } catch (e) { console.error("extension install error", name, e); } // eslint-disable-line
     }
   }
 };
@@ -63,34 +63,34 @@ const installExtensions = async () => {
 
 
 
-const onTopDefinition=['ctrl+shift+v', function() {
-    // console.log('ctrl+shift+v is pressed');
-    mainWindow.setAlwaysOnTop(!mainWindow.isAlwaysOnTop());
-    if (!mainWindow.isAlwaysOnTop())
-      mainWindow.hide();
-    else
-      mainWindow.show();  
-  }];
+const onTopDefinition = ['ctrl+shift+v', function () {
+  // console.log('ctrl+shift+v is pressed');
+  mainWindow.setAlwaysOnTop(!mainWindow.isAlwaysOnTop());
+  if (!mainWindow.isAlwaysOnTop())
+    mainWindow.hide();
+  else
+    mainWindow.show();
+}];
 
-app.commandLine.appendSwitch('remote-debugging-port', '9222'); 
+app.commandLine.appendSwitch('remote-debugging-port', '9222');
 
 import Positioner from "electron-positioner";
 
 app.on('ready', async () => {
-    await installExtensions();
-  mainWindow = new BrowserWindow({ 
-    width: 300, 
-    height: 500, 
+  await installExtensions();
+  mainWindow = new BrowserWindow({
+    width: 300,
+    height: 500,
     // transparent:true, 
-    alwaysOnTop:true,
+    alwaysOnTop: true,
     frame: false,
-    resizable:true,
+    resizable: true,
     // titleBarStyle: 'hidden',
-	  // titleBarStyle:"hidden-inset",
-		'min-width': 151,
-		'min-height': 126,
-		// 'standard-window': false,
-		// 'use-content-size': true,
+    // titleBarStyle:"hidden-inset",
+    'min-width': 151,
+    'min-height': 126,
+    // 'standard-window': false,
+    // 'use-content-size': true,
     // experimentalFeatures: true,    
     // Boolean - Allow an https page to display content like images from http URLs. Default is `false`. 
     allowDisplayingInsecureContent: true,
@@ -101,9 +101,9 @@ app.on('ready', async () => {
     darkTheme: true,
     // mobable:true,
     // zoomFactor:0.2,
-    title:"VoodoohopLiveTools",
+    title: "VoodoohopLiveTools",
     backgroundColor: 'rgba(0,0,0,1)'
-    });
+  });
 
   mainWindow.loadURL(`file://${__dirname}/app/app.html`);
 
@@ -130,32 +130,32 @@ app.on('ready', async () => {
     });
   }
 
-  
+
   const ret = globalShortcut.register(...onTopDefinition);
 
   if (!ret) {
     console.error('global shortcut registration failed');
   }
 
-  mainWindow.on('closed', function() {
+  mainWindow.on('closed', function () {
     mainWindow = null;
     app.quit();
   });
 
 
   state$
-  .skipImmRepeats()
-  .tap(s => console.log("stateFromRenderer",s.toJS()))
-  .map(s=> s.get("visible"))
-   .skipImmRepeats()
-  // .tap(log("visibility"))
-  .tap(v => mainWindow.setAlwaysOnTop(v))
-  .observe(visibility => visibility ? mainWindow.show() : mainWindow.hide())
-  .catch(e=>console.error(e));
+    .skipImmRepeats()
+    .tap(s => console.log("stateFromRenderer", s.toJS()))
+    .map(s => s.get("visible"))
+    .skipImmRepeats()
+    // .tap(log("visibility"))
+    .tap(v => mainWindow.setAlwaysOnTop(v))
+    .observe(visibility => visibility ? mainWindow.show() : mainWindow.hide())
+    .catch(e => console.error(e));
 
-// app on ready 
- 
-// debugWindow.on() 
+  // app on ready 
+
+  // debugWindow.on() 
   // if (process.env.NODE_ENV === 'development') {
   //   mainWindow.openDevTools();
   // }
@@ -193,15 +193,15 @@ app.on('ready', async () => {
           app.quit();
         }
       }]
-    }, 
-    
-     {
+    },
+
+    {
       label: 'View',
       submenu: [{
         label: 'On Top',
         accelerator: onTopDefinition[0],
         click: onTopDefinition[1]
-      },{
+      }, {
         label: 'Reload',
         accelerator: 'Command+R',
         click() {
@@ -286,24 +286,24 @@ app.on('ready', async () => {
     mainWindow.setMenu(menu);
 
 
-    
-  const positioner = new Positioner(mainWindow);
 
-  // Moves the window top right on the screen.
-  positioner.move('bottomLeft');
+    const positioner = new Positioner(mainWindow);
+
+    // Moves the window top right on the screen.
+    positioner.move('bottomLeft');
 
 
   }
-    // client.create(mainWindow);
+  // client.create(mainWindow);
 
-electronDebug({
+  electronDebug({
     showDevTools: true
-});
+  });
 
 });
 
-ipcMain.on("dragStart", (event, {maxForLiveDevice, path, icon}) =>{
-  console.log("dragStart",maxForLiveDevice,path,icon);
+ipcMain.on("dragStart", (event, {maxForLiveDevice, path, icon}) => {
+  console.log("dragStart", maxForLiveDevice, path, icon);
   event.sender.startDrag({
     file: path, icon: icon
   })
@@ -312,28 +312,28 @@ ipcMain.on("dragStart", (event, {maxForLiveDevice, path, icon}) =>{
 
 
 ipcMain.on('downloadUpdate', (e, args) => {
-  console.log("download update requested",args);
-  e.sender.send("downloadUpdateRes",{start: true});
+  console.log("download update requested", args);
+  e.sender.send("downloadUpdateRes", { start: true });
   download(mainWindow, args.url)
-        .then(dl => {
-          e.sender.send("downloadUpdateRes",{result:dl.getSavePath()})
-          shell.showItemInFolder(dl.getSavePath());
-          shell.beep();
-          setTimeout(() => {
-            mainWindow = null;
-            app.quit();
-          }
-          , 1000);
-        })
-        .catch(err => e.sender.send("downloadUpdateRes",{
-          error:err
-        }))
+    .then(dl => {
+      e.sender.send("downloadUpdateRes", { result: dl.getSavePath() })
+      shell.showItemInFolder(dl.getSavePath());
+      shell.beep();
+      setTimeout(() => {
+        mainWindow = null;
+        app.quit();
+      }
+        , 1000);
+    })
+    .catch(err => e.sender.send("downloadUpdateRes", {
+      error: err
+    }))
 });
 
-ipcMain.on("state",(event,s)=> {
+ipcMain.on("state", (event, s) => {
   const stateUnserialized = transit.fromJSON(s);
-  console.log("state length in serialized chars",s.length);
+  console.log("state length in serialized chars", s.length);
   // console.log("got state from renderer",stateUnserialized.get("uiState"));
-   state$.push(stateUnserialized);
+  state$.push(stateUnserialized);
 });
 

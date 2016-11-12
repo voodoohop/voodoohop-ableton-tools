@@ -10,14 +10,14 @@ import Immutable from "immutable";
 
 
 var disable = process.env["NODE_ENV"] !== "development";
-export default function streamLog(identifier, transformer=(a=>a)) {
+export default function streamLog(identifier, transformer = (a => a instanceof Object && a.toJS ? a.toJS() : a)) {
 	if (disable)
 		return (args) => args;
 	return (...args) => {
 		if (window.loggingDisabled)
 			return args[0];
-		console.log("---"+identifier, 
-        ...args.map(transformer).map(a => a === undefined ? undefined : ((a===null) ? null: a)  ));
+		console.log("---" + identifier,
+			...args.map(transformer).map(a => a === undefined ? undefined : ((a === null) ? null : a)));
 		return args[0];
 	}
 }

@@ -30,9 +30,9 @@ import PlayingTracks from './playingTracksView';
 import log from './utils/streamLog';
 import UpdateNotifier from './updateNotifier';
 
-let installDevTools = require('immutable-devtools');
+let installImmutableDevTools = require('immutable-devtools');
 console.log("installing immutable devtools extension");
-installDevTools(Immutable);
+installImmutableDevTools(Immutable);
 
 import finalState from './store/combinedState';
 

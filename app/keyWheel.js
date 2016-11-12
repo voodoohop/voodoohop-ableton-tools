@@ -68,7 +68,7 @@ const KeyLabel = component2(({x, y, datum, connectedNotes}) => {
     const scaleProp = 1.5;
     var textX = x * scaleProp;
     var textY = y * scaleProp;
-    return <g key={`keylabel_${data.note}`}>{data.playing && connectedNotes ?
+    return <g key={`keylabel_${data.note}`}>{connectedNotes ?
         connectedNotes
             // .map(({otherKeyLabel}) => otherKeyLabel.toJS())
             .map(({transpose, otherKeyLabel}) => ({ transpose, destNote: otherKeyLabel.toJS() }))
@@ -139,9 +139,11 @@ const mapTranspose = (otherKeyLabels, data) =>
 
 const TomKeyLabel = component2((props) => {
     // console.log("labelProps", props.datum.selected);
-    return <VictoryAnimation duration={500} data={{ x: props.x, y: props.y }} >
-        {animatedProps => <ReactiveKeyLabel {...props} {...animatedProps} connectedNotes={props.datum.selected ? allKeyLabels$.map((otherKeyLabels) => mapTranspose(otherKeyLabels, props.datum)) : []} />}
-    </VictoryAnimation>;
+    // return <VictoryAnimation duration={500} data={{ x: props.x, y: props.y }} >
+    //     {animatedProps => <ReactiveKeyLabel {...props} {...animatedProps} connectedNotes={props.datum.selected ? allKeyLabels$.map((otherKeyLabels) => mapTranspose(otherKeyLabels, props.datum)) : null} />}
+    // </VictoryAnimation>;
+    return <ReactiveKeyLabel {...props} connectedNotes={props.datum.selected ? allKeyLabels$.map((otherKeyLabels) => mapTranspose(otherKeyLabels, props.datum)) : null} />
+
 })
 
 const shortenInfo = (info) => (info && (info.slice(0, Math.min(info.length, 15)).trim() + (info.length > 15 ? "..." : ""))) || null;
