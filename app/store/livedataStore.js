@@ -40,11 +40,13 @@ const liveDataModified =
 
   liveDataPrepped
     .tap(log("newLiveData"))
-    .scan((store, newData) => (newData.get("type") === "id" && newData.get("trackId") === "selectedClip"
-      ? store.update(newData.get("trackId"), () => Immutable.Map({
-        id: newData.get("value")
-      }))
-      : store.setIn([
+    .scan((store, newData) => (
+
+      // newData.get("type") === "id" && newData.get("trackId") === "selectedClip"
+      // ? store.update(newData.get("trackId"), () => Immutable.Map({
+      //   id: newData.get("value")
+      // })) : 
+      store.setIn([
         newData.get("trackId"),
         newData.get("type")
       ], newData.get("value"))).updateIn([

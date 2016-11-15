@@ -99,7 +99,7 @@ const liveDataInterested = ["transposedKey", "playing", "name", "isSelected"];
 function trackPlaying(tracks, note) {
     return tracks
         .filter((track) =>
-            keysToColors(track.getIn(["liveData", "transposedKey"])) == keysToColors(note) && track.getIn(["liveData", "playing"])
+            keysToColors(track.getIn(["liveData", "transposedKey"])) == keysToColors(note) //&& track.getIn(["liveData", "playing"])
         )
         .filter((track) => !(track.getIn(["liveData", "selectedCLipAlreadyDisplayed"]))).toArray();
 }

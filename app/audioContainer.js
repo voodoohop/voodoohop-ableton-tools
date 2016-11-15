@@ -207,7 +207,7 @@ export default component2(({uiState, trackId, track}) => {
           </mask>
 
         </defs>
-        {liveData.get("isSelected") || liveData.get("playing")
+        {liveData.get("isSelected") || liveData.get("playing") || trackId === "selectedClip"
           ? <g>
             <g transform={"scale(" + (scale) + "," + (viewboxHeight / 127) + ")"}>
 
@@ -246,8 +246,8 @@ export default component2(({uiState, trackId, track}) => {
                       </g>
                       : null}
 
-  { 
-    // <BeatClickGrid
+                  {
+                    // <BeatClickGrid
                     // startMarker={startMarker}
                     // endMarker={liveData.get("end_marker")}
                     // trackId={trackId} />

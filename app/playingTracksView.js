@@ -182,7 +182,7 @@ const Track = component(function ({ track, trackId, uiState }) {
                 />
               : ''
             }
-            {(track.getIn(['liveData', 'playing']) || isSelected)
+            {(track.getIn(['liveData', 'playing']) || isSelected || isSelectedClip)
               ? <div>
                 <div
                   className="ui header tom"
@@ -260,7 +260,7 @@ const PlayingTracks = component(({ availableTracks, uiState }) => {
       // "selectedClip";
       const isSelectedClip = trackId === "selectedClip";
       const isSelected = track.getIn(["liveData", "isSelected"]);
-      const noClipSelected = track.getIn(["liveData", "id"]) === 0;
+      const noClipSelected = track.getIn(["liveData", "name"]) === undefined;
       // logger("rendering track",track.get("trackId"),track);
       const selectedClipAlreadyDisplayed = track.getIn(["liveData", "selectedClipAlreadyDisplayed"]);
       return <div key={"key_" + trackId} className="item">
