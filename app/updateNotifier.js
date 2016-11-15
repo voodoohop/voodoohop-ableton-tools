@@ -27,7 +27,7 @@ const UpdateNotifier = Connector(component2(({updateResponse, downloadStatus}) =
         <h3>Update Available: <span style={{ color: "#aaa" }}>{updateResponse.version}</span></h3>
 
       </div>
-      <div className="ui bulleted list inverted">
+      <div className="ui bulleted tiny list inverted">
         {updateResponse.lastUpdateDescription.split("\n").map((changeDescription, i) => <div key={`changeDesc_${i}`} className="item">{changeDescription}</div>)}
       </div>
       <button className={`ui primary button tiny inverted ${downloadStatus && downloadStatus.start ? "disabled loading" : ""}`}

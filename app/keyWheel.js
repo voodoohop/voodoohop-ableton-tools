@@ -20,8 +20,8 @@ import log from "./utils/streamLog";
 import "./transforms/audioMetadataGenerator";
 // const labelProps={};
 
-const innerRadius = 87;
-const labelRadius = 105;
+const innerRadius = 83;
+const labelRadius = 104;
 
 const radiusProp = innerRadius / labelRadius;
 
@@ -32,10 +32,7 @@ const ConnectNodes = component(({start, end, thickness, transpose}) => {
     return <g>
         <linearGradient id={gradientId} x1={start.x * 1 / radiusProp} y1={start.y * 1 / radiusProp} x2={end.x * radiusProp} y2={end.y * radiusProp} gradientUnits="userSpaceOnUse">
             <stop offset="0%" style={{ stopColor: getNoteColor(start.datum.note), stopOpacity: 1 }} />
-            <stop offset="25%" style={{ stopColor: getMixedNoteColor(start.datum.note, end.datum.note, 25), stopOpacity: 0.9 }} />
 
-            <stop offset="50%" style={{ stopColor: getMixedNoteColor(start.datum.note, end.datum.note), stopOpacity: 0.55 }} />
-            <stop offset="75%" style={{ stopColor: getMixedNoteColor(start.datum.note, end.datum.note, 75), stopOpacity: 0.8 }} />
 
             <stop offset="100%" style={{ stopColor: getNoteColor(end.datum.note), stopOpacity: 1 }} />
         </linearGradient>
@@ -68,6 +65,8 @@ const KeyLabel = component2(({x, y, datum, connectedNotes}) => {
     const scaleProp = 1.5;
     var textX = x * scaleProp;
     var textY = y * scaleProp;
+    const compactTitles = data.trackInfos.length > 2;
+    const textDist = compactTitles ? 15 : 30;
     return <g key={`keylabel_${data.note}`}>{connectedNotes ?
         connectedNotes
             // .map(({otherKeyLabel}) => otherKeyLabel.toJS())
@@ -76,17 +75,24 @@ const KeyLabel = component2(({x, y, datum, connectedNotes}) => {
             .map(({transpose, destNote}) => <ConnectNodes key={`conn_${data.note}_${destNote.datum.note}`} start={{ x, y, datum }} end={destNote} thickness={1 /*/ Math.abs(transpose)*/} transpose={transpose} />)
         : null
     }
-        <text textAnchor="middle" x={x} y={y} style={{ strokeWidth: "0.4px", stroke: "none", fill: "black", fontWeight: "bold", fontFamily: "Arial", fontSize: data.shortLabel ? "15px" : "9px" }}>
+
+        <text textAnchor="middle" x={x} y={y} style={{ strokeWidth: "0.4px", stroke: "none", fill: "black", fontWeight: "bold", fontFamily: "Arial", fontSize: data.shortLabel ? "1.5em" : "1em" }}>
             {data.keyLabel}
         </text>
-        {Immutable.Seq(data.trackInfos).map(({title, artist}, index) => <g key={`detailsTrack_${index}`}>
+        <defs>
+            <filter x="0" y="0" width="1" height="1" id="solid">
+                <feFlood floodColor="rgba(0,0,0,0.5)" />
+                <feComposite in="SourceGraphic" />
+            </filter>
+        </defs>
+        {Immutable.Seq(data.trackInfos).map(({title, artist}, index, trackInfos) => <g key={`detailsTrack_${index}`}>
             {artist ?
-                <text key={"artistlabel_" + index} textAnchor="middle" x={textX} y={textY + 0 + index * 30} style={{ strokeWidth: "0.4px", stroke: "none", fill: "rgb(250,250,250)", fontFamily: "Arial", fontSize: "10px" }}>
-                    {artist}
+                <text filter="url(#solid)" key={"artistlabel_" + index} textAnchor="middle" x={textX} y={textY - (trackInfos.size * 12) + (compactTitles ? 12 : 0) + 5 + index * textDist} style={{ fill: "rgb(250,250,250)", fontFamily: "Arial", fontSize: "1.1em" }}>
+                    {shortenInfo(artist, 10) + " " + (compactTitles ? " - " + shortenInfo(title, 7) : "")}
                 </text>
                 : null}
-            {title ?
-                <text key={"titlelable_" + index} textAnchor="middle" x={textX} y={textY + 12 + index * 30} style={{ strokeWidth: "0.4px", stroke: "none", fill: "rgb(210,210,210)", fontFamily: "Arial", fontSize: "9px" }}>
+            {!compactTitles && title ?
+                <text filter="url(#solid)" key={"titlelable_" + index} textAnchor="middle" x={textX} y={textY - ((trackInfos.size - 1) * 12) + 5 + index * textDist} style={{ fill: "rgb(210,210,210)", fontFamily: "Arial", fontSize: "1em" }}>
                     {title}
                 </text>
                 : null}
@@ -146,7 +152,7 @@ const TomKeyLabel = component2((props) => {
 
 })
 
-const shortenInfo = (info) => (info && (info.slice(0, Math.min(info.length, 15)).trim() + (info.length > 15 ? "..." : ""))) || null;
+const shortenInfo = (info, maxLength = 15) => (info && (info.slice(0, Math.min(info.length, maxLength)).trim() + (info.length > maxLength ? "..." : ""))) || null;
 
 import { getKeyFormatter } from "./api/openKeySequence";
 

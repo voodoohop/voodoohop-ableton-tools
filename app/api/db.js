@@ -86,10 +86,7 @@ export function cache(unprocessedKey, cacheMissFunc) {
         db.findOne({ _id: key }, (err, doc) => doc ?
             resolve(Imm.fromJS(doc)) :
             cacheMissFunc(key)
-                .then(o => {
-                    console.log("before:", o, "after:", sanitizeKeys(o).toJS());
-                    return sanitizeKeys(o);
-                })
+                .then(sanitizeKeys)
                 .then(res => invalidateCache(key).then(() => db.insert(res.set("_id", key).toJS(), (err, doc) => {
                     if (err) {
                         console.error("cache insert error", err, key);
