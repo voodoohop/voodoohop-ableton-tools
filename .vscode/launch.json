@@ -2,12 +2,37 @@
     "version": "0.1.0",
     "configurations": [
         {
-            "name": "Attach with sourcemaps2",
-            "type": "node2",
-            "program": "${workspaceRoot}/main.js",
+            "name": "Debug Main Process",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "program": "${workspaceRoot}/main.js"
+        },
+        {
+            "name": "Debug Renderer Process",
+            "type": "chrome",
+            "request": "launch",
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "runtimeArgs": [
+                "${workspaceRoot}",
+                "--enable-logging",
+                "--remote-debugging-port=9222"
+            ],
+            "sourceMaps": true
+        },
+        {
+            "name": "Attach Renderer Process",
+            "type": "chrome",
+            "request": "attach",
+            "env": {
+                "NODE_ENV": "development"
+            },
             "port": 9222,
-            "sourceMaps": true,
-            "diagnosticLogging": true
+            "sourceMaps": true
         }
     ]
 }

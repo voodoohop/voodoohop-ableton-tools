@@ -36,9 +36,9 @@ export default merge(baseConfig, {
           'css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
         ]
       },
-      { 
-        test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/, 
-        loader: 'url-loader?limit=100000' 
+      {
+        test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/,
+        loader: 'url-loader?limit=100000'
       }
     ]
   },
@@ -47,10 +47,10 @@ export default merge(baseConfig, {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
-    'process.env': {
-      'NODE_ENV': JSON.stringify('development'),
-      'ELECTRON_ENABLE_LOGGING': true
-    }
+      'process.env': {
+        'NODE_ENV': JSON.stringify('development'),
+        'ELECTRON_ENABLE_LOGGING': true
+      }
     }),
     new webpack.IgnorePlugin(/vertx/)
   ],

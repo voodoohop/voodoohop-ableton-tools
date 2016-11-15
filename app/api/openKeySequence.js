@@ -152,5 +152,5 @@ export const getKeyFormatter = (uiState) => {
     return keysToCamelot;
   if (notation === "openkey")
     return keysToOpenkey;
-  return (key) => key;
+  return (key) => key;//.replace("b", '\u266D').replace("#", '\u266F');
 }
