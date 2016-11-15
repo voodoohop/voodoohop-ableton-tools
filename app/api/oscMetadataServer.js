@@ -1,7 +1,7 @@
 import { oscInputStream, oscOutput } from "../utils/oscInOut";
 
 import { getPathPromise } from "../store/metadataStore";
-
+import combinedState from "../store/combinedState";
 
 import { Map, fromJS } from "immutable";
 
@@ -43,6 +43,27 @@ oscOutput.plug(loadingMetadata
 
 
 
+const tracksRequested = oscInputStream
+    // .tap(([cmd,data]) => console.log("cmd,data",cmd,data))
+    .filter(([cmd, value]) => cmd == "get_tracks")
+    // .map(([_, path]) => path)
+    // .tap(log("getMetadataPath"))
+    // .flatMap(
+    //     path => metadataStore.map(metadata => Map({path, metadata:metadata.getIn([path,"id3Metadata"])})).skipImmRepeats()
+    // )
+    .constant(true)
+    .tap(log("getTracksRequested"))
+    .multicast();
+
+
+
+oscOutput.plug(
+    combinedState
+        .map(s => s.get("tracks").keySeq())
+        .sampleWith(tracksRequested)
+        .map(trackNames => trackNames.filter(name => name !== "selectedClip"))
+        .map(trackIds => Map({ trackId: "got_tracks", args: trackIds }))
+)
     // .combine(
     //     (path,metadata) => metadata.contains(path) ? 
     //         most.of(metadata.get(path))

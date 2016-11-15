@@ -164,7 +164,7 @@ app.on('ready', async () => {
     template = [{
       label: 'VOODOOHOP',
       submenu: [{
-        label: 'About ElectronReact',
+        label: 'About Voodoohop Live Tools',
         selector: 'orderFrontStandardAboutPanel:'
       }, {
         type: 'separator'
@@ -174,7 +174,7 @@ app.on('ready', async () => {
       }, {
         type: 'separator'
       }, {
-        label: 'Hide ElectronReact',
+        label: 'Hide',
         accelerator: 'Command+H',
         selector: 'hide:'
       }, {
