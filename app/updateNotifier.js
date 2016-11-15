@@ -25,6 +25,7 @@ const UpdateNotifier = Connector(component2(({updateResponse, downloadStatus}) =
       <i className="close icon" onClick={cancelSubject.push}></i>
       <div className="header" style={{ marginBottom: "5px" }}>
         <h3>Update Available: <span style={{ color: "#aaa" }}>{updateResponse.version}</span></h3>
+        {updateResponse.lastUpdateDescription}
       </div>
       <button className={`ui primary button tiny inverted ${downloadStatus && downloadStatus.start ? "disabled loading" : ""}`}
         onClick={() => {
