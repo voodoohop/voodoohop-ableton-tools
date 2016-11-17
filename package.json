@@ -2,7 +2,7 @@
   "name": "VoodoohopLiveTools",
   "version": "0.6.5",
   "description": "VOODOOHOP Live Tools",
-  "lastUpdateDescription": "fixed loading filenames with special characters\nselected clip will now continue being displayed until another clip is selected\nshow only selected clips transposition options\nfixed problem when metadata keys contain special characters\nbetter text readability on key wheel",
+  "lastUpdateDescription": "new interface vor live devices\nfixed loading filenames with special characters\nselected clip will now continue being displayed until another clip is selected\nshow only selected clips transposition options\nfixed problem when metadata keys contain special characters\nbetter text readability on key wheel",
   "main": "main.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --recursive --require ./test/setup.js test/**/*.spec.js",
