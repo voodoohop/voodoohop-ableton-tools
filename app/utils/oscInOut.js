@@ -14,11 +14,11 @@ console.log("oscSerrver in renderer", oscServer);
 
 var oscInputStream = most.fromEvent("message", oscServer)
 	.map(f => f[0])
-    // .skipRepeatsWith((e,f) => JSON.stringify(f) === JSON.stringify(e))
-    .tap(log("oscIn"))
+	// .skipRepeatsWith((e,f) => JSON.stringify(f) === JSON.stringify(e))
+	.tap(log("oscIn"))
 	.multicast();
 // export oscInputStream as oscInp;
-console.log("OSCstream",oscInputStream);
+console.log("OSCstream", oscInputStream);
 
 var oscOutput = Subject();
 // oscOutput
@@ -29,24 +29,23 @@ var currentOscSender = new Promise(resolve => resolve(Immutable.Map({})));
 var client = new osc.Client('127.0.0.1', 7777);
 
 oscOutput
-.tap(log("oscOutputBefore",(msg)=>[msg.get("trackId")].concat(msg.get("args").toArray())))
+	.tap(log("oscOutputBefore", (msg) => [msg.get("trackId")].concat(msg.get("args").toArray())))
 
-.bufferedThrottle(20)
-// .tap((l)=>con)
-// .merge(actionStream.filter(a => a.get("type")==="oscOutput"))
-.scan((oscSender, oscMessage) => oscSender.then(() => new Promise(resolve => {
-	console.log("sending, ", oscMessage.toJS() );
-	client.send(""+oscMessage.get("trackId"),...oscMessage.get("args").toArray(), function() {
-		resolve(Immutable.Map({sent: oscMessage}));
-		// client.kill();
-	});
-}
-)),currentOscSender)
-.flatMap(f => most.fromPromise(f))
-.observe(oscStatus => console.log("osc sent:", JSON.stringify(oscStatus.toJS()))).catch(console.error.bind(console));
+	.bufferedThrottle(2)
+	// .tap((l)=>con)
+	// .merge(actionStream.filter(a => a.get("type")==="oscOutput"))
+	.scan((oscSender, oscMessage) => oscSender.then(() => new Promise(resolve => {
+		console.log("sending, ", oscMessage.toJS());
+		client.send("" + oscMessage.get("trackId"), ...oscMessage.get("args").toArray(), function () {
+			resolve(Immutable.Map({ sent: oscMessage }));
+			// client.kill();
+		});
+	}
+	)), currentOscSender)
+	.flatMap(f => most.fromPromise(f))
+	.observe(oscStatus => console.log("osc sent:", JSON.stringify(oscStatus.toJS()))).catch(console.error.bind(console));
 
 
-oscOutput.plug(actionStream.filter(a => a.get("type")==="oscOutput").bufferedThrottle(50));
+oscOutput.plug(actionStream.filter(a => a.get("type") === "oscOutput").bufferedThrottle(5));
 
-export {oscOutput, oscInputStream};
-    
+export { oscOutput, oscInputStream };

@@ -1,6 +1,6 @@
 {
   "name": "VoodoohopLiveTools",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "VOODOOHOP Live Tools",
   "lastUpdateDescription": "fixed loading filenames with special characters\nselected clip will now continue being displayed until another clip is selected\nshow only selected clips transposition options\nfixed problem when metadata keys contain special characters\nbetter text readability on key wheel",
   "main": "main.js",

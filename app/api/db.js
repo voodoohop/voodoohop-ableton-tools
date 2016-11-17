@@ -81,7 +81,7 @@ export function invalidateCache(unprocessedKey) {
 }
 
 export function cache(unprocessedKey, cacheMissFunc) {
-    const key = sanitizeKey(unprocessedKey);
+    const key = unprocessedKey;//sanitizeKey(unprocessedKey);
     return new Promise((resolve, reject) => {
         db.findOne({ _id: key }, (err, doc) => doc ?
             resolve(Imm.fromJS(doc)) :

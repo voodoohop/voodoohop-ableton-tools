@@ -45,6 +45,8 @@ import SplashScreen from './splashScreen';
 
 import { ipcRenderer } from 'electron';
 
+import { Connector } from "./utils/createReactiveClass";
+
 class AppRenderer extends React.Component {
     render() {
         const state = this.props.state;
