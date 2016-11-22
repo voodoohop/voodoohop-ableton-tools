@@ -117,11 +117,11 @@ let TrackStatistic = component(({
 
 import actionStream from './api/actionSubject';
 
-import { DraggableParent, DraggableChild, dragEvent } from './utils/makeDraggableTrack';
+// import { DraggableParent, DraggableChild, dragEvent } from './utils/makeDraggableTrack';
 
-actionStream.plug(fromEvent('beginDrag', dragEvent));
-actionStream.plug(fromEvent('endDrag', dragEvent));
-actionStream.plug(fromEvent('hoverDrag', dragEvent).throttle(20).skipRepeatsWith((a, b) => a.get('targetId') === b.get('targetId')));
+// actionStream.plug(fromEvent('beginDrag', dragEvent));
+// actionStream.plug(fromEvent('endDrag', dragEvent));
+// actionStream.plug(fromEvent('hoverDrag', dragEvent).throttle(20).skipRepeatsWith((a, b) => a.get('targetId') === b.get('targetId')));
 
 import { getKeyFormatter } from './api/openKeySequence';
 
@@ -156,84 +156,81 @@ const Track = component(function ({ track, trackId, uiState }) {
   // var audioContainer = ;
   const isSelectedClip = trackId === 'selectedClip';
   const isSelected = track.getIn(['liveData', 'isSelected']);
-  return this
-    .props
-    .connectDragSource(this.props.connectDropTarget(
-      <div className="ui vertical segment inverted" style={style}>
-        <div className="image" style={{
-          position: 'relative'
-        }}>
-          <div
-            className="content inverted"
-            style={{
-              position: 'absolute',
-              width: '100%'
-            }}
-            >
+  return <div className="ui vertical segment inverted" style={style}>
+    <div className="image" style={{
+      position: 'relative'
+    }}>
+      <div
+        className="content inverted"
+        style={{
+          position: 'absolute',
+          width: '100%'
+        }}
+        >
 
-            {track.get('fileData')
-              ? <TrackStatistic
-                masterTempo={uiState.get('masterTempo')}
-                isSelected={isSelected}
-                liveData={track.get('liveData')}
-                trackid={trackId}
-                fileData={track.get('fileData')}
-                keyFormatter={getKeyFormatter(uiState)}
-                />
-              : ''
-            }
-            {(track.getIn(['liveData', 'playing']) || isSelected || isSelectedClip)
-              ? <div>
-                <div
-                  className="ui header tom"
+        {track.get('fileData')
+          ? <TrackStatistic
+            masterTempo={uiState.get('masterTempo')}
+            isSelected={isSelected}
+            liveData={track.get('liveData')}
+            trackid={trackId}
+            fileData={track.get('fileData')}
+            keyFormatter={getKeyFormatter(uiState)}
+            />
+          : ''
+        }
+        {(track.getIn(['liveData', 'playing']) || isSelected || isSelectedClip)
+          ? <div>
+            <div
+              className="ui header tom"
+              style={{
+                fontSize: '3vw',
+                fontWeight: isSelectedClip
+                  ? 'normal'
+                  : 'bold'
+              }}
+              >
+              <span className="blackTransparentBg">
+                {track.getIn(['fileData', 'id3Metadata', 'artist']) || track.getIn(['liveData', 'name'])}
+              </span>{track.getIn(['liveData', 'isSelected'])
+                ? <span
                   style={{
-                    fontSize: '3vw',
-                    fontWeight: isSelectedClip
-                      ? 'normal'
-                      : 'bold'
-                  }}
-                  >
-                  <span className="blackTransparentBg">
-                    {track.getIn(['fileData', 'id3Metadata', 'artist']) || track.getIn(['liveData', 'name'])}
-                  </span>{track.getIn(['liveData', 'isSelected'])
-                    ? <span
-                      style={{
-                        color: '#aaa'
-                      }}
-                      >
-                      (selected)</span>
-                    : null}</div>
-                <span
-                  className="blackTransparentBg"
-                  style={{
-                    fontSize: isSelectedClip
-                      ? '2vw'
-                      : '3vw',
-                    margin: '0px',
                     color: '#aaa'
                   }}
-                  >{track.getIn(['fileData', 'id3Metadata', 'title'])}</span>
+                  >
+                  (selected)</span>
+                : null}</div>
+            <span
+              className="blackTransparentBg"
+              style={{
+                fontSize: isSelectedClip
+                  ? '2vw'
+                  : '3vw',
+                margin: '0px',
+                color: '#aaa'
+              }}
+              >{track.getIn(['fileData', 'id3Metadata', 'title'])}</span>
 
-              </div>
-              : null
-            }
           </div>
-
-          <div
-            style={{
-              paddingTop: '10px',
-              height: '100%'
-            }}
-            >
-            <AudioContainer uiState={uiState} trackId={trackId} track={track} />
-          </div>
-
-        </div>
+          : null
+        }
       </div>
-    ));
+
+      <div
+        style={{
+          paddingTop: '10px',
+          height: '100%'
+        }}
+        >
+        <AudioContainer uiState={uiState} trackId={trackId} track={track} />
+      </div>
+
+    </div>
+  </div>
+
 });
 
-const DraggableTrack = DraggableChild(Track);
+const DraggableTrack = Track; // disabled dragging DraggableChild(Track);
 
 import log from './utils/streamLog';
 
@@ -299,4 +296,4 @@ const PlayingTracks = component(({ availableTracks, uiState }) => {
   </div>);
 });
 
-export default DraggableParent(PlayingTracks);
+export default PlayingTracks;//DraggableParent(PlayingTracks);

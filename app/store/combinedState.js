@@ -30,7 +30,7 @@ const appState = combine((tracks,uiState) => Immutable.Map({tracks,uiState}), tr
 
 import transposeStateKey from "../utils/transposeStateKey";
 
-const debouncedState = appState.throttledDebounce(10);
+const debouncedState = appState.throttledDebounce(20);
 const finalState = transposeStateKey(debouncedState)
     .tap(log("state")).multicast();
 

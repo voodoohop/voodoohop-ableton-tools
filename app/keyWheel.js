@@ -157,9 +157,11 @@ const shortenInfo = (info, maxLength = 15) => (info && (info.slice(0, Math.min(i
 import { getKeyFormatter } from "./api/openKeySequence";
 
 import _ from "lodash";
-const DynamicKeyWheel = component2(({tracks, keyFormatter, canShortenLabel}) => {
+
+const DynamicKeyWheel = component(({tracks, uiState, canShortenLabel}) => {
     // console.log("DynamicKeyWheel tracks",tracks,uiState);    
     // const keyFormatter =;
+    const keyFormatter = getKeyFormatter(uiState);
     log("rendering dynamickeywheel")("yes");
     return <VictoryPie innerRadius={innerRadius} width={350} height={350}
         labelRadius={labelRadius}
@@ -210,8 +212,8 @@ const DynamicKeyWheel = component2(({tracks, keyFormatter, canShortenLabel}) => 
 
 //TODO: seems to rerender each time althoguh state stays same
 
-var lastReduced = null;
-var lastUi = null;
+// var lastReduced = null;
+// var lastUi = null;
 
 export default component2(({tracks, uiState}) => {
     const reducedTracks = tracks.map(track =>
@@ -220,8 +222,8 @@ export default component2(({tracks, uiState}) => {
         )
     );
 
-    console.log("isequal,keywheel", Immutable.is(reducedTracks, lastReduced), Immutable.is(uiState, lastUi));
-    lastReduced = reducedTracks;
-    lastUi = uiState;
-    return <DynamicKeyWheel tracks={reducedTracks} keyFormatter={getKeyFormatter(uiState)} canShortenLabel={uiState.get("keyNotation") !== "trad"} />
+    // // console.log("isequal,keywheel", Immutable.is(reducedTracks, lastReduced), Immutable.is(uiState, lastUi));
+    // lastReduced = reducedTracks;
+    // lastUi = uiState;
+    return <DynamicKeyWheel tracks={reducedTracks} uiState={uiState} canShortenLabel={uiState.get("keyNotation") !== "trad"} />
 });

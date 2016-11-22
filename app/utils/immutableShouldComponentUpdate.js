@@ -1,4 +1,4 @@
-import {is} from 'immutable';
+import { is } from 'immutable';
 
 // const is = Immutable.is.bind(Immutable);
 
@@ -8,7 +8,7 @@ function shallowEqualImmutable(objA, objB) {
   }
 
   if (typeof objA !== 'object' || objA === null ||
-      typeof objB !== 'object' || objB === null) {
+    typeof objB !== 'object' || objB === null) {
     return false;
   }
 
@@ -34,6 +34,7 @@ function shallowEqualImmutable(objA, objB) {
 
 export default {
   shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
-  return !shallowEqualImmutable(this.props, nextProps);
-}
+    // console.log("shouldComponentUpdate called", nextProps, this.props, this);
+    return !shallowEqualImmutable(this.props, nextProps);
+  }
 }
