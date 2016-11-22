@@ -55,14 +55,14 @@ const tracksRequested = oscInputStream
     .tap(log("getTracksRequested"))
     .multicast();
 
+export const availableTracks$ = combinedState
+    .map(s => s.get("tracks").keySeq())
+    .sampleWith(tracksRequested)
+    .map(trackNames => trackNames.filter(name => name !== "selectedClip"))
 
 
 oscOutput.plug(
-    combinedState
-        .map(s => s.get("tracks").keySeq())
-        .sampleWith(tracksRequested)
-        .map(trackNames => trackNames.filter(name => name !== "selectedClip"))
-        .map(trackIds => Map({ trackId: "got_tracks", args: trackIds }))
+    availableTracks.map(trackIds => Map({ trackId: "got_tracks", args: trackIds }))
 )
     // .combine(
     //     (path,metadata) => metadata.contains(path) ? 
