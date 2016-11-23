@@ -145,6 +145,8 @@ export const keysToOpenkey = (key) => camToOpenKey[keysToCamelot(key)];
 // keyFormatter(key);     console.log("formatting key", key, "result:",
 // result,"notation:",notation,keyFormatter);     // console.trace();     return
 // result; }
+const identity = (key) => key;
+
 export const getKeyFormatter = (uiState) => {
 
   const notation = uiState.get("keyNotation") || "trad";
@@ -152,5 +154,5 @@ export const getKeyFormatter = (uiState) => {
     return keysToCamelot;
   if (notation === "openkey")
     return keysToOpenkey;
-  return (key) => key;//.replace("b", '\u266D').replace("#", '\u266F');
+  return identity;//.replace("b", '\u266D').replace("#", '\u266F');
 }

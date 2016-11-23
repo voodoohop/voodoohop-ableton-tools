@@ -32,40 +32,7 @@ const alterName = (keyInfo) =>
 
 import { availableTracks$ } from "../api/oscMetadataServer";
 
-// oscOutput.plug(state$
-//     .flatMap(state =>
-//         most.from(
-//             state.get("tracks")
-//                 .filter((s,trackId)=> trackId=="selectedClip")
-//                 .map((s,trackId) =>
-//                 s? Map({ 
-//                     transposedKey: s.getIn(["liveData", "transposedKey"]), 
-//                     clipId: s.getIn(["liveData", "id"]),
-//                     trackId 
-//                 }):Map()).toArray()))
-//     // .tap(log("clipsWantingToBeColouredFirst"))
-//     .filter(s => s && s.get("transposedKey") && s.get("clipId"))
-
-//     .scan((assignedColors, newColor) =>
-//         assignedColors.update(newColor.get("trackId"),() => newColor)
-//     , Map({}))
-//     // )
-//     .skipImmRepeats()
-//     .debounce(100)
-//     .tap(log("clipsWantingToBeColoured"))
-
-//     .flatMap(trackKeys => from(trackKeys.map((keyInfo) =>
-//         Map({
-//             trackId:keyInfo.get("trackId"),
-//             args: List(["color", getAbletonCol(keyInfo)])
-//         })
-//     ).toArray()))
-//     .tap(log("oscClipColorCommand"))
-// );
-
-
 import { getKeyFormatter } from "../api/openKeySequence";
-
 
 oscOutput.plug(
     state$
@@ -74,9 +41,12 @@ oscOutput.plug(
             .set("clipUpdate", state.getIn(["uiState", "clipUpdate"]))
         )
         // .map(selectedTrackState => )
-        .debounce(50)
         .skipImmRepeats()
-        .combine((s, availableTracks) => availableTracks.has(s.get("trackId")) ? s : null, availableTracks$)
+        .debounce(50)
+        .tap(log("colorizeClipsBeforeCheckTrack"))
+        .combine((s, availableTracks) =>
+            availableTracks.find(t => t == s.getIn(["liveData", "trackNumber"])) ? s : null
+        , availableTracks$)
         .filter(s => s !== null)
         .map(s => Map({
             transposedKey: s.getIn(["liveData", "transposedKey"]),
