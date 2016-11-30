@@ -156,3 +156,10 @@ export const getKeyFormatter = (uiState) => {
     return keysToOpenkey;
   return identity;//.replace("b", '\u266D').replace("#", '\u266F');
 }
+
+
+import uiState from "../store/uiStateStore";
+
+export const keyFormatter$ = uiState
+  .map(getKeyFormatter)
+  .skipImmRepeats();

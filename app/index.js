@@ -47,6 +47,8 @@ import { ipcRenderer } from 'electron';
 
 import { Connector } from "./utils/createReactiveClass";
 
+import debugModeInDev from "./debugMode";
+
 class AppRenderer extends React.Component {
     render() {
         const state = this.props.state;
@@ -76,7 +78,7 @@ class AppRenderer extends React.Component {
                     >
                     <KeyWheel uiState={state.get('uiState')} tracks={state.get('tracks')} />
                 </div>
-                {process.env.NODE_ENV !== 'development'
+                {process.env.NODE_ENV !== 'development' || !debugModeInDev
                     ? <div />
                     : <div>
                         <ObjectInspector

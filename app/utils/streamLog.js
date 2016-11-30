@@ -7,9 +7,9 @@ import Immutable from "immutable";
 // 	return original(...args);
 // });
 
+import debugModeInDev from "../debugMode";
 
-
-var disable = process.env["NODE_ENV"] !== "development";
+var disable = process.env["NODE_ENV"] !== "development" || !debugModeInDev;
 export default function streamLog(identifier, transformer = (a => a instanceof Object && a.toJS ? a.toJS() : a)) {
 	if (disable)
 		return (args) => args;

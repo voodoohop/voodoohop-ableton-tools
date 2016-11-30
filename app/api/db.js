@@ -50,7 +50,7 @@ const sanitizeKey = (unprocessedKey) => unprocessedKey.replace(dotRegexp, "_").r
 const sanitizeKeys = immMap => immMap.mapKeys(sanitizeKey).map(v => v instanceof Object && v.mapKeys ? sanitizeKeys(v) : v);
 
 export function invalidateCache(unprocessedKey) {
-    const key = sanitizeKey(unprocessedKey);
+    const key = unprocessedKey;// sanitizeKey(unprocessedKey);
     console.log("removing", key, "from cache");
     return new Promise(resolve => db.remove({ _id: key }, (err, doc) => resolve(key)));
 }

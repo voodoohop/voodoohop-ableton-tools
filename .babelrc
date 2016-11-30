@@ -1,19 +1,36 @@
 {
-  "presets": ["es2015", "stage-0", "react"],
-  "plugins": ["add-module-exports"],
+  "presets": [
+    "es2015",
+    "stage-0",
+    "react"
+  ],
+  "plugins": [
+    "add-module-exports",
+    "transform-export-default-name"
+  ],
   "env": {
     "production": {
-      "presets": ["react-optimize"],
+      "presets": [
+        "react-optimize"
+      ],
       "plugins": [
         "babel-plugin-dev-expression"
       ]
     },
     "development": {
-      "presets": ["react-hmre"]
+      "presets": [
+        "react-hmre"
+      ]
     },
     "test": {
       "plugins": [
-        ["webpack-loaders", { "config": "webpack.config.node.js", "verbose": false }]
+        [
+          "webpack-loaders",
+          {
+            "config": "webpack.config.node.js",
+            "verbose": false
+          }
+        ]
       ]
     }
   }

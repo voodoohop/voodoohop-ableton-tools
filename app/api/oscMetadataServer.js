@@ -11,33 +11,38 @@ import { from } from "most";
 
 import log from "../utils/streamLog";
 
+import { keyFormatter$, keysToCamelot, keysToOpenkey } from "../api/openKeySequence";
+
 const loadingMetadata = oscInputStream
-    // .tap(([cmd,data]) => console.log("cmd,data",cmd,data))
     .filter(([cmd, value]) => cmd == "get_metadata")
     .map(([_, path]) => path)
-    // .tap(log("getMetadataPath"))
-    // .flatMap(
-    //     path => metadataStore.map(metadata => Map({path, metadata:metadata.getIn([path,"id3Metadata"])})).skipImmRepeats()
-    // )
     .tap(log("getMetadataRequested"))
     .multicast();
 
-// const needToLoad = loadingMetadata.filter(d => !d.get("metadata")).map((d) => Map({action: "loadMetadata", path: d.get("path")}))
-
-// actionStream.plug(needToLoad);
 
 oscOutput.plug(loadingMetadata
     .map(path => getPathPromise(path))
-
     .tap(log("pathPromise metadataServer"))
     .await()
     // .map(d => d.get("metadata"))
     .filter(d => d.get("id3Metadata"))
-    .flatMap(d => from(d.get("id3Metadata")
+    .map(d => d
+        .get("id3Metadata")
+        .set("path", d.get("path"))
         .set("warpBpm", d.getIn(["warpMarkers", "baseBpm"]))
-        // .set("transposedKey", d.getIn(["liveData", "transposedKey"]))
-        .map((val, key) => Map({ trackId: "got_metadata", args: fromJS([d.get("path"), key, val]) })).toArray()))
-
+    )
+    // .map(d => d)
+    // .tap(log("before setting camelotKey"))
+    .map(d => d.get("initialkey") ? d.set("camelotKey", keysToCamelot(d.get("initialkey"))) : d)
+    .combine((d, keyFormatter) => d.set("formattedKey", keyFormatter(d.get("initialkey"))), keyFormatter$)
+    .tap(log("beforeFlatMap"))
+    .skipImmRepeats()
+    .flatMap(d => from(d
+        .filter(val => val !== undefined)
+        .toOrderedMap()
+        .set("done", "true")
+        .map((val, key) => Map({ trackId: "got_metadata", args: fromJS([d.get("path"), key, val]) }))
+        .toArray()))
     .tap(log("sendingBack"))
 );
 
