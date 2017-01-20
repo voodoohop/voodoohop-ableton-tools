@@ -16,8 +16,10 @@ import Subject from "./utils/subject";
 const pjson = require("../package.json");
 
 const platformURL = () => process.platform === "darwin" ?
-  "https://www.dropbox.com/s/rtpz5p8oorkmbqh/VoodoohopLiveTools-mac.zip?dl=1" :
-  "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1";
+  pjson.packageDownloads.darwin :
+  pjson.packageDownloads.win32;
+// "https://www.dropbox.com/s/dcukowlt204p4ea/VoodoohopLiveTools-mac.zip?dl=1" :
+// "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1";
 
 const UpdateNotifier = Connector(component2(({updateResponse, downloadStatus}) => updateResponse ?
   (
