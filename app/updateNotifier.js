@@ -6,12 +6,13 @@ import { Connector } from "./utils/createReactiveClass";
 
 import * as most from "most";
 
-import hold from "@most/hold";
+import holdProblematic from "@most/hold";
+const hold = holdProblematic.default;
 
 import log from "./utils/streamLog";
 import { ipcRenderer } from "electron";
 import Subject from "./utils/subject";
-// console.log("most",most);
+// console.log("mosthold", hold.default);
 const pjson = require("../package.json");
 
 const platformURL = () => process.platform === "darwin" ?

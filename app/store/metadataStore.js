@@ -2,7 +2,10 @@ import { Map, Set, Record } from 'immutable';
 
 import * as most from 'most';
 
-import hold from '@most/hold';
+
+import holdProblematic from "@most/hold";
+const hold = holdProblematic.default;
+
 
 import { getTransformed } from '../transforms/audioMetadataGenerator';
 
