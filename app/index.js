@@ -101,7 +101,7 @@ finalState.observe((state) => {
     render(
         <div>
             <UpdateNotifier />
-            <AppRenderer state={state} />
+            <AppRenderer state={state} />]
         </div>, document.getElementById('root'));
 }).catch((e) => {
     console.error(e);

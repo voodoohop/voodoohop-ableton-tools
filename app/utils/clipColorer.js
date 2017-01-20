@@ -45,8 +45,8 @@ oscOutput.plug(
         .debounce(50)
         .tap(log("colorizeClipsBeforeCheckTrack"))
         .combine((s, availableTracks) =>
-            availableTracks.find(t => t == s.getIn(["liveData", "trackNumber"])) ? s : null
-        , availableTracks$)
+            availableTracks.find(t => t == s.getIn(["liveData", "trackNumber"])) !== undefined ? s : null
+        , availableTracks$.tap(log("availableTracks")))
         .filter(s => s !== null)
         .map(s => Map({
             transposedKey: s.getIn(["liveData", "transposedKey"]),
