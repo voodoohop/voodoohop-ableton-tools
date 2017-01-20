@@ -180,10 +180,11 @@ function extractFromBuffer({
   // Postln("sending dictionary content:",JSON.stringify(dict_to_jsobj(markers)));
   console.log("final warp markers",warpMarkers);
   console.table(warpMarkers.toJS());
+  const fileStat = fs.existsSync(filename) ? fs.statSync(filename) : { mtime: 0 };
   var res = Imm.Map({
     error: null,
     path: filename,
-    pathStat: Imm.fromJS(JSON.parse(JSON.stringify(fs.statSync(filename)))),
+    pathStat: Imm.fromJS(JSON.parse(JSON.stringify(fileStat))),
     warpMarkers: warpMarkers,
     baseBpm: refBpm,
     durationBeats: warpMarkers.last().get("beats") - warpMarkers.first().get("beats"),

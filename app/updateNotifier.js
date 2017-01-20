@@ -12,12 +12,14 @@ const hold = holdProblematic.default;
 import log from "./utils/streamLog";
 import { ipcRenderer } from "electron";
 import Subject from "./utils/subject";
+
+import Linkify from 'react-linkify';
 // console.log("mosthold", hold.default);
 const pjson = require("../package.json");
 
-const platformURL = () => process.platform === "darwin" ?
-  pjson.packageDownloads.darwin :
-  pjson.packageDownloads.win32;
+const platformURL = (packagejson) => process.platform === "darwin" ?
+  packagejson.packageDownloads.darwin :
+  packagejson.packageDownloads.win32;
 // "https://www.dropbox.com/s/dcukowlt204p4ea/VoodoohopLiveTools-mac.zip?dl=1" :
 // "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1";
 
@@ -31,11 +33,13 @@ const UpdateNotifier = Connector(component2(({updateResponse, downloadStatus}) =
 
       </div>
       <div className="ui bulleted tiny list inverted">
-        {updateResponse.lastUpdateDescription.split("\n").map((changeDescription, i) => <div key={`changeDesc_${i}`} className="item">{changeDescription}</div>)}
+        {updateResponse.lastUpdateDescription.split("\n")
+          .map((changeDescription, i) => <div key={`changeDesc_${i}`} className="item"><Linkify>{changeDescription}</Linkify></div>)
+        }
       </div>
       <button className={`ui primary button tiny inverted ${downloadStatus && downloadStatus.start ? "disabled loading" : ""}`}
         onClick={() => {
-          ipcRenderer.send("downloadUpdate", { url: platformURL() });
+          ipcRenderer.send("downloadUpdate", { url: platformURL(updateResponse) });
           // progressSubject.push({start:true});
         } }>
 

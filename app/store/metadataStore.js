@@ -21,6 +21,10 @@ import log from '../utils/streamLog';
 
 import { livedataStore } from './';
 
+function fsStatThatTreatsNonExistentFiles(path) {
+    return fs.existsSync(path) ? fs.statSync(path) : {mtime:0};
+}
+
 export const getPathPromise = (path) => {
     // console.log("getting dbpath cache",path);
     return dbCache(path, () => new Promise((resolve, reject) => getTransformed([
@@ -92,16 +96,35 @@ const pathsChangedSinceStart = pathsToBeWatched
     // Date(fs.statSync(p.get('watchPath')).mtime).getTime(), new
     // Date(p.get('watchStat').get('mtime')).getTime()))
     .flatMap(p => most.fromPromise(new Promise((resolve) => {
-        console.log('watching', p.get('watchPath'));
-        const watcher = fs.watch(p.get('watchPath'), () => {
-            console.log('unwatching', p.get('watchPath'));
+        const path =  p.get('watchPath');
+
+        const watcher = fs.existsSync(path) ?
+        fs.watch(path, () => {
+            console.log('unwatching with watch', path);
             watcher.close();
             resolve(p);
+        })
+        :
+        fs.watchFile(path, stat => {
+            if (stat.size === 0) {
+                console.log("file",path,"does not exist yet. ignoring until created");
+                return;
+            }
+            watcher.stop();
+            resolve(p);
         });
+        // const watchMethod=fs.existsSync(path) ? fs.watch : fs.watchFile;
+        // console.log('watching',path, "with method", watchMethod.name);
+        // const watcher = watchMethod(path, () => {
+
+        //     console.log('unwatching', path);
+        //     watcher.close ? watcher.close() : watcher.stop();
+        //     resolve(p);
+        // });
     })));
 
 const pathsChangedFile = pathsToBeWatched
     // .tap(log("pathsChangedFile22")) .merge()
-    .filter(p => p.get("watchStat") !== undefined).filter(p => new Date(fs.statSync(p.get("watchPath")).mtime).getTime() - new Date(p.get("watchStat").get("mtime")).getTime() > 0).tap(log("watching pathChanged, sending reloadMetadata"));
+    .filter(p => p.get("watchStat") !== undefined).filter(p => new Date(fsStatThatTreatsNonExistentFiles(p.get("watchPath")).mtime).getTime() - new Date(p.get("watchStat").get("mtime")).getTime() > 0).tap(log("watching pathChanged, sending reloadMetadata"));
 
 actionStream.plug(most.merge(pathsChangedSinceStart, pathsChangedFile).tap(log('pathsChangedSinceStart1')).map(p => invalidateCache(p.getIn(['target', 'path']))).await().tap(log('pathsChangedSinceStart2')).map(path => Map({ type: 'reloadMetadata', path })));
