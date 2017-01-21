@@ -24,7 +24,7 @@ const tracksState = combine((liveData, metaData, midiData) =>
     
     , livedataStore, metadataStore, midiClipStore)
     .startWith(Immutable.Map());
-    ; 
+    
 
 const appState = combine((tracks,uiState) => Immutable.Map({tracks,uiState}), tracksState, uiStateStore)
 

@@ -6,9 +6,35 @@ import Immutable from 'immutable';
 
 import log from '../utils/streamLog';
 
-const prepLiveInput = liveDataInput =>
+
+import { oscInputStream, oscOutput } from "../utils/oscInOut";
+
+// import {midiClipStore} from "."; import {liveDataMidiLinker} from
+// "./mididataLinker";
+
+oscOutput.push(Immutable.Map({
+  trackId: "sendAll",
+  args: Immutable.List()
+}));
+
+
+const oscFilteredInput = oscInputStream
+  // .tap(log("preLiveDataInput"))
+  .map(d => d[1] === "playingClip"
+    ? [
+      "list", ...d
+    ]
+    : d).filter(f => f[2] === "playingClip").map(f => Immutable.fromJS({
+      type: "liveDataInput",
+      trackId: f[1],
+      data: f.slice(3)
+    }));
+
+
+
+const liveIn = 
   // most.empty();
-  liveDataInput
+  oscFilteredInput
     // .tap(log("liveDataInput1"))//.switch( (accumData,liveDataInput)
     // .merge(most.periodic(60, null)) .loop((state, info)=> {
     .filter(info => info !== null)
@@ -32,19 +58,19 @@ const prepLiveInput = liveDataInput =>
 // 	ts.set(t.get("trackId"), 	t 	) 	, Immutable.Map()));
 // .tap(f=>console.log("oscInputStore2",f.toJS()));
 
-import actionStream from '../api/actionSubject';
+
 // export var addLiveDataSource =(source) => { console.log("adding data
 // source",source);  mergeBack.push(source); }
 
-let liveIn = prepLiveInput(actionStream.filter(a => a.get('type') === 'liveDataInput'));
+// let liveIn = prepLiveInput(actionStream.filter(a => a.get('type') === 'liveDataInput'));
 
-actionStream.plug(liveIn.filter(l => l.get('type') === 'file_path').map(l => Immutable.Map({
-  type: 'livePathReceived',
-  path: l.get('value')
-})));
+// actionStream.plug(liveIn.filter(l => l.get('type') === 'file_path').map(l => Immutable.Map({
+//   type: 'livePathReceived',
+//   path: l.get('value')
+// })));
 
 // addLiveDataSource(liveIn.delay(1).sample( 	(storedNow, liveAccum) =>{
 // 	console.log("merging",storedNow.toJS(),liveAccum.toJS()); 	return
 // storedNow.mergeDeep(liveAccum); }, stored.startWith(emptyDta),liveIn));
 // stored.observe(log("stored"));
-export default liveIn;
+export default liveIn.multicast();

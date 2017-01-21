@@ -7,33 +7,9 @@ import Immutable from "immutable";
 
 import log from "../utils/streamLog";
 
-import { oscInputStream, oscOutput } from "../utils/oscInOut";
-
-// import {midiClipStore} from "."; import {liveDataMidiLinker} from
-// "./mididataLinker";
-
-const oscInput = oscInputStream
-  // .tap(log("preLiveDataInput"))
-  .map(d => d[1] === "playingClip"
-    ? [
-      "list", ...d
-    ]
-    : d).filter(f => f[2] === "playingClip").map(f => Immutable.fromJS({
-      type: "liveDataInput",
-      trackId: f[1],
-      data: f.slice(3)
-    }));
-
-import actionStream from "../api/actionSubject";
-
 // import {clickedLoopCommands} from "./oscOutputStore";
 
 import liveDataPrepped from "./livedataPrepper";
-
-oscOutput.push(Immutable.Map({
-  trackId: "sendAll",
-  args: Immutable.List()
-}));
 
 const liveDataModified =
   // groupedTracksApplier(
@@ -67,7 +43,5 @@ const liveDataModified =
       : s))
     .tap(log("liveDataModifiedStore"))
 // .map(m => m.filter(t => t.get("id") >= 0))
-
-actionStream.plug(oscInput);
 
 export default liveDataModified.multicast();
