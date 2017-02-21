@@ -147,9 +147,9 @@ export const keysToOpenkey = (key) => camToOpenKey[keysToCamelot(key)];
 // result; }
 const identity = (key) => key;
 
-export const getKeyFormatter = (uiState) => {
+export const getKeyFormatter = (keyNotation) => {
 
-  const notation = uiState.get("keyNotation") || "trad";
+  const notation = keyNotation || "trad";
   if (notation === "camelot")
     return keysToCamelot;
   if (notation === "openkey")
@@ -161,5 +161,5 @@ export const getKeyFormatter = (uiState) => {
 import uiState from "../store/uiStateStore";
 
 export const keyFormatter$ = uiState
-  .map(getKeyFormatter)
+  .map(state => getKeyFormatter(state.get("keyNotation")))
   .skipImmRepeats();

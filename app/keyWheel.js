@@ -100,7 +100,6 @@ const KeyLabel = component2(({x, y, datum, connectedNotes}) => {
     </g>;
 });
 
-const liveDataInterested = ["transposedKey", "playing", "name", "isSelected"];
 
 function trackPlaying(tracks, note) {
     return tracks
@@ -158,10 +157,10 @@ import { getKeyFormatter } from "./api/openKeySequence";
 
 import _ from "lodash";
 
-const DynamicKeyWheel = component(({tracks, uiState, canShortenLabel}) => {
+const DynamicKeyWheel = component(({tracks, keyNotation, canShortenLabel}) => {
     // console.log("DynamicKeyWheel tracks",tracks,uiState);    
     // const keyFormatter =;
-    const keyFormatter = getKeyFormatter(uiState);
+    const keyFormatter = getKeyFormatter(keyNotation);
     log("rendering dynamickeywheel")("yes");
     return <VictoryPie innerRadius={innerRadius} width={350} height={350}
         labelRadius={labelRadius}
@@ -207,15 +206,16 @@ const DynamicKeyWheel = component(({tracks, uiState, canShortenLabel}) => {
         dataComponent={<TomSlice />}
         colorScale={openkeySequence.map(getNoteColor)}
 
-        />
+    />
 });
 
 //TODO: seems to rerender each time althoguh state stays same
 
 // var lastReduced = null;
 // var lastUi = null;
+const liveDataInterested = ["transposedKey", "playing", "name", "isSelected"];
 
-export default component2(({tracks, uiState}) => {
+export default component2(({tracks, keyNotation}) => {
     const reducedTracks = tracks.map(track =>
         track.update("liveData", (liveData) =>
             liveData.filter((v, k) => liveDataInterested.includes(k))
@@ -225,5 +225,5 @@ export default component2(({tracks, uiState}) => {
     // // console.log("isequal,keywheel", Immutable.is(reducedTracks, lastReduced), Immutable.is(uiState, lastUi));
     // lastReduced = reducedTracks;
     // lastUi = uiState;
-    return <DynamicKeyWheel tracks={reducedTracks} uiState={uiState} canShortenLabel={uiState.get("keyNotation") !== "trad"} />
+    return <DynamicKeyWheel tracks={reducedTracks} keyNotation={keyNotation} canShortenLabel={keyNotation !== "trad"} />
 });

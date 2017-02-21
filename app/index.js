@@ -3,6 +3,7 @@
 // require('njstrace').inject(); Promise.onPossiblyUnhandledRejection(function
 // (error) {     throw error; });
 import './utils/streamPrototypeExtensions';
+import './utils/warpedBpmSender';
 
 import React from 'react';
 import { render } from 'react-dom';
@@ -68,15 +69,15 @@ class AppRenderer extends React.Component {
                 <PlayingTracks
                     availableTracks={state.get('tracks')}
                     uiState={state.get('uiState')}
-                    />
+                />
                 <div
                     style={{
                         width: '90%',
                         left: '5%',
                         position: 'relative'
                     }}
-                    >
-                    <KeyWheel uiState={state.get('uiState')} tracks={state.get('tracks')} />
+                >
+                    <KeyWheel keyNotation={state.getIn(['uiState', 'keyNotation'])} tracks={state.get('tracks')} />
                 </div>
                 {process.env.NODE_ENV !== 'development' || !debugModeInDev
                     ? <div />
@@ -87,14 +88,14 @@ class AppRenderer extends React.Component {
                             }}
                             data={state}
                             initialExpandedPaths={['*', '*', '*']}
-                            />
+                        />
                     </div>
                 }
             </div>
             : <SplashScreen
                 foundMasterPlugin={foundMasterPlugin}
                 foundTrackPlugin={foundTrackPlugin}
-                />;
+            />;
     }
 }
 finalState.observe((state) => {

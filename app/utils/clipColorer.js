@@ -37,7 +37,7 @@ import { getKeyFormatter } from "../api/openKeySequence";
 oscOutput.plug(
     state$
         .map(state => state.getIn(["tracks", "selectedClip"], Map())
-            .set("keyFormatter", getKeyFormatter(state.get("uiState")))
+            .set("keyFormatter", getKeyFormatter(state.getIn(["uiState", "keyNotation"])))
             .set("clipUpdate", state.getIn(["uiState", "clipUpdate"]))
         )
         // .map(selectedTrackState => )
