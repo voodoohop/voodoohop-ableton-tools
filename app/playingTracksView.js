@@ -166,7 +166,7 @@ const Track = component(function ({ track, trackId, uiState }) {
           position: 'absolute',
           width: '100%'
         }}
-        >
+      >
 
         {track.get('fileData')
           ? <TrackStatistic
@@ -175,8 +175,8 @@ const Track = component(function ({ track, trackId, uiState }) {
             liveData={track.get('liveData')}
             trackid={trackId}
             fileData={track.get('fileData')}
-            keyFormatter={getKeyFormatter(uiState)}
-            />
+            keyFormatter={getKeyFormatter(uiState.get("keyNotation"))}
+          />
           : ''
         }
         {(track.getIn(['liveData', 'playing']) || isSelected || isSelectedClip)
@@ -189,7 +189,7 @@ const Track = component(function ({ track, trackId, uiState }) {
                   ? 'normal'
                   : 'bold'
               }}
-              >
+            >
               <span className="blackTransparentBg">
                 {track.getIn(['fileData', 'id3Metadata', 'artist']) || track.getIn(['liveData', 'name'])}
               </span>{track.getIn(['liveData', 'isSelected'])
@@ -197,7 +197,7 @@ const Track = component(function ({ track, trackId, uiState }) {
                   style={{
                     color: '#aaa'
                   }}
-                  >
+                >
                   (selected)</span>
                 : null}</div>
             <span
@@ -209,7 +209,7 @@ const Track = component(function ({ track, trackId, uiState }) {
                 margin: '0px',
                 color: '#aaa'
               }}
-              >{track.getIn(['fileData', 'id3Metadata', 'title'])}</span>
+            >{track.getIn(['fileData', 'id3Metadata', 'title'])}</span>
 
           </div>
           : null
@@ -221,7 +221,7 @@ const Track = component(function ({ track, trackId, uiState }) {
           paddingTop: '10px',
           height: '100%'
         }}
-        >
+      >
         <AudioContainer uiState={uiState} trackId={trackId} track={track} />
       </div>
 

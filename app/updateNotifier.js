@@ -25,7 +25,7 @@ const platformURL = (packagejson) => process.platform === "darwin" ?
 
 const UpdateNotifier = Connector(component2(({updateResponse, downloadStatus}) => updateResponse ?
   (
-    <div className="ui info message inverted ">
+    <div style={{ WebkitAppRegion: "no-drag" }} className="ui info message inverted ">
 
       <i className="close icon" onClick={cancelSubject.push}></i>
       <div className="header" style={{ marginBottom: "5px" }}>
@@ -41,7 +41,7 @@ const UpdateNotifier = Connector(component2(({updateResponse, downloadStatus}) =
         onClick={() => {
           ipcRenderer.send("downloadUpdate", { url: platformURL(updateResponse) });
           // progressSubject.push({start:true});
-        } }>
+        }}>
 
         Download
  </button>
