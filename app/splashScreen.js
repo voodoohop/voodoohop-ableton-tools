@@ -10,7 +10,7 @@ const getResourcePath = (filename) => (process.env["NODE_ENV"] === "development"
 
 
 const getDraggableVoodoo = ({message, amxdPath, disabled = false}) => <div className={`ui segment inverted vertical ${disabled ? "disabled" : ""}`}>
-  <img style={{ "WebkitAppRegion": "no-drag" }}
+  <img style={{ WebkitAppRegion: "no-drag" }}
     onDragStart={(event) => {
       event.preventDefault();
       ipcRenderer.send('dragStart', {
