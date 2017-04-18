@@ -24,7 +24,7 @@
     <!-- .toolbar-header sits at the top of your app -->
 
     <!-- Your app's content goes inside .window-content -->
-    <div class="window-content" style="width:100%;height:100%;">
+    <div class="window-content" style="width:100%;height:100%; overflow:hidden;">
       <div style="width:100%;height:100%;">
         <div id="root" style="-webkit-app-region:drag; height:100%; width:100%;"></div>
       </div>
@@ -32,16 +32,16 @@
   </div>
 
   <script>
-      {
-  
-        if (typeof process === "undefined")
-          window.process = {env: "production"};
-        const script = document.createElement('script');
-        const port = process.env.PORT || 3000;
-        script.src = (process.env.HOT) ? `http://localhost:${port}/dist/bundle.js` : '../dist/bundle.js';
-        document.write(script.outerHTML);
-      }
-    </script>
+    {
+
+      if (typeof process === "undefined")
+        window.process = { env: "production" };
+      const script = document.createElement('script');
+      const port = process.env.PORT || 3000;
+      script.src = (process.env.HOT) ? `http://localhost:${port}/dist/bundle.js` : '../dist/bundle.js';
+      document.write(script.outerHTML);
+    }
+  </script>
   </ul>
 </body>
 

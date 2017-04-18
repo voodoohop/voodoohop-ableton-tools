@@ -153,6 +153,17 @@ app.on('ready', async () => {
     .observe(visibility => visibility ? mainWindow.show() : mainWindow.hide())
     .catch(e => console.error(e));
 
+  state$
+    .map(s => s.get("componentHeight"))
+    .skipImmRepeats()
+    .filter(h => h > 0)
+    .map(h => h + 20)
+    .tap(height => console.log("new height", height, mainWindow.getSize()[0] / height))
+    .observe(height => {
+
+      mainWindow.setAspectRatio(mainWindow.getSize()[0] / height);
+      mainWindow.setSize(mainWindow.getSize()[0], height);
+    });
   // app on ready 
 
   // debugWindow.on() 
@@ -302,7 +313,7 @@ app.on('ready', async () => {
 
 });
 
-ipcMain.on("dragStart", (event, {maxForLiveDevice, path, icon}) => {
+ipcMain.on("dragStart", (event, { maxForLiveDevice, path, icon }) => {
   console.log("dragStart", maxForLiveDevice, path, icon);
   event.sender.startDrag({
     file: path, icon: icon

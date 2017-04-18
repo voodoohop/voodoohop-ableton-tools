@@ -1,18 +1,16 @@
 import React from 'react';
-import component from 'omniscient';
 import component2 from './utils/immComponent';
-// import { dom } from 'react-reactive-class';
 
 import Immutable from 'immutable';
-// import Waveform from "./waveform";
 
 import logger from './utils/streamLog';
 
-const log = logger('waveform');
 
 import tinycolor from 'tinycolor2';
 
 import keysToColors from './api/keysToColors';
+
+const log = logger('waveform');
 
 const WaveformPoly = component2(({
   durationBeats, gain, waveformData,

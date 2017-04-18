@@ -1,5 +1,5 @@
 import React from 'react';
-import component from 'omniscient';
+import component from './utils/immComponent';
 import Immutable from "immutable";
 
 import keysToColors from "./api/keysToColors";

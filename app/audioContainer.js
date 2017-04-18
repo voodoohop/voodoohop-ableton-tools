@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 
 import actionSubject from './api/actionSubject';
 
-import component from 'omniscient';
+// import component from 'omniscient';
 import component2 from './utils/immComponent';
 import Waveform from './waveform';
 import PianoRoll from './pianoroll';
@@ -32,7 +32,7 @@ const getStrokeWidth = (i, modulo) => {
     : current / modulo;
 };
 
-const BeatClickGrid = component2(({startMarker, endMarker, trackId}) => {
+const BeatClickGrid = component2(({ startMarker, endMarker, trackId }) => {
   let beatClickGrid = Immutable.Range(startMarker, endMarker, 4);
   beatClickGrid = beatClickGrid.zip(beatClickGrid.skip(1));
   log('beatclickgrid', beatClickGrid);
@@ -83,10 +83,10 @@ const DetailViews = component2(({
   endOffset = Infinity,
   maskId
 }) => <g style={{
-  mask: maskId
-    ? `url(#${maskId})`
-    : null
-}}>
+    mask: maskId
+      ? `url(#${maskId})`
+      : null
+  }}>
     {(waveform && !(waveform.get('error')))
       ? <Waveform
         key="waveform_Container"
@@ -125,7 +125,7 @@ const DetailViews = component2(({
   </g>);
 
 const neededLiveInfo = Immutable.Set(['start_marker', 'end_marker', 'looping', 'loop_end', 'loop_start']);
-export default component2(({uiState, trackId, track}) => {
+export default component2(({ uiState, trackId, track }) => {
   let liveData = track.get('liveData');
   if (!(liveData.keySeq().isSuperset(neededLiveInfo)))
     return <div

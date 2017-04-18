@@ -56,6 +56,8 @@ export default actionStream//.filter(a=> a.get("type") === "globalZoom" || a.get
                 return store.set("lastMetadata", input.get("metadata"));
             case "cpuUsageUpdate":
                 return store.setIn(["cpuUsage", input.get("process")], input.get("usage"));
+            case "containerHeightChanged":
+                return store.set("componentHeight", input.get("value"));
             default:
                 return store;
         }

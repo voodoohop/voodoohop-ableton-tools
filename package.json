@@ -1,6 +1,6 @@
 {
   "name": "VoodoohopLiveTools",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "description": "VOODOOHOP Live Tools",
   "lastUpdateDescription": "max for live performance bug fix. !IMPORTANT! please remove the max for live devices from your project and add the new ones.\nif the download button does not download correctly use this link: https://goo.gl/4XVQLz\nslight performance optimisations\nwas not updating the metadata when file or warp marker file changed\nbug fixes for clip name and color changing\nchanges clip name and color only on tracks with the slave device\nbugfix for track number 0 not updating color or name\nperformance improvements\nnew interface for live devices\nfixed loading filenames with special characters\nselected clip will now continue being displayed until another clip is selected\nshow only selected clips transposition options\nfixed problem when metadata keys contain special characters\nbetter text readability on key wheel",
   "packageDownloads": {
@@ -190,6 +190,7 @@
     "react-dock": "^0.2.3",
     "react-dom": "^15.4.2",
     "react-draggable2": "^0.7.0-alpha1",
+    "react-height": "^2.2.1",
     "react-hot-loader": "^3.0.0-beta.6",
     "react-json-tree": "^0.10.3",
     "react-linkify": "^0.2.0",
@@ -221,7 +222,7 @@
     "typed-immutable": "0.1.0",
     "url-loader": "^0.5.7",
     "usage": "^0.7.1",
-    "victory": "^0.17.0",
+    "victory": "^0.18.4",
     "webpack": "^1.13.0",
     "webpack-dev-middleware": "^1.10.1",
     "webpack-hot-middleware": "^2.10.0",

@@ -8,6 +8,7 @@ import './utils/warpedBpmSender';
 import React from 'react';
 import { render } from 'react-dom';
 
+import ReactHeight from "react-height";
 import './app.global.css';
 
 import KeyWheel from './keyWheel';
@@ -50,6 +51,10 @@ import { Connector } from "./utils/createReactiveClass";
 
 import debugModeInDev from "./debugMode";
 
+import actionStream from './api/actionSubject';
+
+const heightChanged = (height) => actionStream.push(Immutable.Map({ type: "containerHeightChanged", value: height }));
+
 class AppRenderer extends React.Component {
     render() {
         const state = this.props.state;
@@ -65,33 +70,36 @@ class AppRenderer extends React.Component {
             : false;
         // console.log("preUiState",state.get("uiState"));
         return foundMasterPlugin && foundTrackPlugin
-            ? <div>
-                <PlayingTracks
-                    availableTracks={state.get('tracks')}
-                    uiState={state.get('uiState')}
-                />
-                <div
-                    style={{
-                        width: '90%',
-                        left: '5%',
-                        position: 'relative'
-                    }}
-                >
-                    <KeyWheel keyNotation={state.getIn(['uiState', 'keyNotation'])} tracks={state.get('tracks')} />
-                </div>
-                {process.env.NODE_ENV !== 'development' || !debugModeInDev
-                    ? <div />
-                    : <div>
-                        <ObjectInspector
-                            style={{
-                                color: 'white'
-                            }}
-                            data={state}
-                            initialExpandedPaths={['*', '*', '*']}
-                        />
+            ?
+            <ReactHeight onHeightReady={heightChanged}>
+                <div>
+                    <PlayingTracks
+                        availableTracks={state.get('tracks')}
+                        uiState={state.get('uiState')}
+                    />
+                    <div
+                        style={{
+                            width: '90%',
+                            left: '5%',
+                            position: 'relative'
+                        }}
+                    >
+                        <KeyWheel keyNotation={state.getIn(['uiState', 'keyNotation'])} tracks={state.get('tracks')} />
                     </div>
-                }
-            </div>
+                    {process.env.NODE_ENV !== 'development' || !debugModeInDev
+                        ? <div />
+                        : <div>
+                            <ObjectInspector
+                                style={{
+                                    color: 'white'
+                                }}
+                                data={state}
+                                initialExpandedPaths={['*', '*', '*']}
+                            />
+                        </div>
+                    }
+                </div>
+            </ReactHeight>
             : <SplashScreen
                 foundMasterPlugin={foundMasterPlugin}
                 foundTrackPlugin={foundTrackPlugin}
