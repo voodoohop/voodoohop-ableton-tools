@@ -2,7 +2,7 @@ import { is } from 'immutable';
 
 // const is = Immutable.is.bind(Immutable);
 
-function shallowEqualImmutable(objA, objB) {
+export function shallowEqualImmutable(objA, objB) {
   if (objA === objB || is(objA, objB)) {
     return true;
   }

@@ -56,10 +56,10 @@ let groupAttributes = Immutable
   .Seq
   .of('loop_start', 'loop_end', 'looping', 'pitch', 'gain');
 
-let groupedLiveData = livedataStore.combine((liveData, uiState) => liveData.filter((v, trackId) => uiState.get('groupedTracks').contains(trackId)).map((track, trackId) => {
-  console.log('trk', track.toJS());
-  return track.filter((_, k) => groupAttributes.contains(k));
-}), uiStateStore);
+// let groupedLiveData = livedataStore.combine((liveData, uiState) => liveData.filter((v, trackId) => uiState.get('groupedTracks').contains(trackId)).map((track, trackId) => {
+//   console.log('trk', track.toJS());
+//   return track.filter((_, k) => groupAttributes.contains(k));
+// }), uiStateStore);
 
 function tomDiff(prev, next, path = Immutable.List()) {
   if (prev === undefined)
@@ -85,22 +85,22 @@ function tomDiff(prev, next, path = Immutable.List()) {
   return res;
 }
 
-const grouedOscCommands = groupedLiveData.combinePrevious(tomDiff)
-  // .tap(log("groupedLiveData1"))
-  .flatMap(f => f)
-  .combine((groupDiff, uiState) => most.from(uiState.get('groupedTracks').map(trackId => Immutable.Map({
-    trackId,
-    path: groupDiff.get('path'),
-    type: groupDiff.getIn(['path', 1]),
-    value: groupDiff.get('value')
-  })).toArray()), uiStateStore)
-  .flatMap(f => f)
-  .filter(f => f.get('value') != 4096 && f.get('value') != -4096)
-  .tap(log('groupedLiveData'));
+// const grouedOscCommands = groupedLiveData.combinePrevious(tomDiff)
+//   // .tap(log("groupedLiveData1"))
+//   .flatMap(f => f)
+//   .combine((groupDiff, uiState) => most.from(uiState.get('groupedTracks').map(trackId => Immutable.Map({
+//     trackId,
+//     path: groupDiff.get('path'),
+//     type: groupDiff.getIn(['path', 1]),
+//     value: groupDiff.get('value')
+//   })).toArray()), uiStateStore)
+//   .flatMap(f => f)
+//   .filter(f => f.get('value') != 4096 && f.get('value') != -4096)
+//   .tap(log('groupedLiveData'));
 // .drain();
 
 const mergedCommands = clickedLoopCommands
-  .merge(grouedOscCommands)
+  // .merge(grouedOscCommands)
   .multicast();
 
 const mergedCommands2 = mergedCommands.combine((oscCommand, liveData) => {

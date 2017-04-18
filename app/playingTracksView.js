@@ -140,8 +140,6 @@ const Track = component(function ({ track, trackId, uiState }) {
     return <div>{'loading'}</div>;
   }
 
-  let grouped = uiState.getIn(['groupedTracks', trackId]);
-
   let style = {
     padding: '3px',
     /* ,backgroundColor:"white"*/

@@ -1,6 +1,6 @@
 import React from 'react';
 import component from "./utils/immComponent";
-import component2 from "omniscient";
+// import component2 from "omniscient";
 // import { dom } from 'react-reactive-class';
 import * as most from 'most';
 import Immutable from "immutable";
@@ -49,7 +49,7 @@ const ConnectNodes = component(({ start, end, thickness, transpose }) => {
 
 
 
-const KeyLabel = component2(({ x, y, datum, connectedNotes }) => {
+const KeyLabel = component(({ x, y, datum, connectedNotes }) => {
     // if (otherKeyLabels.source)
     //     otherKeyLabels = Immutable.Map();
     // console.log("DynamicKeyWheel renderlabel",{x,y,datum,connectedNotes});    
@@ -113,7 +113,7 @@ const getNoteColor = note => tinyColor(keysToColors(transposedNote(note, 0)))./*
 
 const getMixedNoteColor = (note1, note2, mix = 50) => tinyColor.mix(getNoteColor(note1), getNoteColor(note2), mix).toHexString();
 
-const TomSlice = component2((props) => {
+const TomSlice = component((props) => {
     return <VictoryAnimation data={props.slice} duration={400}>{(animatedProps) => <Slice {...props} slice={animatedProps} />}</VictoryAnimation>;
 });
 
@@ -142,7 +142,7 @@ const mapTranspose = (otherKeyLabels, data) =>
         .map(({ transpose, color }) => ({ transpose, otherKeyLabel: otherKeyLabels.get(color) }))
         .filter(({ transpose, otherKeyLabel }) => otherKeyLabel);
 
-const TomKeyLabel = component2((props) => {
+const TomKeyLabel = component((props) => {
     // console.log("labelProps", props.datum.selected);
     // return <VictoryAnimation duration={500} data={{ x: props.x, y: props.y }} >
     //     {animatedProps => <ReactiveKeyLabel {...props} {...animatedProps} connectedNotes={props.datum.selected ? allKeyLabels$.map((otherKeyLabels) => mapTranspose(otherKeyLabels, props.datum)) : null} />}
@@ -155,13 +155,22 @@ const shortenInfo = (info, maxLength = 15) => (info && (info.slice(0, Math.min(i
 
 import { getKeyFormatter } from "./api/openKeySequence";
 
+import { shallowEqualImmutable } from "./utils/immutableShouldComponentUpdate";
 import _ from "lodash";
+
+var debugImmUpdate = { tracks: null, keyNotation: null, canShortenLabel: null };
 
 const DynamicKeyWheel = component(({ tracks, keyNotation, canShortenLabel }) => {
     // console.log("DynamicKeyWheel tracks",tracks,uiState);    
     // const keyFormatter =;
     const keyFormatter = getKeyFormatter(keyNotation);
-    log("rendering dynamickeywheel")("yes");
+    const newImmUpdate = { tracks, keyNotation, canShortenLabel };
+
+    log("rendering dynamickeywheel")(tracks, keyNotation, canShortenLabel,
+        shallowEqualImmutable(tracks, debugImmUpdate.tracks));
+
+    debugImmUpdate = newImmUpdate;
+
     return <VictoryPie innerRadius={innerRadius} width={350} height={350}
         labelRadius={labelRadius}
         data={
@@ -215,7 +224,7 @@ const DynamicKeyWheel = component(({ tracks, keyNotation, canShortenLabel }) => 
 // var lastUi = null;
 const liveDataInterested = ["transposedKey", "playing", "name", "isSelected"];
 
-export default component2(({ tracks, keyNotation }) => {
+export default component(({ tracks, keyNotation }) => {
     const reducedTracks = tracks.map(track =>
         track.update("liveData", (liveData) =>
             liveData.filter((v, k) => liveDataInterested.includes(k))
