@@ -20,14 +20,12 @@
 </head>
 
 <body>
-  <div class="window" style="background:none; padding: 8px;width:100%;height:100%;">
+  <div class="window" style="background-color:transparent;width:100%;height:100%;">
     <!-- .toolbar-header sits at the top of your app -->
 
     <!-- Your app's content goes inside .window-content -->
     <div class="window-content" style="width:100%;height:100%; overflow:hidden;">
-      <div style="width:100%;height:100%;">
-        <div id="root" style="-webkit-app-region:drag; height:100%; width:100%;"></div>
-      </div>
+      <div id="root" style="-webkit-app-region:drag; height:100%; width:100%;"></div>
     </div>
   </div>
 
@@ -46,29 +44,3 @@
 </body>
 
 </html>
-
-<!--=======
-    <title>Hello Electron React!</title>
-    <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css" />
-    <script>
-      if (!process.env.HOT) {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = '../dist/style.css';
-        document.write(link.outerHTML);
-      }
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script>
-      {
-        const script = document.createElement('script');
-        const port = process.env.PORT || 3000;
-        script.src = (process.env.HOT) ? `http://localhost:${port}/dist/bundle.js` : '../dist/bundle.js';
-        document.write(script.outerHTML);
-      }
-    </script>
-  </body>
-</html>
->>>>>>> 9d0782912ae4100825089e1678a684966bedee59-->

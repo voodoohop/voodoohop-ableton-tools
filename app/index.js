@@ -18,6 +18,7 @@ import Immutable from 'immutable';
 // import Dock from "react-dock";
 import ObjectInspector from 'react-json-tree';
 
+import { parse } from "querystring";
 import transit from 'transit-immutable-js';
 
 // actionSubject.observe(a => console.log("actionSubject", (a.toJS && a.toJS())
@@ -112,9 +113,13 @@ class AppRenderer extends React.Component {
             />;
     }
 }
+
+const queryParams = parse((window.location.search || "").replace("?", ""));
+console.log("queryparams", queryParams);
+const supportsVibrancy = parseInt(queryParams.supportsVibrancy) === 1;
 finalState.observe((state) => {
     render(
-        <div>
+        <div style={{ backgroundColor: supportsVibrancy ? "transparent" : "black", padding: "8px" }}>
             <UpdateNotifier />
             <AppRenderer state={state} />]
         </div>, document.getElementById('root'));

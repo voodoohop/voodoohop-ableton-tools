@@ -163,103 +163,103 @@ export default component2(({ uiState, trackId, track }) => {
   const transposedKey = liveData.get('transposedKey');
   const isSelectedClip = track.getIn(['liveData', 'isSelected']);
   // console.log("positions",playingPosX,startRenderPos,endMarker,startMarker);
+  const hasContent = liveData.get("isSelected") || liveData.get("playing") || trackId === "selectedClip";
   if ((!(waveform && !(waveform.get('error'))) && !midiData))
     return <div>Waveform / midi not yet loaded</div>;
   return (
     <div key={"trackid_detail_" + trackId}>
+      {hasContent ?
+        <svg
+          style={{
+            overflow: "hidden",
+            backfaceVisibility: "hidden"
+          }}
+          width={"100%"}
+          height={"100%"}
+          viewBox={[0, 0, viewboxWidth, viewboxHeight].join(" ")}>
 
-      <svg
-        style={{
-          overflow: "hidden",
-          backfaceVisibility: "hidden"
-        }}
-        width={"100%"}
-        height={"100%"}
-        viewBox={[0, 0, viewboxWidth, viewboxHeight].join(" ")}>
+          <defs>
 
-        <defs>
+            <mask id={"Mask" + trackId}>
+              <rect
+                stroke="none"
+                fill="white"
+                opacity={0.5}
+                x={startRenderPos}
+                width={Math.max(playingPosX - startRenderPos, 1)}
+                y={0}
+                height={200} />
+              <rect
+                stroke="none"
+                fill="white"
+                opacity={1}
+                x={playingPosX}
+                width={Math.max(endMarker - playingPosX, 0.1)}
+                y={0}
+                height={viewboxHeight} />
+              <rect
+                stroke="none"
+                fill="white"
+                opacity={0.3}
+                x={endMarker}
+                width={viewboxWidth - endMarker}
+                y={0}
+                height={viewboxHeight} />
+            </mask>
 
-          <mask id={"Mask" + trackId}>
-            <rect
-              stroke="none"
-              fill="white"
-              opacity={0.5}
-              x={startRenderPos}
-              width={Math.max(playingPosX - startRenderPos, 1)}
-              y={0}
-              height={200} />
-            <rect
-              stroke="none"
-              fill="white"
-              opacity={1}
-              x={playingPosX}
-              width={Math.max(endMarker - playingPosX, 0.1)}
-              y={0}
-              height={viewboxHeight} />
-            <rect
-              stroke="none"
-              fill="white"
-              opacity={0.3}
-              x={endMarker}
-              width={viewboxWidth - endMarker}
-              y={0}
-              height={viewboxHeight} />
-          </mask>
+          </defs>
+          {hasContent ?
+            <g>
+              <g transform={"scale(" + (scale) + "," + (viewboxHeight / 127) + ")"}>
 
-        </defs>
-        {liveData.get("isSelected") || liveData.get("playing") || trackId === "selectedClip"
-          ? <g>
-            <g transform={"scale(" + (scale) + "," + (viewboxHeight / 127) + ")"}>
+                <g transform={`translate(${visibleBeats / 4},0)`}>
 
-              <g transform={`translate(${visibleBeats / 4},0)`}>
+                  <g transform={"translate(" + (-playingPosX) + ",0)"}>
 
-                <g transform={"translate(" + (-playingPosX) + ",0)"}>
-
-                  <DetailViews
-                    maskId={"Mask" + trackId}
-                    {...{ waveform, trackId, waveformLPF, midiData, gain, transposedChords, transposedKey }} /> {(liveData.get("looping") === 1)
-                      ? <rect
-                        stroke="white"
-                        fill="rgba(255,255,255,0.1)"
-                        opacity="0.9"
-                        y="0"
-                        x={liveData.get("loop_start")}
-                        width={liveData.get("loop_end") - liveData.get("loop_start")}
-                        height={127} />
-                      : null}
-                  {// repeat looped waveform if it finishes at the end of the loop marker
-                    (liveData.get("looping") === 1 && endMarker <= liveData.get("loop_end"))
-                      ? <g opacity="0.6">
-                        <g
-                          id={`loopedRegion_${trackId}`}
-                          transform={`translate(${liveData.get("loop_end") - liveData.get("loop_start")},0)`}>
-                          <DetailViews
-                            startOffset={liveData.get("loop_start")}
-                            endOffset={liveData.get("loop_end")}
-                            {...{ waveform, trackId, waveformLPF, midiData, gain, transposedChords, transposedKey }} />
+                    <DetailViews
+                      maskId={"Mask" + trackId}
+                      {...{ waveform, trackId, waveformLPF, midiData, gain, transposedChords, transposedKey }} /> {(liveData.get("looping") === 1)
+                        ? <rect
+                          stroke="white"
+                          fill="rgba(255,255,255,0.1)"
+                          opacity="0.9"
+                          y="0"
+                          x={liveData.get("loop_start")}
+                          width={liveData.get("loop_end") - liveData.get("loop_start")}
+                          height={127} />
+                        : null}
+                    {// repeat looped waveform if it finishes at the end of the loop marker
+                      (liveData.get("looping") === 1 && endMarker <= liveData.get("loop_end"))
+                        ? <g opacity="0.6">
+                          <g
+                            id={`loopedRegion_${trackId}`}
+                            transform={`translate(${liveData.get("loop_end") - liveData.get("loop_start")},0)`}>
+                            <DetailViews
+                              startOffset={liveData.get("loop_start")}
+                              endOffset={liveData.get("loop_end")}
+                              {...{ waveform, trackId, waveformLPF, midiData, gain, transposedChords, transposedKey }} />
+                          </g>
+                          {Immutable.Range(liveData.get("loop_end") - liveData.get("loop_start"), Math.max(liveData.get("loop_end"), uiState.get("visibleBeats") * 3 / 4), liveData.get("loop_start") - liveData.get("loop_end")).map(start => <use
+                            key={`loopedRegionCopy_${trackId}_${start}`}
+                            xlinkHref={`#loopedRegion_${trackId}`}
+                            x={start} />)
+                          }
                         </g>
-                        {Immutable.Range(liveData.get("loop_end") - liveData.get("loop_start"), Math.max(liveData.get("loop_end"), uiState.get("visibleBeats") * 3 / 4), liveData.get("loop_start") - liveData.get("loop_end")).map(start => <use
-                          key={`loopedRegionCopy_${trackId}_${start}`}
-                          xlinkHref={`#loopedRegion_${trackId}`}
-                          x={start} />)
-                        }
-                      </g>
-                      : null}
+                        : null}
 
-                  {
-                    // <BeatClickGrid
-                    // startMarker={startMarker}
-                    // endMarker={liveData.get("end_marker")}
-                    // trackId={trackId} />
-                  }
+                    {
+                      // <BeatClickGrid
+                      // startMarker={startMarker}
+                      // endMarker={liveData.get("end_marker")}
+                      // trackId={trackId} />
+                    }
+                  </g>
+
                 </g>
-
               </g>
             </g>
-          </g>
-          : null}
-      </svg>
-
+            : null}
+        </svg> : null}
     </div>
   );
 });

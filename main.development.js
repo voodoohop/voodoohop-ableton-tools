@@ -1,24 +1,24 @@
-import "./app/utils/streamPrototypeExtensions";
+import './app/utils/streamPrototypeExtensions';
 
 import { app, BrowserWindow, Menu, shell, ipcMain, globalShortcut } from 'electron';
 
-import { download } from "electron-dl";
+import { download } from 'electron-dl';
 // require('electron-dl')();
 
-import Immutable from "immutable";
+import Immutable from 'immutable';
 
 import { electronDebug } from 'electron-debug';
 
-import log from "./app/utils/streamLog";
+import log from './app/utils/streamLog';
 
 let menu;
 let template;
 let mainWindow = null;
 
-import most from "most";
+import most from 'most';
 
 
-import Subject from "./app/utils/subject";
+import Subject from './app/utils/subject';
 
 import transit from 'transit-immutable-js';
 
@@ -28,7 +28,7 @@ const state$ = Subject();
 
 process.on('uncaughtException', function (err) {
   console.error(err);
-  console.log("Node NOT Exiting...");
+  console.log('Node NOT Exiting...');
 });
 
 
@@ -72,16 +72,18 @@ const onTopDefinition = ['ctrl+shift+v', function () {
     mainWindow.show();
 }];
 
-app.commandLine.appendSwitch('remote-debugging-port', '9222');
+// app.commandLine.appendSwitch('remote-debugging-port', '9222');
 
-import Positioner from "electron-positioner";
-
+import Positioner from 'electron-positioner';
+const osVersion = require('os').release();
+const osPlatform = require('os').platform();
+const supportsVibrancy = osPlatform === 'darwin' && parseInt(osVersion.split('.')[0]) >= 14;
 app.on('ready', async () => {
   await installExtensions();
-  mainWindow = new BrowserWindow({
+  const windowOpts = {
     width: 300,
     height: 500,
-    // transparent:true, 
+    transparent: supportsVibrancy,
     alwaysOnTop: true,
     frame: false,
     resizable: true,
@@ -101,11 +103,14 @@ app.on('ready', async () => {
     darkTheme: true,
     // mobable:true,
     // zoomFactor:0.2,
-    title: "VoodoohopLiveTools",
-    backgroundColor: 'rgba(0,0,0,1)'
-  });
+    title: 'VoodoohopLiveTools',
+    vibrancy: supportsVibrancy ? 'ultra-dark' : undefined,
+    backgroundColor: supportsVibrancy ? undefined : 'black'
+  };
 
-  mainWindow.loadURL(`file://${__dirname}/app/app.html`);
+  mainWindow = new BrowserWindow(windowOpts);
+
+  mainWindow.loadURL(`file://${__dirname}/app/app.html?supportsVibrancy=${supportsVibrancy ? 1 : 0}`);
 
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.show();
@@ -145,8 +150,8 @@ app.on('ready', async () => {
 
   state$
     .skipImmRepeats()
-    .tap(s => console.log("stateFromRenderer", s.toJS()))
-    .map(s => s.get("visible"))
+    .tap(s => console.log('stateFromRenderer', s.toJS()))
+    .map(s => s.get('visible'))
     .skipImmRepeats()
     // .tap(log("visibility"))
     .tap(v => mainWindow.setAlwaysOnTop(v))
@@ -154,11 +159,12 @@ app.on('ready', async () => {
     .catch(e => console.error(e));
 
   state$
-    .map(s => s.get("componentHeight"))
+    .map(s => s.get('componentHeight'))
     .skipImmRepeats()
     .filter(h => h > 0)
+    .debounce(50)
     .map(h => h + 20)
-    .tap(height => console.log("new height", height, mainWindow.getSize()[0] / height))
+    .tap(height => console.log('new height', height, mainWindow.getSize()[0] / height))
     .observe(height => {
 
       mainWindow.setAspectRatio(mainWindow.getSize()[0] / height);
@@ -313,8 +319,8 @@ app.on('ready', async () => {
 
 });
 
-ipcMain.on("dragStart", (event, { maxForLiveDevice, path, icon }) => {
-  console.log("dragStart", maxForLiveDevice, path, icon);
+ipcMain.on('dragStart', (event, { maxForLiveDevice, path, icon }) => {
+  console.log('dragStart', maxForLiveDevice, path, icon);
   event.sender.startDrag({
     file: path, icon: icon
   })
@@ -323,11 +329,11 @@ ipcMain.on("dragStart", (event, { maxForLiveDevice, path, icon }) => {
 
 
 ipcMain.on('downloadUpdate', (e, args) => {
-  console.log("download update requested", args);
-  e.sender.send("downloadUpdateRes", { start: true });
+  console.log('download update requested', args);
+  e.sender.send('downloadUpdateRes', { start: true });
   download(mainWindow, args.url)
     .then(dl => {
-      e.sender.send("downloadUpdateRes", { result: dl.getSavePath() })
+      e.sender.send('downloadUpdateRes', { result: dl.getSavePath() })
       shell.showItemInFolder(dl.getSavePath());
       shell.beep();
       setTimeout(() => {
@@ -336,14 +342,14 @@ ipcMain.on('downloadUpdate', (e, args) => {
       }
         , 1000);
     })
-    .catch(err => e.sender.send("downloadUpdateRes", {
+    .catch(err => e.sender.send('downloadUpdateRes', {
       error: err
     }))
 });
 
-ipcMain.on("state", (event, s) => {
+ipcMain.on('state', (event, s) => {
   const stateUnserialized = transit.fromJSON(s);
-  console.log("state length in serialized chars", s.length);
+  console.log('state length in serialized chars', s.length);
   // console.log("got state from renderer",stateUnserialized.get("uiState"));
   state$.push(stateUnserialized);
 });
