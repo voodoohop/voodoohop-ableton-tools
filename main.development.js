@@ -162,7 +162,7 @@ app.on('ready', async () => {
     .observe(height => {
 
       mainWindow.setAspectRatio(mainWindow.getSize()[0] / height);
-      mainWindow.setSize(mainWindow.getSize()[0], height);
+      mainWindow.setSize(mainWindow.getSize()[0], height, true);
     });
   // app on ready 
 

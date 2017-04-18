@@ -73,19 +73,25 @@ class AppRenderer extends React.Component {
             ?
             <ReactHeight onHeightReady={heightChanged}>
                 <div>
-                    <PlayingTracks
-                        availableTracks={state.get('tracks')}
-                        uiState={state.get('uiState')}
-                    />
-                    <div
-                        style={{
-                            width: '90%',
-                            left: '5%',
-                            position: 'relative'
-                        }}
-                    >
-                        <KeyWheel keyNotation={state.getIn(['uiState', 'keyNotation'])} tracks={state.get('tracks')} />
-                    </div>
+                    {
+                        state.getIn(["uiState", "showWaveforms"]) ?
+                            <PlayingTracks
+                                availableTracks={state.get('tracks')}
+                                uiState={state.get('uiState')}
+                            /> : null
+                    }
+                    {
+                        state.getIn(["uiState", "showKeywheel"]) ?
+                            <div
+                                style={{
+                                    width: '90%',
+                                    left: '5%',
+                                    position: 'relative'
+                                }}
+                            >
+                                <KeyWheel keyNotation={state.getIn(['uiState', 'keyNotation'])} tracks={state.get('tracks')} />
+                            </div> : null
+                    }
                     {process.env.NODE_ENV !== 'development' || !debugModeInDev
                         ? <div />
                         : <div>

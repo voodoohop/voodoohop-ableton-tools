@@ -21,7 +21,9 @@ var visibleBeatsZoomedOut = 1024;
 var initialState = Immutable.Map({
     visibleBeats: visibleBeatsZoomedOut / 2,
     keyNotation: "trad",
-    visible: true
+    visible: true,
+    showWaveforms: true,
+    showKeywheel: true
 });
 
 var toggle = (set, member) => set.contains(member) ? set.remove(member) : set.add(member);
@@ -34,6 +36,10 @@ export default actionStream//.filter(a=> a.get("type") === "globalZoom" || a.get
         switch (input.get("type")) {
             case "visibility":
                 return store.set("visible", input.get("value") == 1);
+            case "showWaveforms":
+                return store.set("showWaveforms", input.get("value") ? true : false);
+            case "showKeywheel":
+                return store.set("showKeywheel", input.get("value") ? true : false);
             case "masterTempo":
                 return store.set("masterTempo", input.get("value"));
             case "keyNotation":
