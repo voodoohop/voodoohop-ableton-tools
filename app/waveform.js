@@ -122,7 +122,7 @@ const WaveformPoly = component2(({
             .lighten(10)
             .toHexString()}
           points={points.join(' ')}
-          />);
+        />);
       })}
     </g>
   );
@@ -168,7 +168,7 @@ export default component2(({
         waveformData={waveform}
         trackId={trackId}
         chords={chords}
-        />
+      />
     </g>
   );
   // { beatLines.map(x =>   	<line key={x}

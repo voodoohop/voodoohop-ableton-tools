@@ -3,9 +3,10 @@ import { Map, Set, Record } from 'immutable';
 import * as most from 'most';
 
 
-import holdProblematic from "@most/hold";
-const hold = holdProblematic.default;
+import { hold } from "@most/hold";
+// const hold = holdProblematic;
 
+console.log("hold", hold);
 
 import { getTransformed } from '../transforms/audioMetadataGenerator';
 
@@ -22,7 +23,7 @@ import log from '../utils/streamLog';
 import { livedataStore } from './';
 
 function fsStatThatTreatsNonExistentFiles(path) {
-    return fs.existsSync(path) ? fs.statSync(path) : {mtime:0};
+    return fs.existsSync(path) ? fs.statSync(path) : { mtime: 0 };
 }
 
 export const getPathPromise = (path) => {
@@ -96,23 +97,23 @@ const pathsChangedSinceStart = pathsToBeWatched
     // Date(fs.statSync(p.get('watchPath')).mtime).getTime(), new
     // Date(p.get('watchStat').get('mtime')).getTime()))
     .flatMap(p => most.fromPromise(new Promise((resolve) => {
-        const path =  p.get('watchPath');
+        const path = p.get('watchPath');
 
         const watcher = fs.existsSync(path) ?
-        fs.watch(path, () => {
-            console.log('unwatching with watch', path);
-            watcher.close();
-            resolve(p);
-        })
-        :
-        fs.watchFile(path, stat => {
-            if (stat.size === 0) {
-                console.log("file",path,"does not exist yet. ignoring until created");
-                return;
-            }
-            watcher.stop();
-            resolve(p);
-        });
+            fs.watch(path, () => {
+                console.log('unwatching with watch', path);
+                watcher.close();
+                resolve(p);
+            })
+            :
+            fs.watchFile(path, stat => {
+                if (stat.size === 0) {
+                    console.log("file", path, "does not exist yet. ignoring until created");
+                    return;
+                }
+                watcher.stop();
+                resolve(p);
+            });
         // const watchMethod=fs.existsSync(path) ? fs.watch : fs.watchFile;
         // console.log('watching',path, "with method", watchMethod.name);
         // const watcher = watchMethod(path, () => {

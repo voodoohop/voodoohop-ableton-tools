@@ -25,7 +25,7 @@ const labelRadius = 104;
 
 const radiusProp = innerRadius / labelRadius;
 
-const ConnectNodes = component(({start, end, thickness, transpose}) => {
+const ConnectNodes = component(({ start, end, thickness, transpose }) => {
     log("connectNodes")({ start, end, thickness, transpose });
     const gradientId = `gradient_${start.datum.note}_${end.datum.note}`;
 
@@ -49,7 +49,7 @@ const ConnectNodes = component(({start, end, thickness, transpose}) => {
 
 
 
-const KeyLabel = component2(({x, y, datum, connectedNotes}) => {
+const KeyLabel = component2(({ x, y, datum, connectedNotes }) => {
     // if (otherKeyLabels.source)
     //     otherKeyLabels = Immutable.Map();
     // console.log("DynamicKeyWheel renderlabel",{x,y,datum,connectedNotes});    
@@ -70,9 +70,9 @@ const KeyLabel = component2(({x, y, datum, connectedNotes}) => {
     return <g key={`keylabel_${data.note}`}>{connectedNotes ?
         connectedNotes
             // .map(({otherKeyLabel}) => otherKeyLabel.toJS())
-            .map(({transpose, otherKeyLabel}) => ({ transpose, destNote: otherKeyLabel.toJS() }))
+            .map(({ transpose, otherKeyLabel }) => ({ transpose, destNote: otherKeyLabel.toJS() }))
             // .map(n => log("destNote")(n))     
-            .map(({transpose, destNote}) => <ConnectNodes key={`conn_${data.note}_${destNote.datum.note}`} start={{ x, y, datum }} end={destNote} thickness={1 /*/ Math.abs(transpose)*/} transpose={transpose} />)
+            .map(({ transpose, destNote }) => <ConnectNodes key={`conn_${data.note}_${destNote.datum.note}`} start={{ x, y, datum }} end={destNote} thickness={1 /*/ Math.abs(transpose)*/} transpose={transpose} />)
         : null
     }
 
@@ -85,7 +85,7 @@ const KeyLabel = component2(({x, y, datum, connectedNotes}) => {
                 <feComposite in="SourceGraphic" />
             </filter>
         </defs>
-        {Immutable.Seq(data.trackInfos).map(({title, artist}, index, trackInfos) => <g key={`detailsTrack_${index}`}>
+        {Immutable.Seq(data.trackInfos).map(({ title, artist }, index, trackInfos) => <g key={`detailsTrack_${index}`}>
             {artist ?
                 <text filter="url(#solid)" key={"artistlabel_" + index} textAnchor="middle" x={textX} y={textY - (trackInfos.size * 12) + (compactTitles ? 12 : 0) + 5 + index * textDist} style={{ fill: "rgb(250,250,250)", fontFamily: "Arial", fontSize: "1.1em" }}>
                     {shortenInfo(artist, 10) + " " + (compactTitles ? " - " + shortenInfo(title, 7) : "")}
@@ -139,8 +139,8 @@ const ReactiveKeyLabel = Connector(KeyLabel);
 const mapTranspose = (otherKeyLabels, data) =>
     Immutable.fromJS([-2, -1, 1, 2])
         .map(transpose => ({ transpose, color: keysToColors(transposedNote(data.note, transpose)) }))
-        .map(({transpose, color}) => ({ transpose, otherKeyLabel: otherKeyLabels.get(color) }))
-        .filter(({transpose, otherKeyLabel}) => otherKeyLabel);
+        .map(({ transpose, color }) => ({ transpose, otherKeyLabel: otherKeyLabels.get(color) }))
+        .filter(({ transpose, otherKeyLabel }) => otherKeyLabel);
 
 const TomKeyLabel = component2((props) => {
     // console.log("labelProps", props.datum.selected);
@@ -157,7 +157,7 @@ import { getKeyFormatter } from "./api/openKeySequence";
 
 import _ from "lodash";
 
-const DynamicKeyWheel = component(({tracks, keyNotation, canShortenLabel}) => {
+const DynamicKeyWheel = component(({ tracks, keyNotation, canShortenLabel }) => {
     // console.log("DynamicKeyWheel tracks",tracks,uiState);    
     // const keyFormatter =;
     const keyFormatter = getKeyFormatter(keyNotation);
@@ -215,7 +215,7 @@ const DynamicKeyWheel = component(({tracks, keyNotation, canShortenLabel}) => {
 // var lastUi = null;
 const liveDataInterested = ["transposedKey", "playing", "name", "isSelected"];
 
-export default component2(({tracks, keyNotation}) => {
+export default component2(({ tracks, keyNotation }) => {
     const reducedTracks = tracks.map(track =>
         track.update("liveData", (liveData) =>
             liveData.filter((v, k) => liveDataInterested.includes(k))

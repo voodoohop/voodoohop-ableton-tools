@@ -6,9 +6,8 @@ import { Connector } from "./utils/createReactiveClass";
 
 import * as most from "most";
 
-import holdProblematic from "@most/hold";
-const hold = holdProblematic.default;
-
+import { hold } from "@most/hold";
+// const hold = holdProblematic.default;
 import log from "./utils/streamLog";
 import { ipcRenderer } from "electron";
 import Subject from "./utils/subject";
@@ -23,7 +22,7 @@ const platformURL = (packagejson) => process.platform === "darwin" ?
 // "https://www.dropbox.com/s/dcukowlt204p4ea/VoodoohopLiveTools-mac.zip?dl=1" :
 // "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1";
 
-const UpdateNotifier = Connector(component2(({updateResponse, downloadStatus}) => updateResponse ?
+const UpdateNotifier = Connector(component2(({ updateResponse, downloadStatus }) => updateResponse ?
   (
     <div style={{ WebkitAppRegion: "no-drag" }} className="ui info message inverted ">
 
