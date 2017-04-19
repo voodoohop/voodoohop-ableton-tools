@@ -22,7 +22,7 @@ const liveDataModified =
       // ? store.update(newData.get("trackId"), () => Immutable.Map({
       //   id: newData.get("value")
       // })) : 
-      newData.get("type") === "id" ? store.set(newData.get("trackId"), Immutable.Map({ id: newData.get("value"), trackId: newData.get("trackId") })) :
+      newData.get("type") === "id" ? store.set(newData.get("trackId"), Immutable.Map({ id: newData.get("value"), trackId: newData.get("trackId"), deviceVersion: store.getIn([newData.get("trackId"), 'deviceVersion']) })) :
         store.setIn([newData.get("trackId"), newData.get("type")], newData.get("value"))
           .updateIn([
             newData.get("trackId"),

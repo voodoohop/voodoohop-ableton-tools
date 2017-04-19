@@ -41,9 +41,8 @@ const UpdateNotifier = Connector(component2(({ updateResponse, downloadStatus })
           ipcRenderer.send("downloadUpdate", { url: platformURL(updateResponse) });
           // progressSubject.push({start:true});
         }}>
-
-        Download
- </button>
+        {downloadStatus && downloadStatus.start ? "dowloading..." : "Download"}
+      </button>
     </div>)
   : null));
 
@@ -58,7 +57,7 @@ const progressSubject = Subject();
 ipcRenderer.on("downloadUpdateRes", (e, res) => {
   console.log("got", res);
   progressSubject.push(res);
-  cancelSubject.push(res);
+  // cancelSubject.push(res);
 });
 
 const updateResponse = hold(most.fromPromise(fetch(updateURL)).tap(log("got fetch res"))

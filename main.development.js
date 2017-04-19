@@ -162,9 +162,10 @@ app.on('ready', async () => {
     .map(s => s.get('componentHeight'))
     .skipImmRepeats()
     .filter(h => h > 0)
-    .debounce(50)
+    .debounce(300)
     .map(h => h + 20)
     .tap(height => console.log('new height', height, mainWindow.getSize()[0] / height))
+    .skipImmRepeats()
     .observe(height => {
 
       mainWindow.setAspectRatio(mainWindow.getSize()[0] / height);

@@ -1,6 +1,6 @@
 {
   "name": "VoodoohopLiveTools",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "VOODOOHOP Live Tools",
   "lastUpdateDescription": "max for live performance bug fix. !IMPORTANT! please remove the max for live devices from your project and add the new ones.\nwindow size depends on content\ncan hide keywheel and waveform independently\npretty blurred transparency if on yosemite\nif the download button does not download correctly use this link: https://goo.gl/4XVQLz\nwas not updating the metadata when file or warp marker file changed\nchanges clip name and color only on tracks with the slave device\nnew interface for live devices\nfixed loading filenames with special characters",
   "packageDownloads": {

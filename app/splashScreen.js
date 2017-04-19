@@ -9,7 +9,7 @@ const getResourcePath = (filename) => (process.env["NODE_ENV"] === "development"
   path.normalize(path.dirname(process.mainModule.filename) + "/..") + "/" + filename) || process.resourcesPath + "/" + filename;
 
 
-const getDraggableVoodoo = ({message, amxdPath, disabled = false}) => <div className={`ui segment inverted vertical ${disabled ? "disabled" : ""}`}>
+const getDraggableVoodoo = ({ message, amxdPath, disabled = false }) => <div className={`ui segment inverted vertical ${disabled ? "disabled" : ""}`}>
   <img style={{ WebkitAppRegion: "no-drag" }}
     onDragStart={(event) => {
       event.preventDefault();
@@ -27,19 +27,22 @@ const getDraggableVoodoo = ({message, amxdPath, disabled = false}) => <div class
 </div>;
 
 
-export default component2(({foundMasterPlugin, foundTrackPlugin}) =>
+export default component2(({ foundMasterPlugin, foundTrackPlugin }) =>
   <div>
     <div className="ui inverted text container center aligned">
       <h2 className="ui header inverted">Voodoohop Live Tools</h2>
       {getDraggableVoodoo({ message: "Drag to tracks you want to monitor", amxdPath: "Voodoohop Track Sender.amxd", disabled: foundTrackPlugin })}
       {getDraggableVoodoo({ message: "Drag to your master track", amxdPath: "Voodoohop Live Tools Master.amxd", disabled: foundMasterPlugin })}
     </div>
+    <div className="ui inverted text container center aligned"><i style={{ color: "grey", fontSize: "10px" }}>if you updated recently delete the slave and master devices and re-add them from here</i></div>
     <div className="ui icon inverted warning message ">
       <img className="ui mini image" src="../images/live_logo.png" />
       <div className="content" style={{ padding: "4px" }} >
         {foundMasterPlugin ? "Waiting for track to monitor..." : (foundTrackPlugin ? "Waiting for master plugin..." : "Awaiting connection to Live...")}
       </div>
+
     </div>
+
   </div>);
 
 

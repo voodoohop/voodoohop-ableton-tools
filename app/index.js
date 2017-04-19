@@ -61,14 +61,11 @@ class AppRenderer extends React.Component {
         const state = this.props.state;
         // console.log("size",state.get("tracks").size);
 
-        const foundMasterPlugin = state.getIn(['tracks', 'selectedClip'])
-            ? true
-            : false;
-        const foundTrackPlugin = state.get('tracks') && state
+        const foundMasterPlugin = state.getIn(['tracks', 'selectedClip', 'liveData', 'deviceVersion']) >= 0.8;
+        const trackPlugin = state.get('tracks') && state
             .get('tracks')
-            .find((_, trackId) => trackId !== 'selectedClip')
-            ? true
-            : false;
+            .find((_, trackId) => trackId !== 'selectedClip');
+        const foundTrackPlugin = trackPlugin && trackPlugin.getIn(['liveData', 'deviceVersion']) >= 0.8;
         // console.log("preUiState",state.get("uiState"));
         return foundMasterPlugin && foundTrackPlugin
             ?
