@@ -4,7 +4,7 @@
   "description": "VOODOOHOP Live Tools",
   "lastUpdateDescription": "minor stability improvements",
   "packageDownloads": {
-    "darwin": "https://www.dropbox.com/s/dcukowlt204p4ea/VoodoohopLiveTools-mac.zip?dl=1",
+    "darwin": "https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1",
     "win32": "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1"
   },
   "main": "main.js",
