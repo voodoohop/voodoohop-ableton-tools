@@ -25,9 +25,6 @@ const dbFind = (...args) =>
         })
     );
 
-
-import { defaultsDeep } from "lodash";
-
 const checkNoError = item => !item.find(val => val && val.get && val.get("error"));
 
 function addToImmStore(storeName, store, item, key) {
@@ -58,25 +55,36 @@ export function invalidateCache(unprocessedKey) {
 export function cache(unprocessedKey, cacheMissFunc) {
     log("getting from cache")(unprocessedKey);
     const key = unprocessedKey;//sanitizeKey(unprocessedKey);
-    return new Promise((resolve, reject) => {
+    const res = new Promise((resolve, reject) => {
         db.findOne({ _id: key }, (err, doc) => doc ?
             resolve(Imm.fromJS(doc)) :
             cacheMissFunc(key)
                 .then(sanitizeKeys)
-                .then(res => invalidateCache(key).then(() => db.insert(res.set("_id", key).toJS(), (err, doc) => {
-                    if (err) {
-                        console.error("cache insert error", err, key);
-                        console.error('tried inserting', res.toJS());
-                        reject(err);
+                .then(res => {
+                    if (checkNoError(res)) {
+                        invalidateCache(key).then(() => db.insert(res.set("_id", key).toJS(), (err, doc) => {
+                            if (err) {
+                                console.error("cache insert error", err, key);
+                                console.error('tried inserting', res.toJS());
+                                reject(err);
+                            }
+                            else {
+                                resolve(res);
+                            }
+                        }))
                     }
-                    else
-                        resolve(res);
+                    else {
+                        console.error("error check of new doc failed");
+                        reject({ error: res });
+                    }
 
-                })))
+                })
                 .catch(e => {
                     console.error("cacheMiss calculation failure", e);
                     reject(e);
                 })
         );
     });
+    // log("got cached or not:")(res);
+    return res;
 }

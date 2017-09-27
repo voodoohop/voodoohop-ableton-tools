@@ -48,8 +48,6 @@ import SplashScreen from './splashScreen';
 
 import { ipcRenderer } from 'electron';
 
-import { Connector } from "./utils/createReactiveClass";
-
 import debugModeInDev from "./debugMode";
 
 import actionStream from './api/actionSubject';

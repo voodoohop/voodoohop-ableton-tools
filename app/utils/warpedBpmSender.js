@@ -16,6 +16,8 @@ import bpmPitchChange from './bpmPitchChange';
 
 // warpMarkerBeatMap(most.from(warpMarkers.get("warpMarkers").toArray()))
 const findWarpMarkerBpm = (warpMarkers, playingPosition) => {
+  if (!warpMarkers)
+    return null;
   const lastMarker = warpMarkers.findLast(warpMarker => warpMarker.get('beats') < playingPosition);
   return lastMarker && lastMarker.get("sourceBpm");
 };
@@ -25,7 +27,7 @@ oscOutput.plug(combinedState
     most.from(state.get('tracks').map((track, trackId) =>
       ({ warpMarkers: track.getIn(['fileData', 'warpMarkers']), playingPosition: track.getIn(['liveData', 'playingPosition']), pitch: track.getIn(['liveData', 'pitch']) || 0, trackId })
     ).toArray())
-      .filter(({warpMarkers, playingPosition }) => playingPosition !== undefined && warpMarkers !== undefined)
+      .filter(({ warpMarkers, playingPosition }) => playingPosition !== undefined && warpMarkers !== undefined)
       .map(({ warpMarkers, playingPosition, trackId, pitch }) =>
         ({ bpm: bpmPitchChange(findWarpMarkerBpm(warpMarkers.get('warpMarkers'), playingPosition), pitch), trackId })
       )

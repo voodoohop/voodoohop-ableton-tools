@@ -84,7 +84,7 @@ var createInputstreamTransform = (transform, transforms) => {
                         //      mapStackTrace(e.stack,st => console.error("error_",st));
 
                         //   else
-                        console.error("error1_", e);
+                        console.error("error1_", e, transform);
 
                         console.error(e);
                         return saveError(e);

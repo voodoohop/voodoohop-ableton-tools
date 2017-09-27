@@ -6,8 +6,6 @@ import * as most from 'most';
 import { hold } from "@most/hold";
 // const hold = holdProblematic;
 
-console.log("hold", hold);
-
 import { getTransformed } from '../transforms/audioMetadataGenerator';
 
 import { invalidateCache, cache as dbCache } from '../api/db';
@@ -38,10 +36,6 @@ export const getPathPromise = (path) => {
         'waveformLPF'
     ], most.of(path)).tap(log('gotTransformed')).observe(resolve).catch(reject)));
 };
-
-import diff from 'immutablediff';
-
-const ReloadablePath = Record({ path: null, reload: false });
 
 const reloadPaths = actionStream.filter(a => a.get('type') === 'reloadMetadata')
     .map(a => a.get('path'))
