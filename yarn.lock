@@ -3530,7 +3530,7 @@ figures@^2.0.0:
   dependencies:
     escape-string-regexp "^1.0.5"
 
-file-api@voodoohop/file-api:
+"file-api@github:voodoohop/file-api":
   version "0.10.6"
   resolved "https://codeload.github.com/voodoohop/file-api/tar.gz/20b16ebe3194b28db7d04c92159deee84f79e38c"
   dependencies:
@@ -8914,9 +8914,9 @@ textextensions@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/textextensions/-/textextensions-1.0.2.tgz#65486393ee1f2bb039a60cbba05b0b68bd9501d2"
 
-thomash-node-audio-metadata@voodoohop/thomash-node-audio-metadata:
+thomash-node-audio-metadata@^1.0.1:
   version "1.0.1"
-  resolved "https://codeload.github.com/voodoohop/thomash-node-audio-metadata/tar.gz/c8af2b43ef97b2753f2ba712e828e0ff131976e8"
+  resolved "https://registry.yarnpkg.com/thomash-node-audio-metadata/-/thomash-node-audio-metadata-1.0.1.tgz#3b264b088d3a248376292af645d53d1d0121ed5d"
   dependencies:
     file-api voodoohop/file-api
 

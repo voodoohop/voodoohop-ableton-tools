@@ -38,8 +38,8 @@ export default merge(baseConfig, {
 
   externals: [
     "musicmetadata",
+    "source-map-support",
     'font-awesome',
-    'source-map-support',
     "thomash-node-audio-metadata",
     "iconv-lite",
     "usage",
