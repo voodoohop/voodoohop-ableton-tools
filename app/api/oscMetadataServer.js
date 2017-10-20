@@ -24,7 +24,7 @@ oscOutput.plug(loadingMetadata
     .map(({ path, requestedTag }) => ({ promise: getPathPromise(path), requestedTag }))
     .tap(log('pathPromise metadataServer'))
     // .await()
-    .flatMap(({promise, requestedTag }) => fromPromise(promise.then(metadata => ({ metadata, requestedTag }))))
+    .flatMap(({ promise, requestedTag }) => fromPromise(promise.then(metadata => ({ metadata, requestedTag }))))
     // .map(d => d.get("metadata"))
     .filter(({ metadata }) => metadata.get('id3Metadata'))
     .map(({ metadata, requestedTag }) => metadata
@@ -68,7 +68,9 @@ export const availableTracks$ = combinedState
 
 
 oscOutput.plug(
-    availableTracks$.sampleWith(tracksRequested).map(trackIds => Map({ trackId: 'got_tracks', args: trackIds }))
+    availableTracks$
+        // .sampleWith(tracksRequested)
+        .map(trackIds => Map({ trackId: 'got_tracks', args: trackIds }))
 )
     // .combine(
     //     (path,metadata) => metadata.contains(path) ? 

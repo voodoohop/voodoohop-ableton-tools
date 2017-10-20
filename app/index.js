@@ -116,7 +116,7 @@ finalState.observe((state) => {
     render(
         <div style={{ backgroundColor: supportsVibrancy ? "transparent" : "black", padding: "8px" }}>
             <UpdateNotifier />
-            <AppRenderer state={state} />]
+            <AppRenderer state={state} />
         </div>, document.getElementById('root'));
 }).catch((e) => {
     console.error(e);
