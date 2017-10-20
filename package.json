@@ -2,7 +2,7 @@
   "name": "VoodoohopLiveTools",
   "version": "0.9.1",
   "description": "VOODOOHOP Live Tools",
-  "lastUpdateDescription": "stability improvement. !IMPORTANT! please remove the max for live devices from your project and add the new ones.\nwindow size depends on content\ncan hide keywheel and waveform independently\npretty blurred transparency if on yosemite\nif the download button does not download correctly use this link: https://goo.gl/4XVQLz\nwas not updating the metadata when file or warp marker file changed\nchanges clip name and color only on tracks with the slave device\nnew interface for live devices\nfixed loading filenames with special characters",
+  "lastUpdateDescription": "stability improvement.\n !IMPORTANT! please remove the max for live devices from your project and add the new ones.",
   "packageDownloads": {
     "darwin": "https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1",
     "win32": "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1"
