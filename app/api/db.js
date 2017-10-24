@@ -66,7 +66,8 @@ export function cache(unprocessedKey, cacheMissFunc) {
                             if (err) {
                                 console.error("cache insert error", err, key);
                                 console.error('tried inserting', res.toJS());
-                                reject(err);
+                                // reject(err);
+                                resolve(res); // TODO: this is not clean. should be rejecting here
                             }
                             else {
                                 resolve(res);
@@ -75,7 +76,8 @@ export function cache(unprocessedKey, cacheMissFunc) {
                     }
                     else {
                         console.error("error check of new doc failed");
-                        reject({ error: res });
+                        // reject({ error: res });
+                        resolve(res); // TODO: this is not clean. should be rejecting here
                     }
 
                 })
