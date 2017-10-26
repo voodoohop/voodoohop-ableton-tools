@@ -147,6 +147,27 @@ app.on('ready', async () => {
     app.quit();
   });
 
+  // TODO: mostify this§
+
+  let prevAspectRatio = 0;
+  // let inFullscreen = false;
+  mainWindow.on('enter-full-screen', () => {
+    console.log("enter-full-screen");
+    // prevAspectRatio = mainWindow.getAspectRatio();
+    mainWindow.setAspectRatio(0);
+    // inFullscreen = true;
+  });
+
+  mainWindow.on('leave-full-screen', () => {
+    console.log("leave-full-screen");
+    mainWindow.setAspectRatio(prevAspectRatio);
+    // inFullscreen = false;
+  });
+
+  // const enterFullScreen$ = most.fromEvent('enter-full-screen', mainWindow);
+  // const exitFullScreen$ = most.fromEvent('exit-full-screen', mainWindow);
+
+  // const duringNotFullScreen$ = exitFullScreen$.constant(enterFullScreen$).startWith(enterFullScreen$);
 
   state$
     .skipImmRepeats()
@@ -164,12 +185,16 @@ app.on('ready', async () => {
     .filter(h => h > 0)
     .debounce(300)
     .map(h => h + 20)
-    .tap(height => console.log('new height', height, mainWindow.getSize()[0] / height))
     .skipImmRepeats()
+    // .during(duringNotFullScreen$)
     .observe(height => {
-
-      mainWindow.setAspectRatio(mainWindow.getSize()[0] / height);
-      mainWindow.setSize(mainWindow.getSize()[0], height, true);
+      const isFullScreen = mainWindow.isFullScreen();
+      console.log("isFullScreen", isFullScreen);
+      if (!isFullScreen) {
+        prevAspectRatio = mainWindow.getSize()[0] / height;
+        mainWindow.setAspectRatio(prevAspectRatio);
+        mainWindow.setSize(mainWindow.getSize()[0], height, true);
+      }
     });
   // app on ready 
 
@@ -351,7 +376,7 @@ ipcMain.on('downloadUpdate', (e, args) => {
 ipcMain.on('state', (event, s) => {
   const stateUnserialized = transit.fromJSON(s);
   console.log('state length in serialized chars', s.length);
-  // console.log("got state from renderer",stateUnserialized.get("uiState"));
+  // console.log("got state from renderer", stateUnserialized);
   state$.push(stateUnserialized);
 });
 

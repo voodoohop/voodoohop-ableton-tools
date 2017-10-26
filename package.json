@@ -2,7 +2,7 @@
   "name": "VoodoohopLiveTools",
   "version": "0.9.2",
   "description": "VOODOOHOP Live Tools",
-  "lastUpdateDescription": "should not hang when problems with audio file now\nstability improvement.\n !IMPORTANT! please remove the max for live devices from your project and add the new ones if you haven't upgraded recently.",
+  "lastUpdateDescription": "should not hang when it encounters problems with audio file now\nstability improvement.\n !IMPORTANT! please remove the max for live devices from your project and add the new ones if you haven't upgraded recently.",
   "packageDownloads": {
     "darwin": "https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1",
     "win32": "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1"
