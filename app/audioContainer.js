@@ -83,10 +83,10 @@ const DetailViews = component2(({
   endOffset = Infinity,
   maskId
 }) => <g style={{
-    mask: maskId
-      ? `url(#${maskId})`
-      : null
-  }}>
+  mask: maskId
+    ? `url(#${maskId})`
+    : null
+}}>
     {(waveform && !(waveform.get('error')))
       ? <Waveform
         key="waveform_Container"
@@ -106,8 +106,8 @@ const DetailViews = component2(({
         chords={transposedChords}
         gain={(gain || 0.4) * 1.2}
         style={{
-          opacity: 0.3,
-          stroke: 'rgba(0,0,0,0.8)',
+          opacity: 1,
+          stroke: 'rgba(0,0,0,1)',
           fill: 'rgba(0,0,0,0.1)',
           strokeWidth: '1'
         }}
