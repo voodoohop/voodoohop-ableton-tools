@@ -45,11 +45,12 @@ let TrackStatistic = component(({
           <span
             style={{
               fontSize: "80%",
-              color: "#aaa"
+              color: Math.abs(liveData.get("pitch")) > 3 ?
+                "red" : "white"
             }}>{(liveData.get("pitch") != 0
               ? ((liveData.get("pitch") > 0
-                ? " +"
-                : " ") + `${liveData.get("pitch")}`)
+                ? "+"
+                : "") + `${liveData.get("pitch")}`)
               : "")}</span>
         </div>
         <div className="label">
@@ -76,7 +77,7 @@ let TrackStatistic = component(({
               ? <span
                 style={{
                   color: Math.abs(Math.round(bpmDifferenceToMaster)) > 5
-                    ? "orange"
+                    ? "red"
                     : "#aaa",
                   fontWeight: "normal",
                   fontSize: "80%"
@@ -101,7 +102,7 @@ let TrackStatistic = component(({
         className="value"
         style={beatsRemaining < 64
           ? {
-            color: "orange",
+            color: "red ",
             fontWeight: "bold"
           }
           : {}}>
@@ -182,7 +183,7 @@ const Track = component(function ({ track, trackId, uiState }) {
             <div
               className="ui header tom"
               style={{
-                fontSize: '3vw',
+                fontSize: '3.5vw',
                 fontWeight: isSelectedClip
                   ? 'normal'
                   : 'bold'
@@ -195,8 +196,9 @@ const Track = component(function ({ track, trackId, uiState }) {
                   style={{
                     color: '#aaa'
                   }}
+                  className="blackTransparentBg"
                 >
-                  (selected)</span>
+                  &nbsp;(selected)</span>
                 : null}</div>
             <span
               className="blackTransparentBg"
