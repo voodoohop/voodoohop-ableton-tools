@@ -2,7 +2,7 @@
   "name": "VoodoohopLiveTools",
   "version": "1.0.0",
   "description": "VOODOOHOP Live Tools",
-  "lastUpdateDescription": "bpm following should be solid now\nramp for bpm follow\nuser interface updates\nmanual download: https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1 ",
+  "lastUpdateDescription": "bpm following should be solid now\nramp for bpm follow\nuser interface updates\nmanual download\n mac: https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1\nwindows: https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1'>windows</a>",
   "packageDownloads": {
     "darwin": "https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1",
     "win32": "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1"
