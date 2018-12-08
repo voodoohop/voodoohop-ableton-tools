@@ -33,7 +33,7 @@ const liveDataModified =
             "gain"
           ], (t) => t || 0.4), Immutable.Map())
     .skip(1)
-    .throttledDebounce(40)
+    .throttledDebounce(10)
     .map(m => m.sortBy((v, k) => k, (k1, k2) => ("" + k1).localeCompare("" + k2)))
     .map(tracks => tracks.map((v, trackId) => v.set("isSelected", v.get("id") && v.get("id") === tracks.getIn(["selectedClip", "id"]))))
     .map(m => m.update("selectedClip", s => s

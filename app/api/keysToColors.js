@@ -96,20 +96,38 @@ import Immutable from 'immutable';
 
 let colors =
 	{
-		'c': col[0], 'am': col[0],
-		g: col[1], 'em': col[1],
-		'd': col[2], bm: col[2],
-		a: col[3], gbm: col[3], 'f#m': col[3],
-		e: col[4], 'dbm': col[4], 'c#m': col[4],
-		b: col[5], 'abm': col[5], 'g#m': col[5],
-		'gb': col[6], 'f#': col[6], 'd#m': col[6], ebm: col[6],
-		db: col[7], 'c#': col[7], 'bbm': col[7], 'a#m': col[7],
-		ab: col[8], 'g#': col[8], 'fm': col[8],
-		'eb': col[9], 'd#': col[9], 'cm': col[9],
-		'bb': col[10], 'a#': col[10], gm: col[10],
-		f: col[11], 'dm': col[11]
+		'c': col[1], 'am': col[1],
+		g: col[0], 'em': col[0],
+		'd': col[11], bm: col[11],
+		a: col[10], gbm: col[10], 'f#m': col[10],
+		e: col[9], 'dbm': col[9], 'c#m': col[9],
+		b: col[8], 'abm': col[8], 'g#m': col[8],
+		'gb': col[7], 'f#': col[7], 'd#m': col[7], ebm: col[7],
+		db: col[6], 'c#': col[6], 'bbm': col[6], 'a#m': col[6],
+		ab: col[5], 'g#': col[5], 'fm': col[5],
+		'eb': col[4], 'd#': col[4], 'cm': col[4],
+		'bb': col[3], 'a#': col[3], gm: col[3],
+		f: col[2], 'dm': col[2]
 	}
 	;
+
+
+// let colors =
+// {
+// 	'c': col[0], 'am': col[0],
+// 	g: col[1], 'em': col[1],
+// 	'd': col[2], bm: col[2],
+// 	a: col[3], gbm: col[3], 'f#m': col[3],
+// 	e: col[4], 'dbm': col[4], 'c#m': col[4],
+// 	b: col[5], 'abm': col[5], 'g#m': col[5],
+// 	'gb': col[6], 'f#': col[6], 'd#m': col[6], ebm: col[6],
+// 	db: col[7], 'c#': col[7], 'bbm': col[7], 'a#m': col[7],
+// 	ab: col[8], 'g#': col[8], 'fm': col[8],
+// 	'eb': col[9], 'd#': col[9], 'cm': col[9],
+// 	'bb': col[10], 'a#': col[10], gm: col[10],
+// 	f: col[11], 'dm': col[11]
+// }
+// ;
 
 
 console.log('colors', colors);

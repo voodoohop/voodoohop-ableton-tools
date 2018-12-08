@@ -4,16 +4,16 @@ npm run package -- --all --asar --icon ./logo_voodoohop_transparent
 
 rm -r ./release/linux*
 cp voodoohop_transparent_black_icon.png ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
-cp -p "./Voodoohop Track Sender.amxd" ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
-cp -p "./Voodoohop Live Tools Master.amxd" ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
+cp -p "./Voodoohop Track Observer.amxd" ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
+cp -p "./Voodoohop Master.amxd" ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/Contents/Resources/
 # rm /tmp/VoodoohopLiveTools.zip
 ditto -c -k --sequesterRsrc --keepParent ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/ /tmp/VoodoohopLiveTools-mac.zip
 
 
 
 cp voodoohop_transparent_black_icon.png ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources
-cp -p "./Voodoohop Track Sender.amxd" ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources
-cp -p "./Voodoohop Live Tools Master.amxd" ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources
+cp -p "./Voodoohop Track Observer.amxd" ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources
+cp -p "./Voodoohop Master.amxd" ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources
 ditto -c -k --sequesterRsrc --keepParent ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/ /tmp/VoodoohopLiveTools-win.zip
 # rm -r "/Applications/VoodoohopLiveTools.app"
 # cp -rp "./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app" /Applications 

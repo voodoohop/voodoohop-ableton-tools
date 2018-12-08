@@ -11,10 +11,7 @@ import * as most from 'most';
 import { Map, fromJS } from 'immutable';
 
 import bpmPitchChange from './bpmPitchChange';
-// import { warpMarkerBeatMap } from "../transforms/warpMarkerMapper";
 
-
-// warpMarkerBeatMap(most.from(warpMarkers.get("warpMarkers").toArray()))
 const findWarpMarkerBpm = (warpMarkers, playingPosition) => {
   if (!warpMarkers)
     return null;
@@ -23,16 +20,17 @@ const findWarpMarkerBpm = (warpMarkers, playingPosition) => {
 };
 
 oscOutput.plug(combinedState
-  .flatMap(state =>
-    most.from(state.get('tracks').map((track, trackId) =>
+  .map(state =>
+    state.get('tracks').map((track, trackId) =>
       ({ warpMarkers: track.getIn(['fileData', 'warpMarkers']), playingPosition: track.getIn(['liveData', 'playingPosition']), pitch: track.getIn(['liveData', 'pitch']) || 0, trackId })
-    ).toArray())
-      .filter(({ warpMarkers, playingPosition }) => playingPosition !== undefined && warpMarkers !== undefined)
+    )
+      .filter(({ warpMarkers, playingPosition, trackId }) => playingPosition !== undefined && warpMarkers !== undefined && trackId !== "selectedClip")
       .map(({ warpMarkers, playingPosition, trackId, pitch }) =>
         ({ bpm: bpmPitchChange(findWarpMarkerBpm(warpMarkers.get('warpMarkers'), playingPosition), pitch), trackId })
       )
       .filter(({ bpm }) => bpm !== undefined)
-  )
+  ).skipStringifiedRepeats()
+  .flatMap(w => most.from(w.toArray()))
   .tap(log('warpedBpmCombined'))
   .map(({ trackId, bpm }) => Map({ trackId, args: fromJS(["warpedBpm", bpm]) }))
 );

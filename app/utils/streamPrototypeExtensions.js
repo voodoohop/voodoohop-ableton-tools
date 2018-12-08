@@ -2,7 +2,7 @@
 // import "./app/utils/streamPrototypeExtensions";
 
 
-import {of as mostof, empty as mostempty,  from as mostfrom,Stream} from 'most';
+import { of as mostof, empty as mostempty, from as mostfrom, Stream } from 'most';
 
 import Immutable from "immutable";
 import logger from "./streamLog";
@@ -15,6 +15,10 @@ Stream.prototype.skipImmRepeats = function () {
     return this.skipRepeatsWith(Immutable.is);
 };
 
+Stream.prototype.skipStringifiedRepeats = function () {
+    return this.skipRepeatsWith((a, b) => JSON.stringify(a) === JSON.stringify(b));
+};
+
 Stream.prototype.combinePrevious = function (functor) {
     return this.loop((prev, next) => (prev === null) ? { seed: next, value: null } : { seed: next, value: functor(prev, next) }, null).skip(1)
 };
@@ -23,7 +27,7 @@ Stream.prototype.throttledDebounce = function (interval) {
     // console.log("thisIs",this);
     var shared = this.scan((withId, data) => ({ data, id: withId.id + 1 }), { id: 0 }).skip(1).multicast();
     return shared.throttle(interval).merge(shared.debounce(interval))
-        .loop((lastId, current) => ({seed: Math.max(lastId,current.id), value: current.id>lastId ? current:null}) ,-1)
+        .loop((lastId, current) => ({ seed: Math.max(lastId, current.id), value: current.id > lastId ? current : null }), -1)
         .filter(n => n !== null)
         .map(d => d.data)
         .multicast();

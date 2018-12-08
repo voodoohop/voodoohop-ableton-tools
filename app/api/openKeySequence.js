@@ -1,16 +1,17 @@
 export const openkeySequence = [
-  "C",
-  "G",
-  "D",
-  "A",
-  "E",
+
   "B",
   "Gb",
   "Db",
   "Ab",
   "Eb",
   "Bb",
-  "F"
+  "F",
+  "C",
+  "G",
+  "D",
+  "A",
+  "E",
 ];
 
 export const camelotToKey = {

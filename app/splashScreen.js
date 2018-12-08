@@ -31,8 +31,8 @@ export default component2(({ foundMasterPlugin, foundTrackPlugin }) =>
   <div>
     <div className="ui inverted text container center aligned">
       <h2 className="ui header inverted">Voodoohop Live Tools</h2>
-      {getDraggableVoodoo({ message: "Drag to tracks you want to monitor", amxdPath: "Voodoohop Track Sender.amxd", disabled: foundTrackPlugin })}
-      {getDraggableVoodoo({ message: "Drag to your master track", amxdPath: "Voodoohop Live Tools Master.amxd", disabled: foundMasterPlugin })}
+      {getDraggableVoodoo({ message: "Drag to tracks you want to monitor", amxdPath: "Voodoohop Track Observer.amxd", disabled: foundTrackPlugin })}
+      {getDraggableVoodoo({ message: "Drag to your master track", amxdPath: "Voodoohop Master.amxd", disabled: foundMasterPlugin })}
     </div>
     <div className="ui inverted text container center aligned"><i style={{ color: "grey", fontSize: "10px" }}>if you updated recently delete the slave and master devices and re-add them from here</i></div>
     <div className="ui icon inverted warning message ">

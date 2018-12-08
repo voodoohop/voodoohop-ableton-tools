@@ -31,7 +31,7 @@ var client = new osc.Client('127.0.0.1', 7777);
 oscOutput
 	.tap(log("oscOutputBefore", (msg) => [msg.get("trackId")].concat(msg.get("args").toArray())))
 
-	.bufferedThrottle(20)
+	.bufferedThrottle(5)
 	// .tap((l)=>con)
 	// .merge(actionStream.filter(a => a.get("type")==="oscOutput"))
 	.scan((oscSender, oscMessage) => oscSender.then(() => new Promise(resolve => {

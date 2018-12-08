@@ -1,6 +1,6 @@
 {
   "name": "VoodoohopLiveTools",
-  "version": "0.9.3",
+  "version": "1.0.0",
   "description": "VOODOOHOP Live Tools",
   "lastUpdateDescription": "split fullscreen should work now\nshould not hang when it encounters problems with audio file now\nstability improvement.\n !IMPORTANT! please remove the max for live devices from your project and add the new ones if you haven't upgraded recently.",
   "packageDownloads": {
