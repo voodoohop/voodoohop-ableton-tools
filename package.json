@@ -2,7 +2,7 @@
   "name": "VoodoohopLiveTools",
   "version": "1.0.0",
   "description": "VOODOOHOP Live Tools",
-  "lastUpdateDescription": "split fullscreen should work now\nshould not hang when it encounters problems with audio file now\nstability improvement.\n !IMPORTANT! please remove the max for live devices from your project and add the new ones if you haven't upgraded recently.",
+  "lastUpdateDescription": "bpm following should be solid now\nramp for bpm follow\nuser interface updates",
   "packageDownloads": {
     "darwin": "https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1",
     "win32": "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1"
