@@ -35,3 +35,22 @@ oscOutput.plug(combinedState
   .map(({ trackId, bpm }) => Map({ trackId, args: fromJS(["warpedBpm", bpm]) }))
 );
 
+
+// transmit if warp markers were saved
+oscOutput.plug(combinedState
+  .map(state =>
+    state.get('tracks')
+      .map((track, trackId) =>
+        ({ trackId, saved: track.getIn(['fileData', 'warpMarkers', 'markersSaved'], "unknown") })
+      )
+  )
+  .tap(ms => console.log("warpSavved", JSON.stringify(ms)))
+  // .tap(log('warpSavedBeforeSkip2'))
+  .skipStringifiedRepeats()
+  .tap(ms => console.log("warpSavvedNoReps", JSON.stringify(ms)))
+
+  .flatMap(w => most.from(w.toArray()))
+  .filter(({ saved }) => saved !== "unknown")
+  .tap(log('warpSaved'))
+  .map(({ trackId, saved }) => Map({ trackId, args: fromJS(["warpSaved", saved ? 1 : 0]) }))
+);

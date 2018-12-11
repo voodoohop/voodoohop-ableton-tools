@@ -88,7 +88,7 @@ class AppRenderer extends React.Component {
                                 <KeyWheel keyNotation={state.getIn(['uiState', 'keyNotation'])} tracks={state.get('tracks')} />
                             </div> : null
                     }
-                    {process.env.NODE_ENV !== 'development' || !debugModeInDev
+                    {process.env.NODE_ENV !== 'development' || !debugModeInDev || true
                         ? <div />
                         : <div>
                             <ObjectInspector
