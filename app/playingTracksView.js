@@ -33,8 +33,8 @@ let TrackStatistic = component(({
   const bpmDifferenceToMaster = -(masterTempo && (masterTempo - repitchedBpm) || 0);
   const warpMarkersSaved = fileData.getIn(['warpMarkers', 'markersSaved']);
   const bpmNotFound = origBpm == 120 && !warpMarkersSaved;
-  return (<div
-    className="ui mini statistics inverted right floated tom blackTransparentBg">
+  return (<div style={{ display: "inline" }}
+    className="ui mini statistics inverted tom ">
     {(liveData.get("transposedKey"))
       ? <div className="statistic tom">
         <div className="value">
@@ -97,7 +97,7 @@ let TrackStatistic = component(({
             <i className="warning sign icon" /></span>}
       </div>
     </div>
-    <div className="statistic  tom">
+    { /* <div className="statistic  tom">
       <div
         className="value"
         style={beatsRemaining < 64
@@ -111,7 +111,8 @@ let TrackStatistic = component(({
       <div className="label">
         Bars
       </div>
-    </div>
+    </div> */
+    }
 
   </div>);
 });
@@ -137,9 +138,7 @@ const Track = component(function ({ track, trackId, uiState }) {
     fill: '#ffffff',
     textAnchor: 'middle'
   };
-  if (!track.getIn(['fileData', 'waveform']) && track.getIn(['liveData', 'file_path'])) {
-    return <div>{'loading'}</div>;
-  }
+
 
   let style = {
     padding: '3px',
@@ -152,6 +151,11 @@ const Track = component(function ({ track, trackId, uiState }) {
     style.border = '1px dotted white';
     style.backgroundColor = 'rgba(255,255,255,0.2)';
   }
+
+  if (!track.getIn(['fileData', 'waveform']) && track.getIn(['liveData', 'file_path'])) {
+    return <div className="ui vertical segment inverted loading" style={style}>loading</div>;
+  }
+
   // var audioContainer = ;
   const isSelectedClip = trackId === 'selectedClip';
   const isSelected = track.getIn(['liveData', 'isSelected']);
@@ -159,62 +163,7 @@ const Track = component(function ({ track, trackId, uiState }) {
     <div className="image" style={{
       position: 'relative'
     }}>
-      <div
-        className="content inverted"
-        style={{
-          position: 'absolute',
-          width: '100%'
-        }}
-      >
 
-        {track.get('fileData')
-          ? <TrackStatistic
-            masterTempo={uiState.get('masterTempo')}
-            isSelected={isSelected}
-            liveData={track.get('liveData')}
-            trackid={trackId}
-            fileData={track.get('fileData')}
-            keyFormatter={getKeyFormatter(uiState.get("keyNotation"))}
-          />
-          : ''
-        }
-        {(track.getIn(['liveData', 'playing']) || isSelected || isSelectedClip)
-          ? <div>
-            <div
-              className="ui header tom"
-              style={{
-                fontSize: '3.5vw',
-                fontWeight: isSelectedClip
-                  ? 'normal'
-                  : 'bold'
-              }}
-            >
-              <span className="blackTransparentBg">
-                {track.getIn(['fileData', 'id3Metadata', 'artist']) || track.getIn(['liveData', 'name'])}
-              </span>{track.getIn(['liveData', 'isSelected'])
-                ? <span
-                  style={{
-                    color: '#aaa'
-                  }}
-                  className="blackTransparentBg"
-                >
-                  &nbsp;(selected)</span>
-                : null}</div>
-            <span
-              className="blackTransparentBg"
-              style={{
-                fontSize: isSelectedClip
-                  ? '2vw'
-                  : '3vw',
-                margin: '0px',
-                color: '#aaa'
-              }}
-            >{track.getIn(['fileData', 'id3Metadata', 'title'])}</span>
-
-          </div>
-          : null
-        }
-      </div>
 
       <div
         style={{
@@ -222,7 +171,59 @@ const Track = component(function ({ track, trackId, uiState }) {
           height: '100%'
         }}
       >
-        <AudioContainer uiState={uiState} trackId={trackId} track={track} />
+
+        <div
+          className="content inverted"
+          style={{
+
+            width: '100%'
+          }}
+        >
+          <AudioContainer uiState={uiState} trackId={trackId} track={track} />
+
+          {(track.getIn(['liveData', 'playing']) || isSelected || isSelectedClip)
+            ?
+            <div
+              style={{
+                fontSize: '3.5vw',
+                fontWeight: 'normal'
+              }}
+            >
+              <table width="100%" border="1"><tr>
+                <td width="33%" style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100px" }}>
+                  {track.getIn(['fileData', 'id3Metadata', 'artist']) || track.getIn(['liveData', 'name'])}
+                </td>
+                <td width="33%" style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100px" }}>
+                  <span
+                    style={{
+                      fontSize: "3.5vw",
+                      margin: '0px',
+                      color: '#aaa'
+                    }}
+                  >{track.getIn(['fileData', 'id3Metadata', 'title'])}</span>
+                </td>
+                <td align="right" width="33%" style={{ textAlign: "right" }}>
+                  {track.get('fileData')
+                    ? <TrackStatistic
+                      masterTempo={uiState.get('masterTempo')}
+                      isSelected={isSelected}
+                      liveData={track.get('liveData')}
+                      trackid={trackId}
+                      fileData={track.get('fileData')}
+                      keyFormatter={getKeyFormatter(uiState.get("keyNotation"))}
+                    />
+                    : ''
+                  }
+                </td>
+              </tr>
+              </table>
+
+
+            </div>
+            : null
+          }
+        </div>
+
       </div>
 
     </div>
@@ -235,7 +236,7 @@ const DraggableTrack = Track; // disabled dragging DraggableChild(Track);
 import log from './utils/streamLog';
 
 const logger = log('playingTracksView');
-// var RTrack = reactive(Track); import { CardStack, Card } from
+// var RTrack = reactive(Track); import {CardStack, Card } from
 // 'react-cardstack';
 
 const PlayingTracks = component(({ availableTracks, uiState }) => {

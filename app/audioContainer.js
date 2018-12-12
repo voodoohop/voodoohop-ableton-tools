@@ -111,7 +111,7 @@ const DetailViews = component2(({
           fill: 'rgba(0,0,0,0.1)',
           strokeWidth: '1'
         }}
-        musicalKey={undefined}
+        musicalKey={transposedKey}
         {...{ startOffset, endOffset, trackId }} />
       : null
     }
@@ -184,7 +184,7 @@ export default component2(({ uiState, trackId, track }) => {
               <rect
                 stroke="none"
                 fill="white"
-                opacity={0.5}
+                opacity={1}
                 x={startRenderPos}
                 width={Math.max(playingPosX - startRenderPos, 1)}
                 y={0}
@@ -218,16 +218,17 @@ export default component2(({ uiState, trackId, track }) => {
 
                     <DetailViews
                       maskId={"Mask" + trackId}
-                      {...{ waveform, trackId, waveformLPF, midiData, gain, transposedChords, transposedKey }} /> {(liveData.get("looping") === 1)
-                        ? <rect
-                          stroke="white"
-                          fill="rgba(255,255,255,0.1)"
-                          opacity="0.9"
-                          y="0"
-                          x={liveData.get("loop_start")}
-                          width={liveData.get("loop_end") - liveData.get("loop_start")}
-                          height={127} />
-                        : null}
+                      {...{ waveform, trackId, waveformLPF, midiData, gain, transposedChords, transposedKey }} />
+                    {(liveData.get("looping") === 1)
+                      ? <rect
+                        stroke="white"
+                        fill="rgba(255,255,255,0.1)"
+                        opacity="0.9"
+                        y="0"
+                        x={liveData.get("loop_start")}
+                        width={liveData.get("loop_end") - liveData.get("loop_start")}
+                        height={127} />
+                      : null}
                     {// repeat looped waveform if it finishes at the end of the loop marker
                       (liveData.get("looping") === 1 && endMarker <= liveData.get("loop_end"))
                         ? <g opacity="0.6">
@@ -248,10 +249,11 @@ export default component2(({ uiState, trackId, track }) => {
                         : null}
 
                     {
+                      <line x1={playingPosX} x2={playingPosX} y1="0" y2="200" stroke="white" strokeWidth="1" />
                       // <BeatClickGrid
                       // startMarker={startMarker}
                       // endMarker={liveData.get("end_marker")}
-                      // trackId={trackId} />
+                      // trackId={trackId} />   
                     }
                   </g>
 
