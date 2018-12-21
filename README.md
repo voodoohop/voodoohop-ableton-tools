@@ -35,7 +35,7 @@ The** Voodoohop Live Tools** introduce the concept of tempo following to the *Se
 
 ## Usage
 
-<center><iframe width="560" height="315" src="https://www.youtube.com/embed/4TBwbnvVHJM" frameborder="0" allowfullscreen></iframe></center>
+[Video](https://www.youtube.com/embed/4TBwbnvVHJM)
 
 The waveforms, as well as harmonies of tracks playing, are shown in a convenient floating window which is possible to show and hide using a key-combination or midi controller. Behind the scenes, the warp markers of audio files are read and the properly warped waveforms are shown with aligned playing positions. This allows to time a transition in terms of break-down and drops. A limitation of Ableton Live for DJing has always been the fact that it only shows the Waveform of one track at a time.
 
