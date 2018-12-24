@@ -66,10 +66,9 @@ export const availableTracks$ = combinedState
     .skipImmRepeats()
     .multicast();
 
-
 oscOutput.plug(
     availableTracks$
-        // .sampleWith(tracksRequested)
+        .sampleWith(tracksRequested)
         .map(trackIds => Map({ trackId: 'got_tracks', args: trackIds }))
 )
     // .combine(

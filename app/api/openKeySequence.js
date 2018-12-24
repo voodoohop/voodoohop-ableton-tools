@@ -1,11 +1,11 @@
 export const openkeySequence = [
 
   "B",
-  "Gb",
-  "Db",
-  "Ab",
-  "Eb",
-  "Bb",
+  "F#",
+  "C#",
+  "G#",
+  "D#",
+  "A#",
   "F",
   "C",
   "G",
@@ -136,12 +136,51 @@ const camToOpenKey = {
   "7a": "12m"
 }
 
+const normalizeKeys = {
+  "c": "Cm",
+  "am": "Am",
+  "g": "G",
+  "em": "Em",
+  "d": "D",
+  "bm": "Bm",
+  "a": "A",
+  "gbm": "Gbm",
+  "f#m": "Gbm",
+  "e": "E",
+  "dbm": "Dbm",
+  "c#m": "Dbm",
+  "b": "B",
+  "abm": "Abm",
+  "g#m": "Abm",
+  "gb": "Gb",
+  "f#": "Gb",
+  "d#m": "Ebm",
+  "ebm": "Ebm",
+  "db": "Db",
+  "c#": "Db",
+  "bbm": "Bbm",
+  "a#m": "Bbm",
+  "ab": "Ab",
+  "g#": "Ab",
+  "fm": "Fm",
+  "eb": "Eb",
+  "d#": "Eb",
+  "cm": "Cm",
+  "bb": "Bb",
+  "a#": "Bb",
+  "gm": "Gm",
+  "f": "F",
+  "dm": "Dm"
+};
+
 export const keysToCamelot = (key) => key
   ? keysToCam[key.toLowerCase()]
   : "undefined";
 
 export const keysToOpenkey = (key) => camToOpenKey[keysToCamelot(key)];
 
+
+export const keysNormalize = (key) => key ? normalizeKeys[key.toLowerCase()] : "undefined"
 // const logInOut = (notation,keyFormatter) => (key) => {     const result =
 // keyFormatter(key);     console.log("formatting key", key, "result:",
 // result,"notation:",notation,keyFormatter);     // console.trace();     return
@@ -155,7 +194,7 @@ export const getKeyFormatter = (keyNotation) => {
     return keysToCamelot;
   if (notation === "openkey")
     return keysToOpenkey;
-  return identity;//.replace("b", '\u266D').replace("#", '\u266F');
+  return keysNormalize;//.replace("b", '\u266D').replace("#", '\u266F');
 }
 
 

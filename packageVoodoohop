@@ -10,7 +10,7 @@ cp -p "./Voodoohop Master.amxd" ./release/darwin-x64/VoodoohopLiveTools-darwin-x
 ditto -c -k --sequesterRsrc --keepParent ./release/darwin-x64/VoodoohopLiveTools-darwin-x64/VoodoohopLiveTools.app/ /tmp/VoodoohopLiveTools-mac.zip
 
 
-
+  
 cp voodoohop_transparent_black_icon.png ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources
 cp -p "./Voodoohop Track Observer.amxd" ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources
 cp -p "./Voodoohop Master.amxd" ./release/win32-ia32/VoodoohopLiveTools-win32-ia32/resources

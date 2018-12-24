@@ -12,10 +12,11 @@ import { oscInputStream, oscOutput } from "../utils/oscInOut";
 // import {midiClipStore} from "."; import {liveDataMidiLinker} from
 // "./mididataLinker";
 
-oscOutput.push(Immutable.Map({
-  trackId: "sendAll",
-  args: Immutable.List()
-}));
+setTimeout(() =>
+  oscOutput.push(Immutable.Map({
+    trackId: "sendAll",
+    args: Immutable.List()
+  })), 5000);
 
 
 const oscFilteredInput = oscInputStream
@@ -32,7 +33,7 @@ const oscFilteredInput = oscInputStream
 
 
 
-const liveIn = 
+const liveIn =
   // most.empty();
   oscFilteredInput
     // .tap(log("liveDataInput1"))//.switch( (accumData,liveDataInput)

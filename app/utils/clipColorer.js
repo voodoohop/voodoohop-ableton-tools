@@ -13,7 +13,7 @@ import { Map, List } from "immutable";
 import tinycolor from "tinycolor2";
 
 
-const calcAbletonRepresentation = ({r, g, b}) => r * (2 ** 16) + g * (2 ** 8) + b;
+const calcAbletonRepresentation = ({ r, g, b }) => r * (2 ** 16) + g * (2 ** 8) + b;
 
 const getAbletonCol = (keyInfo) =>
     calcAbletonRepresentation(tinycolor(keysToColors(keyInfo.get("transposedKey"))).toRgb());
@@ -42,11 +42,11 @@ oscOutput.plug(
         )
         // .map(selectedTrackState => )
         .skipImmRepeats()
-        .debounce(50)
+        .debounce(25)
         .tap(log("colorizeClipsBeforeCheckTrack"))
         .combine((s, availableTracks) =>
             availableTracks.find(t => t == s.getIn(["liveData", "trackNumber"])) !== undefined ? s : null
-        , availableTracks$.tap(log("availableTracks")))
+            , availableTracks$.tap(log("availableTracks")))
         .filter(s => s !== null)
         .map(s => Map({
             transposedKey: s.getIn(["liveData", "transposedKey"]),
@@ -65,11 +65,11 @@ oscOutput.plug(
             mostFrom([
                 keyInfo.getIn(["update", "color"]) ? Map({
                     trackId: "selectedClip",
-                    args: List([keyInfo.get("clipId"), "color", getAbletonCol(keyInfo)])
+                    args: List(["changeClip", keyInfo.get("clipId"), "color", getAbletonCol(keyInfo)])
                 }) : null,
                 keyInfo.getIn(["update", "name"]) ? Map({
                     trackId: "selectedClip",
-                    args: List([keyInfo.get("clipId"), "name", alterName(keyInfo)])
+                    args: List(["changeClip", keyInfo.get("clipId"), "name", alterName(keyInfo)])
                 }) : null]
                 .filter(f => f != null)
             ))

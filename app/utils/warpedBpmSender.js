@@ -44,13 +44,33 @@ oscOutput.plug(combinedState
         ({ trackId, saved: track.getIn(['fileData', 'warpMarkers', 'markersSaved'], "unknown") })
       )
   )
-  .tap(ms => console.log("warpSavved", JSON.stringify(ms)))
+  // .tap(ms => console.log("warpSavved", JSON.stringify(ms)))
   // .tap(log('warpSavedBeforeSkip2'))
   .skipStringifiedRepeats()
-  .tap(ms => console.log("warpSavvedNoReps", JSON.stringify(ms)))
+  // .tap(ms => console.log("warpSavvedNoReps", JSON..stringify(ms)))
 
   .flatMap(w => most.from(w.toArray()))
   .filter(({ saved }) => saved !== "unknown")
   .tap(log('warpSaved'))
   .map(({ trackId, saved }) => Map({ trackId, args: fromJS(["warpSaved", saved ? 1 : 0]) }))
+);
+
+
+// transmit transposed key
+oscOutput.plug(combinedState
+  .map(state =>
+    state.get('tracks')
+      .map((track, trackId) =>
+        ({ trackId, key: track.getIn(['liveData', 'transposedKey'], "unknown") })
+      )
+  )
+  // .tap(ms => console.log("transposedKey", JSON.stringify(ms)))
+  // .tap(log('warpSavedBeforeSkip2'))
+  .skipStringifiedRepeats()
+  // .tap(ms => console.log("warpSavvedNoReps", JSON.stringify(ms)))
+
+  .flatMap(w => most.from(w.toArray()))
+  .filter(({ key }) => key !== "unknown")
+  .tap(log('transposedKey'))
+  .map(({ trackId, key }) => Map({ trackId, args: fromJS(["transposedKey", key]) }))
 );

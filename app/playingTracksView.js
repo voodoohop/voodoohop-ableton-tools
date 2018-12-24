@@ -78,7 +78,7 @@ let TrackStatistic = component(({
                 style={{
                   color: Math.abs(Math.round(bpmDifferenceToMaster)) > 5
                     ? "red"
-                    : "#aaa",
+                    : "white",
                   fontWeight: "normal",
                   fontSize: "80%"
                 }}>
@@ -189,7 +189,7 @@ const Track = component(function ({ track, trackId, uiState }) {
                 fontWeight: 'normal'
               }}
             >
-              <table width="100%" border="1"><tr>
+              <table width="100%" ><tbody><tr>
                 <td width="33%" style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100px" }}>
                   {track.getIn(['fileData', 'id3Metadata', 'artist']) || track.getIn(['liveData', 'name'])}
                 </td>
@@ -202,7 +202,7 @@ const Track = component(function ({ track, trackId, uiState }) {
                     }}
                   >{track.getIn(['fileData', 'id3Metadata', 'title'])}</span>
                 </td>
-                <td align="right" width="33%" style={{ textAlign: "right" }}>
+                <td width="33%" style={{ textAlign: "right" }}>
                   {track.get('fileData')
                     ? <TrackStatistic
                       masterTempo={uiState.get('masterTempo')}
@@ -216,6 +216,7 @@ const Track = component(function ({ track, trackId, uiState }) {
                   }
                 </td>
               </tr>
+              </tbody>
               </table>
 
 

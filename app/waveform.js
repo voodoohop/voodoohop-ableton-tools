@@ -117,7 +117,7 @@ const WaveformPoly = component2(({
           }}
           key={`${segment.get('startOffset')}_${segment.get('endOffset')}`}
           fill={tinycolor(keysToColors(segment.get('chord')))
-            // .lighten(5)
+            // .lighten(5)  
             .toHexString()}
           points={points.join(' ')}
         />);

@@ -37,7 +37,7 @@ const ConnectNodes = component(({ start, end, thickness, transpose }) => {
             <stop offset="100%" style={{ stopColor: getNoteColor(end.datum.note), stopOpacity: 1 }} />
         </linearGradient>
         <path id={"path_" + gradientId} fill="transparent" d={`M ${start.x * radiusProp} ${start.y * radiusProp} Q 0 0 ${end.x * radiusProp} ${end.y * radiusProp}`} stroke={`url(#${gradientId})`} strokeWidth={12 * thickness} />
-        <text fontFamily="Arial" fontSize="12px" fill="rgba(0,0,0,0.8)" fontWeight="bold" x={100} dy={4}>
+        <text fontSize="12px" fill="rgba(0,0,0,0.8)" fontWeight="bold" x={100} dy={4}>
             <textPath href={"#path_" + gradientId} >
                 {"" + (transpose > 0 ? "+" : "") + transpose}&rarr;
     </textPath>
@@ -76,23 +76,23 @@ const KeyLabel = component(({ x, y, datum, connectedNotes }) => {
         : null
     }
 
-        <text textAnchor="middle" x={x} y={y} style={{ strokeWidth: "0.4px", stroke: "none", fill: "black", fontWeight: "bold", fontFamily: "Arial", fontSize: data.shortLabel ? "1.5em" : "1em" }}>
+        <text textAnchor="middle" x={x} y={y} style={{ strokeWidth: "0.4px", stroke: "none", fill: "black", fontWeight: "bold", fontSize: data.shortLabel ? "1.5em" : "1em" }}>
             {data.keyLabel}
         </text>
         <defs>
             <filter x="0" y="0" width="1" height="1" id="solid">
-                <feFlood floodColor="rgba(0,0,0,0.5)" />
+                <feFlood floodColor="rgba(0,0,0,1)" />
                 <feComposite in="SourceGraphic" />
             </filter>
         </defs>
         {Immutable.Seq(data.trackInfos).map(({ title, artist }, index, trackInfos) => <g key={`detailsTrack_${index}`}>
             {artist ?
-                <text filter="url(#solid)" key={"artistlabel_" + index} textAnchor="middle" x={textX} y={textY - (trackInfos.size * 12) + (compactTitles ? 12 : 0) + 5 + index * textDist} style={{ fill: "rgb(250,250,250)", fontFamily: "Arial", fontSize: "1.1em" }}>
+                <text filter="url(#solid)" key={"artistlabel_" + index} textAnchor="middle" x={textX} y={textY - (trackInfos.size * 12) + (compactTitles ? 12 : 0) + 5 + index * textDist} style={{ fill: "rgb(250,250,250)", fontSize: "1.1em" }}>
                     {shortenInfo(artist, 10) + " " + (compactTitles ? " - " + shortenInfo(title, 7) : "")}
                 </text>
                 : null}
             {!compactTitles && title ?
-                <text filter="url(#solid)" key={"titlelable_" + index} textAnchor="middle" x={textX} y={textY - ((trackInfos.size - 1) * 12) + 5 + index * textDist} style={{ fill: "rgb(210,210,210)", fontFamily: "Arial", fontSize: "1em" }}>
+                <text filter="url(#solid)" key={"titlelable_" + index} textAnchor="middle" x={textX} y={textY - ((trackInfos.size - 1) * 12) + 5 + index * textDist} style={{ fill: "rgb(210,210,210)", fontSize: "1em" }}>
                     {title}
                 </text>
                 : null}
@@ -125,7 +125,7 @@ const keyLabelModified$ = Subject();
 const allKeyLabels$ = keyLabelModified$
     .scan((keyLabels, newKeyLabelProps) =>
         keyLabels.update(keysToColors(newKeyLabelProps.getIn(["datum", "note"])), props => newKeyLabelProps)
-    , Immutable.Map())
+        , Immutable.Map())
     .skipImmRepeats()
     .debounce(10)
     // .tap(log("allKeyLabels$"))
@@ -200,7 +200,7 @@ const DynamicKeyWheel = component(({ tracks, keyNotation, canShortenLabel }) => 
         style={{
             labels: {
                 fontWeight: (data) => data.y > 1 ? "bold" : "normal",
-                fontFamily: "arial",
+
                 fill: data => getNoteColor(data.note),//'rgb(100,100,100)',
                 opacity: 1,
                 strokeWidth: (data) => data.y > 1 ? "1px" : "0.4px"
