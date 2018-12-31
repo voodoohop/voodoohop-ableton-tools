@@ -137,7 +137,7 @@ const camToOpenKey = {
 }
 
 const normalizeKeys = {
-  "c": "Cm",
+  "c": "C",
   "am": "Am",
   "g": "G",
   "em": "Em",

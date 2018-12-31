@@ -1,8 +1,8 @@
 {
   "name": "VoodoohopLiveTools",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "VOODOOHOP Live Tools",
-  "lastUpdateDescription": "bpm following should be solid now\nramp for bpm follow\nuser interface updates\n--- manual download ---\n mac: https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1\nwindows: https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1'>windows</a>",
+  "lastUpdateDescription": "fixed small error where Cminor was displayed instead of C\nbpm following should be solid now\nramp for bpm follow\nuser interface updates\n--- manual download ---\n mac: https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1\nwindows: https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1'>windows</a>",
   "packageDownloads": {
     "darwin": "https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1",
     "win32": "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1"
@@ -156,6 +156,7 @@
     "jsdom": "^9.0.0",
     "labella": "^1.1.2",
     "lodash": "^4.17.4",
+    "max4node": "^0.1.2",
     "meyda": "^3.1.1",
     "minimist": "^1.2.0",
     "mocha": "^2.4.5",
