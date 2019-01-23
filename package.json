@@ -2,7 +2,7 @@
   "name": "VoodoohopLiveTools",
   "version": "1.0.5",
   "description": "VOODOOHOP Live Tools",
-  "lastUpdateDescription": "hopefully fixed a bug that would occasionally completely crash live when tempo locking is one\n--- manual download ---\n mac: https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1\nwindows: https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1'>windows</a>",
+  "lastUpdateDescription": "hopefully fixed a bug that would occasionally completely crash live when tempo locking is on\n--- manual download ---\n mac: https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1\nwindows: https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1'>windows</a>",
   "packageDownloads": {
     "darwin": "https://www.dropbox.com/s/9u71bcqjqfulipv/VoodoohopLiveTools-mac.zip?dl=1",
     "win32": "https://www.dropbox.com/s/pv611fs2uvdsd69/VoodoohopLiveTools-win.zip?dl=1"
