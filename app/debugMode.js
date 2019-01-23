@@ -1,3 +1,3 @@
-const debugModeInDev = true;
+const debugModeInDev = false;
 
 export default debugModeInDev;      
