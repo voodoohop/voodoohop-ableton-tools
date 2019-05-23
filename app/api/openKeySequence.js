@@ -67,8 +67,6 @@ export const openKeyToKey = {
   "6m": "G#m"
 }
 
-import keysToColors from "./keysToColors";
-
 // import {invert} from "lodash"; const camelotToColors =
 // invert(camelotToKey).map((camelot,key) => keysToColor)
 
