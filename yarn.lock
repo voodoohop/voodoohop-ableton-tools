@@ -36,7 +36,7 @@
   version "7.0.43"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.43.tgz#a187e08495a075f200ca946079c914e1a5fe962c"
 
-File@^0.10.2, File@kevinkid/File#patch-1:
+File@^0.10.2:
   version "0.10.2"
   resolved "https://codeload.github.com/kevinkid/File/tar.gz/18f239aecb3ed6d505714380692e73430c841579"
   dependencies:
@@ -161,9 +161,10 @@ ajv@^5.1.0:
     json-schema-traverse "^0.3.0"
     json-stable-stringify "^1.0.1"
 
-"alac@https://github.com/voodoohop/alac.js":
+"alac@git+https://github.com/audiocogs/alac.js.git":
   version "0.1.0"
-  resolved "https://github.com/voodoohop/alac.js#055d4a03386251f757ab954ce8e347edb72d9b27"
+  uid "055d4a03386251f757ab954ce8e347edb72d9b27"
+  resolved "git+https://github.com/audiocogs/alac.js.git#055d4a03386251f757ab954ce8e347edb72d9b27"
 
 align-text@^0.1.1, align-text@^0.1.3:
   version "0.1.4"
@@ -349,22 +350,21 @@ asap@^2.0.6, asap@~2.0.3:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
 
-asar@^0.12.0:
-  version "0.12.4"
-  resolved "https://registry.yarnpkg.com/asar/-/asar-0.12.4.tgz#2dd3f116882eab8c0f23b754792a82a7d9fce171"
+asar@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/asar/-/asar-0.11.0.tgz#b926e792c315f8c048c43371e325b09c97a76464"
   dependencies:
-    chromium-pickle-js "^0.2.0"
+    chromium-pickle-js "^0.1.0"
     commander "^2.9.0"
     cuint "^0.2.1"
     glob "^6.0.4"
-    minimatch "^3.0.3"
+    minimatch "^3.0.0"
     mkdirp "^0.5.0"
     mksnapshot "^0.3.0"
-    tmp "0.0.28"
 
-asar@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/asar/-/asar-0.13.0.tgz#df33dd9d01bff842464d0d9f095740d4a62afb14"
+asar@^0.12.0:
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/asar/-/asar-0.12.4.tgz#2dd3f116882eab8c0f23b754792a82a7d9fce171"
   dependencies:
     chromium-pickle-js "^0.2.0"
     commander "^2.9.0"
@@ -677,13 +677,14 @@ babel-helpers@^6.24.1:
     babel-runtime "^6.22.0"
     babel-template "^6.24.1"
 
-babel-loader@7.1.1:
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/babel-loader/-/babel-loader-7.1.1.tgz#b87134c8b12e3e4c2a94e0546085bc680a2b8488"
+babel-loader@^6.3.2:
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/babel-loader/-/babel-loader-6.4.1.tgz#0b34112d5b0748a8dcdbf51acf6f9bd42d50b8ca"
   dependencies:
-    find-cache-dir "^1.0.0"
-    loader-utils "^1.0.2"
+    find-cache-dir "^0.1.1"
+    loader-utils "^0.2.16"
     mkdirp "^0.5.1"
+    object-assign "^4.0.1"
 
 babel-messages@^6.23.0:
   version "6.23.0"
@@ -708,12 +709,6 @@ babel-plugin-dev-expression@^0.2.1:
 babel-plugin-react-transform@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/babel-plugin-react-transform/-/babel-plugin-react-transform-2.0.2.tgz#515bbfa996893981142d90b1f9b1635de2995109"
-  dependencies:
-    lodash "^4.6.1"
-
-babel-plugin-react-transform@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-transform/-/babel-plugin-react-transform-3.0.0.tgz#402f25137b7bb66e9b54ead75557dfbc7ecaaa74"
   dependencies:
     lodash "^4.6.1"
 
@@ -1114,9 +1109,9 @@ babel-plugin-transform-strict-mode@^6.24.1:
     babel-runtime "^6.22.0"
     babel-types "^6.24.1"
 
-babel-plugin-webpack-loaders@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-webpack-loaders/-/babel-plugin-webpack-loaders-0.9.0.tgz#686ec1cab9db348958f990a95f57090f7e16b743"
+babel-plugin-webpack-loaders@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-webpack-loaders/-/babel-plugin-webpack-loaders-0.8.0.tgz#1ec5255e2c9de8d5226c58a099890d935a876065"
   dependencies:
     babel-preset-es2015 "^6.3.13"
     babel-preset-stage-0 "^6.5.0"
@@ -1446,6 +1441,10 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
+bluebird@^2.6.4:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
+
 bluebird@^3.1.1, bluebird@^3.4.7:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
@@ -1567,9 +1566,28 @@ browserslist@^2.4.0:
     caniuse-lite "^1.0.30000718"
     electron-to-chromium "^1.3.18"
 
+buffer-alloc-unsafe@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/buffer-alloc-unsafe/-/buffer-alloc-unsafe-1.1.0.tgz#bd7dc26ae2972d0eda253be061dba992349c19f0"
+
+buffer-alloc@^1.1.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/buffer-alloc/-/buffer-alloc-1.2.0.tgz#890dd90d923a873e08e10e5fd51a57e5b7cce0ec"
+  dependencies:
+    buffer-alloc-unsafe "^1.1.0"
+    buffer-fill "^1.0.0"
+
 buffer-crc32@^0.2.1:
   version "0.2.13"
   resolved "https://registry.yarnpkg.com/buffer-crc32/-/buffer-crc32-0.2.13.tgz#0d333e3f00eac50aa1454abd30ef8c2a5d9a7242"
+
+buffer-fill@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/buffer-fill/-/buffer-fill-1.0.0.tgz#f8f78b76789888ef39f205cd637f68e702122b2c"
+
+buffer-from@^1.0.0:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.2.tgz#2b146a6fd72e80b4f55d255f35ed59a3a9a41bd5"
 
 buffer-xor@^1.0.3:
   version "1.0.3"
@@ -1730,6 +1748,10 @@ chromedriver@^2.27.3:
     mkdirp "^0.5.1"
     request "^2.81.0"
     rimraf "^2.5.4"
+
+chromium-pickle-js@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/chromium-pickle-js/-/chromium-pickle-js-0.1.0.tgz#1d48b107d82126a2f3e211c2ea25f803ba551b21"
 
 chromium-pickle-js@^0.2.0:
   version "0.2.0"
@@ -2464,11 +2486,21 @@ dateformat@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-2.2.0.tgz#4065e2013cf9fb916ddfd82efb506ad4c6769062"
 
+dct@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/dct/-/dct-0.0.3.tgz#19390a834388a1d3a1373f9edfe50622074849d3"
+
 debug-menu@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/debug-menu/-/debug-menu-0.4.0.tgz#c8fb7cd07a230ba4cc19629faac508eaa76b382e"
   dependencies:
     electron-debug "^0.5.2"
+
+debug@2, debug@2.6.9, debug@^2.1.1, debug@^2.1.3, debug@^2.2.0, debug@^2.5.1, debug@^2.6.3, debug@^2.6.8:
+  version "2.6.9"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
+  dependencies:
+    ms "2.0.0"
 
 debug@2.2.0:
   version "2.2.0"
@@ -2481,12 +2513,6 @@ debug@2.3.3:
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.3.tgz#40c453e67e6e13c901ddec317af8986cda9eff8c"
   dependencies:
     ms "0.7.2"
-
-debug@2.6.9, debug@^2.1.1, debug@^2.1.3, debug@^2.2.0, debug@^2.5.1, debug@^2.6.3, debug@^2.6.8:
-  version "2.6.9"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
-  dependencies:
-    ms "2.0.0"
 
 debuglog@~1.0.0, debuglog@~1.0.1:
   version "1.0.1"
@@ -3603,13 +3629,13 @@ finalhandler@~1.0.6:
     statuses "~1.3.1"
     unpipe "~1.0.0"
 
-find-cache-dir@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/find-cache-dir/-/find-cache-dir-1.0.0.tgz#9288e3e9e3cc3748717d39eade17cf71fc30ee6f"
+find-cache-dir@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/find-cache-dir/-/find-cache-dir-0.1.1.tgz#c8defae57c8a52a8a784f9e31c57c742e993a0b9"
   dependencies:
     commondir "^1.0.1"
-    make-dir "^1.0.0"
-    pkg-dir "^2.0.0"
+    mkdirp "^0.5.1"
+    pkg-dir "^1.0.0"
 
 find-index@^0.1.1:
   version "0.1.1"
@@ -3626,7 +3652,7 @@ find-up@^1.0.0:
     path-exists "^2.0.0"
     pinkie-promise "^2.0.0"
 
-find-up@^2.0.0, find-up@^2.1.0:
+find-up@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/find-up/-/find-up-2.1.0.tgz#45d1b7e506c717ddd482775a2b77920a3c0c57a7"
   dependencies:
@@ -3681,9 +3707,9 @@ flac-parser@^0.3.2:
     stream-tokenizr "~0.3.0"
     vorbis-parser "~0.3.1"
 
-"flac.js@https://github.com/aleen42/flac.js":
+flac.js@^0.2.1:
   version "0.2.1"
-  resolved "https://github.com/aleen42/flac.js#6f7bfa86f96c42782e44e293cea3f330e455cbd7"
+  resolved "https://registry.yarnpkg.com/flac.js/-/flac.js-0.2.1.tgz#88500d8858f5c4f85b7ea9c548937def20602f40"
 
 flagged-respawn@^0.3.2:
   version "0.3.2"
@@ -5177,6 +5203,11 @@ jsesc@~0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-0.5.0.tgz#e7dee66e35d6fc16f710fe91d5cf69f70f08911d"
 
+"jsfft@git://github.com/dntj/jsfft.git":
+  version "0.0.4"
+  uid "19d65ed77f5590be1cab91186e42ca7047dd09db"
+  resolved "git://github.com/dntj/jsfft.git#19d65ed77f5590be1cab91186e42ca7047dd09db"
+
 json-loader@^0.5.4:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/json-loader/-/json-loader-0.5.7.tgz#dca14a70235ff82f0ac9a3abeb60d337a365185d"
@@ -5885,12 +5916,6 @@ macaddress@^0.2.8:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/macaddress/-/macaddress-0.2.8.tgz#5904dc537c39ec6dbefeae902327135fa8511f12"
 
-make-dir@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-1.0.0.tgz#97a011751e91dd87cfadef58832ebb04936de978"
-  dependencies:
-    pify "^2.3.0"
-
 make-error-cause@^1.1.1:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/make-error-cause/-/make-error-cause-1.2.2.tgz#df0388fcd0b37816dff0a5fb8108939777dcbc9d"
@@ -5920,6 +5945,13 @@ map-stream@~0.0.3, map-stream@~0.0.6:
 math-expression-evaluator@^1.2.14:
   version "1.2.17"
   resolved "https://registry.yarnpkg.com/math-expression-evaluator/-/math-expression-evaluator-1.2.17.tgz#de819fdbcd84dccd8fae59c6aeb79615b9d266ac"
+
+max4node@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/max4node/-/max4node-0.1.2.tgz#2dfc61185782fb7cdf4510c36e603769c27f6c71"
+  dependencies:
+    bluebird "^2.6.4"
+    osc-min "^0.2.0"
 
 md5.js@^1.3.4:
   version "1.3.4"
@@ -5978,6 +6010,15 @@ merge-stream@^1.0.0:
 methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
+
+meyda@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/meyda/-/meyda-3.1.1.tgz#ca6752d2e0713d40e59e182b921d1769fda89e8f"
+  dependencies:
+    dct "0.0.3"
+    jsfft "git://github.com/dntj/jsfft.git"
+    node-getopt "^0.2.3"
+    wav "^1.0.0"
 
 micromatch@^2.1.5, micromatch@^2.3.7:
   version "2.3.11"
@@ -6082,9 +6123,9 @@ minimist@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.2.0.tgz#4dffe525dae2b864c66c2e23c6271d7afdecefce"
 
-minimist@^1.1.0, minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
+minimist@^1.1.0, minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.6.tgz#8637a5b759ea0d6e98702cfb3a9283323c93af44"
 
 minimist@~0.0.1:
   version "0.0.10"
@@ -6286,6 +6327,10 @@ node-find-files@0.0.4:
   dependencies:
     async "0.2.6"
 
+node-getopt@^0.2.3:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/node-getopt/-/node-getopt-0.2.4.tgz#3afb554717e5479f4bb10eb7327504650811c7a2"
+
 node-gyp@^3.6.0:
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/node-gyp/-/node-gyp-3.6.2.tgz#9bfbe54562286284838e750eac05295853fa1c60"
@@ -6397,13 +6442,13 @@ node-notifier@^5.0.1:
     shellwords "^0.1.0"
     which "^1.2.12"
 
-"node-osc@https://github.com/voodoohop/node-osc":
-  version "2.0.4"
-  resolved "https://github.com/voodoohop/node-osc#582c92ab72c737574a03fbe5a27c7e9e5d2f8b02"
+"node-osc@https://github.com/voodoohop/node-osc/tarball/master":
+  version "4.1.0"
+  uid f52a84768970f5f884188ddcbdf86a34902ba57d
+  resolved "https://github.com/voodoohop/node-osc/tarball/master#f52a84768970f5f884188ddcbdf86a34902ba57d"
   dependencies:
     jspack "0.0.4"
     osc-min "^1.1.1"
-    semver "^5.1.0"
 
 node-pre-gyp@^0.6.36:
   version "0.6.38"
@@ -6681,6 +6726,12 @@ os-tmpdir@^1.0.0, os-tmpdir@^1.0.1, os-tmpdir@~1.0.1, os-tmpdir@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
 
+osc-min@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/osc-min/-/osc-min-0.2.0.tgz#b0864d631949a23b390a31334afac52c89f6f473"
+  dependencies:
+    binpack "~0"
+
 osc-min@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/osc-min/-/osc-min-1.1.1.tgz#8580443a3abb02f73254f5a286340dcbe3cf3f07"
@@ -6926,12 +6977,6 @@ pkg-dir@^1.0.0:
   resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-1.0.0.tgz#7a4b508a8d5bb2d629d447056ff4e9c9314cf3d4"
   dependencies:
     find-up "^1.0.0"
-
-pkg-dir@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-2.0.0.tgz#f6d5d1109e19d63edf428e0bd57e12777615334b"
-  dependencies:
-    find-up "^2.1.0"
 
 plist@^1.1.0:
   version "1.2.0"
@@ -7638,7 +7683,7 @@ read-pkg@^2.0.0:
     isarray "0.0.1"
     string_decoder "~0.10.x"
 
-"readable-stream@>=1.1.13-1 <1.2.0-0", readable-stream@^1.1.8, readable-stream@~1.1.9:
+"readable-stream@>=1.1.13-1 <1.2.0-0", readable-stream@^1.1.14, readable-stream@^1.1.8, readable-stream@~1.1.9:
   version "1.1.14"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.1.14.tgz#7cf4c54ef648e3813084c636dd2079e166c081d9"
   dependencies:
@@ -8647,6 +8692,12 @@ stream-http@^2.3.1:
     to-arraybuffer "^1.0.0"
     xtend "^4.0.0"
 
+stream-parser@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/stream-parser/-/stream-parser-0.3.1.tgz#1618548694420021a1182ff0af1911c129761773"
+  dependencies:
+    debug "2"
+
 stream-shift@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/stream-shift/-/stream-shift-1.0.0.tgz#d5c752825e5367e786f78e18e445ea223a155952"
@@ -8914,11 +8965,11 @@ textextensions@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/textextensions/-/textextensions-1.0.2.tgz#65486393ee1f2bb039a60cbba05b0b68bd9501d2"
 
-thomash-node-audio-metadata@^1.0.1:
+thomash-node-audio-metadata@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/thomash-node-audio-metadata/-/thomash-node-audio-metadata-1.0.1.tgz#3b264b088d3a248376292af645d53d1d0121ed5d"
   dependencies:
-    file-api voodoohop/file-api
+    file-api "github:voodoohop/file-api"
 
 throttleit@0.0.2:
   version "0.0.2"
@@ -9453,6 +9504,16 @@ watchpack@^0.2.1:
     async "^0.9.0"
     chokidar "^1.0.0"
     graceful-fs "^4.1.2"
+
+wav@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/wav/-/wav-1.0.2.tgz#bdbf3fa0d9b4519e9dfd2f603299ead0a2f22060"
+  dependencies:
+    buffer-alloc "^1.1.0"
+    buffer-from "^1.0.0"
+    debug "^2.2.0"
+    readable-stream "^1.1.14"
+    stream-parser "^0.3.1"
 
 waveform-data@^2.0.0:
   version "2.0.1"
